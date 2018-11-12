@@ -8,6 +8,16 @@ chars += chars.upper()
 
 for ch in article:
     cnt = article.count(ch)
-        if cnt:
+    if cnt:
             result[ch] = cnt
-print(result)
+
+result_list = list(result.items())
+
+for j in range(len(result_list)-1):
+    for i in range(len(result_list)-1):
+        if result_list[i][1] > result_list[i+1][1]:
+            result_list[i],result_list[i+1] = result_list[i+1],result_list[i]
+
+for idx,e in enumerate(result_list[-1:-11:-1]):
+    ch,cnt =e
+    print(idx+1,":",ch,":",cnt)

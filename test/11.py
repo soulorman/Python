@@ -1,24 +1,16 @@
-#encoding: utf-8
+#enconding: utf-8
+#write file
 
-
-users = {
-     1:{'name' : 'kk', 'age' : 30, 'tel' : '152xxxxxx'}
-     2:{'name' : 'kk', 'age' : 30, 'tel' : '152xxxxxx'}
-
+user = {
+     1 : {'name':'kk','age':30, 'tel': '123xxxx'},
+     2 : {'name':'kk1','age':30, 'tel': '123xxxx'},
+     3 : {'name':'k2','age':30, 'tel': '123xxxx'},
 }
 
-while True:
-    operate = input('please add/delete/update/find/list: ')
-    if 'add' == operate:
-        text = input('please user info: ')
-        nodes = text.split(',')
-        if len(nodes) != 3:
-            print('error')
-        else:
-            if not nodes[1].isdigit():
-                print('age error')
-            else:
-                users[max(users) + 1] = {'name': nodes[0],'age': nodes[1],'tel': nodes[2}
-        print('add ok ')
-    elif 'delete' == 'operate'
-        
+path = 'user.data.txt'
+
+fhandler = open(path,'wt')
+for k,v in user.items():
+    fhandler.write('{0},{1},{2},{3}\n'.format(k,v['name'],v['age'],v['tel']))
+fhandler.close()
+

@@ -1,2 +1,1 @@
-# test
-this is a bjtest
+#This is my way to learn Python

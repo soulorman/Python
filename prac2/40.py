@@ -26,7 +26,8 @@ def save_data(users):
     f.close()
     return True
 
-def login(users):
+def login():
+    users = load_data()
     isLogin = False
     for _ in range(3):
         text = input('请输入用户名和密码(users/passwd):')
@@ -35,13 +36,18 @@ def login(users):
             if user['name'] == username and user['password'] == password:
                 isLogin =True
                 break
-            else:
-                print('账号密码错误')    
+        
         if isLogin:
+            print('ok')
             break
+        else:
+            print('error')
     return isLogin
 
-def add_user(users):
+def input_add_user():
+    is_valid = False
+    user = {}
+
     text = input('请输入用户信息:')
     nodes = text.split(',')
     if len(nodes) !=4:
@@ -50,22 +56,40 @@ def add_user(users):
         if not nodes[1].isdigit():
             print('年龄有误')
         else:
-            uid = 1
-            if users:
-                uid = max(users) + 1
-            users[uid] = {'name':nodes[0],'age':int(nodes[1]),'tel':nodes[2],'password':nodes[3]}
-            print('添加成功')     
-def delete_user(users):
+            user = {'name':nodes[0],'age':int(nodes[1]),'tel':nodes[2],'password':nodes[3]}
+            is_valid = True
+    return is_valid,user
+
+def add_user():
+    is_valid,user =  input_add_user()
+    if is_valid:
+        users = load_data()
+        uid = 1
+        if users:
+            uid = max(users) + 1
+        users[uid] = user
+        save_data(users)
+        print('添加成功')
+
+def input_delete_user():
+    is_valid = False
     uid = input('请输入删除的用户ID:')
     if not uid.isdigit():
         print('输入信息有误')
-    else:
+
+    return is_valid,uid
+
+def delete_user():
+    is_valid,uid = input_delete_user()
+    if is_valid:
+        users = load_data()
         user = users.pop(int(uid),None)
-        if user:
-            print('删除成功')
-        else:
-            print('删除失败')
-def update_user(users):
+        save_data(users)
+        print('删除成功')
+
+def input_update_user():
+    users = load_data()
+    is_valid, user = False, {}
     uid = input('请输入要修改的用户ID:')
     if not uid.isdigit() or int(uid) not in users:
         print('输入信息有误')
@@ -78,46 +102,57 @@ def update_user(users):
             if not nodes[0].isdigit():
                 print('年龄有误')
             else:
+                is_valid = True
                 uid = int(uid)
-                users[uid]['age'] = nodes[0]
-                users[uid]['tel'] = nodes[1]
-                users[uid]['password'] = nodes[2]
+                user = {'age':int(nodes[0]),'tel':nodes[1],'password':nodes[2]}
 
-                users[uid] = {'name':users[uid]['name'],'age':int(nodes[0]),'tel':nodes[1],'password':nodes[2]}
-                print('更改成功')
-def list_user(users):
+    return is_valid,uid,user
+
+def update_user():
+    is_valid,uid,user = input_update_user()
+    if is_valid:
+        users = load_data()
+        users[uid].update(user)
+        save_data(users)
+        print('更改成功')
+
+def list_user():
+    users = load_data()
     print(splitline)
     print(title)
     print(splitline)
     for key,value in users.items():
         print(tpl_body.format(uid=key,name=value['name'],age=int(value['age']),tel=value['tel'],password=len(value['password']) * '*'))
     print(splitline)
-def find_user(users):
+
+def find_user():
+    users = load_data()
     text = input('请输入查找的字符串:')
     for key,value in users.items():
         if text in value['name']:
-            print(tpl_body.format(uid=key,name=value['name'],age=int(value['age']),tel=value['tel'],password=value['password']))
+            print(tpl_body.format(uid=key,name=value['name'],age=int(value['age']),tel=value['tel'],password=value['password'] * '*'))
 
 def main():
-    users = load_data()
-    login_ok = login(users)
+    login_ok = login()
     if not login_ok:
         print('登录失败')
         return
+    actions = {
+        'add' : add_user,
+        'delete' : delete_user,
+        'update' : update_user,
+        'list' : list_user,
+        'find' : find_user,
+    }
     while True: 
         operate = input('请输入操作(add/delete/update/find/list/exit):')
-        if 'add' == operate:
-            add_user(users)
-        if 'delete' == operate:
-            delete_user(users)
-        if 'update' == operate:
-            update_user(users)
-        if 'find' == operate:
-            find_user(users)
-        if 'list' == operate:
-            list_user(users)
         if 'exit' == operate:
-            save_data(users)
             break
+        func = actions.get(operate)
+        if func:
+            func()
+        else:
+            print('输入操作有误')
+
 if __name__ =='__main__':
     main()

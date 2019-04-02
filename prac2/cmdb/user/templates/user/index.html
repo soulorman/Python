@@ -1,23 +1,35 @@
-当前时间为: {{ current_time }}
-
-
-<table>
-    <thead>
-        <tr>
-	    <th>ID</th>
-	    <th>NAME</th>
-	    <th>AGE</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in users %}
-        <tr>
-            <td>{{ item.0 }}</td>
-            <td>{{ item.1.name }}</td>
-            <td>{{ item.1.age }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-
-
-</table>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>用户管理</title>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+            	    <th>姓名</th>
+            	    <th>年龄</th>
+            	    <th>性别</th>
+                    <th>联系方式</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for id,user in users.items %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.age }}</td>
+                    <td>
+                    {% if user.sex == 0  %}
+                        女
+                    {% else %}
+                        男
+                    {% endif %}
+                    </td>
+                    <td>{{ user.tel }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

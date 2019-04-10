@@ -2,7 +2,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
-from .models import get_users,delete_user
+from .models import get_users,delete_user,get_user,update_user,valid_update_user
 from .models import valid_login as valid_login_func
 
 def index(request):
@@ -36,3 +36,23 @@ def delete(request):
     uid = request.GET.get('uid','')
     delete_user(uid)
     return redirect('user:index')
+
+def view(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+
+    uid = request.GET.get('uid','')
+    get_user(uid)
+    return render(request,'user/view.html',{'user' : get_user(uid)})
+
+def update(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+
+
+    is_valid,user,errors = valid_update_user(request.POST)
+    if is_valid:
+        update_user(user)
+        return redirect('user:index')
+    else:
+        return render(request,'user/view.html',{ 'user' : user, 'errors' : errors})

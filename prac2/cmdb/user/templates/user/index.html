@@ -31,7 +31,7 @@
                     </td>
                     <td>{{ user.tel }}</td>
                     <td>
-                        <a >编辑</a>
+                        <a href="{% url 'user:view' %}?uid={{ uid }}">编辑</a>
                         {% if request.session.user.id != uid %}
                         <a href="{% url 'user:delete' %}?uid={{ uid }}">删除</a>
                         {% endif %}

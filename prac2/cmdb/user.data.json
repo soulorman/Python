@@ -1,1 +1,1 @@
-{"1": {"name": "test", "password": "123", "sex": 1, "age": 20, "tel": "136xxx"}, "4": {"name": "aa", "password": "aaaaa", "sex": 0, "age": 12, "tel": "aa"}, "7": {"name": "aa", "password": "aaaaa", "sex": 0, "age": 12, "tel": "aa"}}
+{"1": {"password": "123", "name": "test", "tel": "136xxx", "sex": 1, "age": 20}, "4": {"password": "aaaaa", "name": "test2", "age": "127", "sex": 1, "tel": "123"}, "7": {"age": "26", "sex": 0, "name": "test3", "tel": "136xxxx", "password": "aaaaa"}}

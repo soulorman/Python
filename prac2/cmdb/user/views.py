@@ -2,7 +2,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
-from .models import get_users,delete_user,get_user,update_user,valid_update_user
+from .models import get_users,delete_user,get_user,update_user,valid_update_user,valid_create_user,create_user
 from .models import valid_login as valid_login_func
 
 def index(request):
@@ -56,3 +56,17 @@ def update(request):
         return redirect('user:index')
     else:
         return render(request,'user/view.html',{ 'user' : user, 'errors' : errors})
+
+
+def create(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+    if 'GET' == request.method:
+        return render(request, 'user/create.html')
+    else:
+        is_valid, user, errors = valid_create_user(request.POST)
+        if is_valid:
+            create_user(user)
+            return redirect('user:index')
+        else:
+            return render(request, 'user/create.html', {'user' : user,'errors' : errors})

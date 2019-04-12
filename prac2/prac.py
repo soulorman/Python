@@ -21,6 +21,7 @@ create table accesslog(
     status int not null default 0
 )engine=innodb default charset utf8;
 '''
+
 SQL = 'INSERT INTO accesslog(logtime,ip,url,status) VALUES(%s,%s,%s,%s);'
 
 if __name__ == '__main__':
@@ -39,4 +40,4 @@ if __name__ == '__main__':
         conn.commit()
         cursor.close()
         conn.close()
-        print(cnt) 
+        print(cnt)

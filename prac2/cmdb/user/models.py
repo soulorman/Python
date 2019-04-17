@@ -1,7 +1,9 @@
 #enconding: utf-8
 import json
 from django.db import models
-from .dbutils  import execute_sql
+from .dbutils  import DBConnection
+
+
 
 SQL_LOGIN = 'SELECT id,name,age,tel,sex FROM user2 where name=%s and password=%s LIMIT 1'
 SQL_LIST = 'SELECT id,name,age,tel,sex FROM user2'
@@ -13,27 +15,27 @@ SQL_CREATE_USER = 'INSERT INTO user2 (name,password,age,tel,sex) values(%s,%s,%s
 SQL_DELETE_USER = 'DELETE FROM user2 WHERE id=%s'
 
 def get_users():
-    cnt,result =  execute_sql(SQL_LIST)
+    cnt,result =  DBConnection.execute_sql(SQL_LIST)
     return [dict(zip(SQL_COLUMN,line)) for line in result]
 
 
 def valid_login(name,password):
-    cnt,result =  execute_sql(SQL_LOGIN,(name,password),one=True)
+    cnt,result =  DBConnection.execute_sql(SQL_LOGIN,(name,password),one=True)
     return dict(zip(SQL_COLUMN,result)) if result else None
 
 
 def delete_user(uid):
-    execute_sql(SQL_DELETE_USER,(uid,),fetch=False)
+    DBConnection(SQL_DELETE_USER,(uid,),fetch=False)
     return True
 
 
 def get_user(uid):
-    cnt,result = execute_sql(SQL_GET_USER_BY_ID,(uid,),fetch=True,one=True)
+    cnt,result = DBConnection.execute_sql(SQL_GET_USER_BY_ID,(uid,),fetch=True,one=True)
     return dict(zip(SQL_COLUMN,result)) if result else None
 
 
 def get_user_by_name(name):
-    cnt,result = execute_sql(SQL_GET_USER_BY_NAME,(name,),fetch=True,one=True)
+    cnt,result = DBConnection.execute_sql(SQL_GET_USER_BY_NAME,(name,),fetch=True,one=True)
     return dict(zip(SQL_COLUMN,result)) if result else None
 
 
@@ -76,7 +78,7 @@ def valid_update_user(params):
 
 def update_user(params):
     args = (params['name'],params['age'],params['tel'],params['sex'],params['id'])
-    execute_sql(SQL_UPDATE_USER,args,fetch=False)
+    DBConnection.execute_sql(SQL_UPDATE_USER,args,fetch=False)
     return True
 
 
@@ -111,5 +113,5 @@ def valid_create_user(params):
 
 def create_user(params):
     args = (params['name'],params['password'],params['age'],params['tel'],params['sex'])
-    execute_sql(SQL_CREATE_USER,args,fetch=False)
+    DBConnection.execute_sql(SQL_CREATE_USER,args,fetch=False)
     return True

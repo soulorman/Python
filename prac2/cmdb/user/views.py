@@ -2,14 +2,14 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
-from .models import get_users,delete_user,get_user,update_user,valid_update_user,valid_create_user,create_user
-from .models import valid_login as valid_login_func
+from .models import User
 
 def index(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    return render(request,'user/index.html',{'users' : get_users()})
+    return render(request,'user/index.html',{'users' : User.get_list()})
+
 
 def login(request):
     if 'GET' == request.method:
@@ -17,9 +17,9 @@ def login(request):
     else:
         name = request.POST.get('name')
         password = request.POST.get('password')
-        user = valid_login_func(name,password)
+        user = User.valid_login(name,password)
         if user:
-            request.session['user'] = user
+            request.session['user'] = user.as_dict()
             return redirect('user:index')
             #return render(request,'user/index.html',{'users' : get_users()})
         else:
@@ -34,7 +34,7 @@ def delete(request):
         return redirect('user:login')
 
     uid = request.GET.get('uid','')
-    delete_user(uid)
+    User.delete_by_id(uid)
     return redirect('user:index')
 
 def view(request):
@@ -42,17 +42,16 @@ def view(request):
         return redirect('user:login')
 
     uid = request.GET.get('uid','')
-    get_user(uid)
-    return render(request,'user/view.html',{'user' : get_user(uid)})
+    return render(request,'user/view.html',{'user' : User.get_by_id(uid)})
+
 
 def update(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-
-    is_valid,user,errors = valid_update_user(request.POST)
+    is_valid,user,errors = User.valid_update_user(request.POST)
     if is_valid:
-        update_user(user)
+        User.update(user)
         return redirect('user:index')
     else:
         return render(request,'user/view.html',{ 'user' : user, 'errors' : errors})
@@ -64,9 +63,9 @@ def create(request):
     if 'GET' == request.method:
         return render(request, 'user/create.html')
     else:
-        is_valid, user, errors = valid_create_user(request.POST)
+        is_valid, user, errors = User.valid_create(request.POST)
         if is_valid:
-            create_user(user)
+            user.create()
             return redirect('user:index')
         else:
             return render(request, 'user/create.html', {'user' : user,'errors' : errors})

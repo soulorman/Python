@@ -3,12 +3,13 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
 from .models import User
+from .validators import UserValiator
 
 def index(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    return render(request,'user/index.html',{'users' : User.get_list()})
+    return render(request,'user/index.html',{'users' : User.objects.all()})
 
 
 def login(request):
@@ -17,7 +18,7 @@ def login(request):
     else:
         name = request.POST.get('name')
         password = request.POST.get('password')
-        user = User.valid_login(name,password)
+        user = UserValiator.valid_login(name,password)
         if user:
             request.session['user'] = user.as_dict()
             return redirect('user:index')
@@ -34,7 +35,7 @@ def delete(request):
         return redirect('user:login')
 
     uid = request.GET.get('uid','')
-    User.delete_by_id(uid)
+    User.objects.filter(id=uid).delete()
     return redirect('user:index')
 
 def view(request):
@@ -42,16 +43,16 @@ def view(request):
         return redirect('user:login')
 
     uid = request.GET.get('uid','')
-    return render(request,'user/view.html',{'user' : User.get_by_id(uid)})
+    return render(request,'user/view.html',{'user' : User.objects.get(id=uid)})
 
 
 def update(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid,user,errors = User.valid_update_user(request.POST)
+    is_valid, user, errors = UserValiator.valid_update(request.POST)
     if is_valid:
-        User.update(user)
+        user.save()
         return redirect('user:index')
     else:
         return render(request,'user/view.html',{ 'user' : user, 'errors' : errors})
@@ -63,9 +64,9 @@ def create(request):
     if 'GET' == request.method:
         return render(request, 'user/create.html')
     else:
-        is_valid, user, errors = User.valid_create(request.POST)
+        is_valid, user, errors = UserValiator.valid_create(request.POST)
         if is_valid:
-            user.create()
+            user.save()
             return redirect('user:index')
         else:
             return render(request, 'user/create.html', {'user' : user,'errors' : errors})

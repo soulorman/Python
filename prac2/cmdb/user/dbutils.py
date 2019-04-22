@@ -7,14 +7,14 @@ class DBConnection(object):
     @staticmethod
     def execute_sql(sql,args=(),fetch=True,one=False):
         cnt,result = 0,None
-        conn,cur = None,None
+        cur = None
         try:
             cur = connection.cursor()
             cnt = cur.execute(sql,args)
             if fetch:
                 result = cur.fetchone() if one else cur.fetchall()
             else:
-                conn.commit()
+                connection.commit()
         except BaseException  as e:
             print(e)
             print(traceback.format_exc())

@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'cmdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cmdb',
+        'NAME': 'cmdb_orm',
         'HOST' : '192.168.31.103',
         'PORT' : 3306,
         'USER' : 'root',
@@ -118,7 +118,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

@@ -77,13 +77,10 @@ WSGI_APPLICATION = 'cmdb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cmdb_orm',
+        'ENGINE' : 'djongo',
+        'NAME' : 'cmdb',
         'HOST' : '192.168.31.103',
-        'PORT' : 3306,
-        'USER' : 'root',
-        'PASSWORD' : '123456',
-        'CHARSET' : 'utf8'
+        'PORT' : 27017
     }
 }
 

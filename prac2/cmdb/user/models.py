@@ -1,5 +1,18 @@
 #enconding: utf-8
-from django.db import models
+from djongo import models
+import hashlib
+
+def encrypt_password(password):
+    if not isinstance(password, bytes):
+        password = str(password).encode()
+
+    md5 = hashlib.md5()
+    md5.update(password)
+    return md5.hexdigest()
+
+class Hardware_Information(models.Model):
+    Host_Name = models.CharField(max_length=32, null=False, default='')
+    Describe = models.CharField(max_length=1024,null=False, default='')
 
 class User(models.Model):
     name = models.CharField(max_length=32, null=False, default='')

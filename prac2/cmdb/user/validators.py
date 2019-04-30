@@ -1,6 +1,6 @@
 #enconding: utf-8
 from django.utils import timezone
-from .models  import User
+from .models  import User,encrypt_password,Hardware_Information
 
 class validator(object):
 
@@ -111,5 +111,7 @@ class UserValiator(validator):
         if user.password == '' or params.get('other_password') != user.password:
             is_valid = False
             errors['password'] = '密码不能为空,  且两次输入密码必须相同'
+        else:
+            user.password = encrypt_password(user.password)
         
         return is_valid, user, errors

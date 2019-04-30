@@ -11,4 +11,9 @@ urlpatterns = [
     path('view/', views.view, name="view"),
     path('update/', views.update, name="update"),
     path('create/', views.create, name="create"),
+    path('user/', views.user, name="user"),
+    path('create/ajax/', views.create_ajax, name="create_ajax"),
+    path('delete/ajax/', views.delete_ajax, name="delete_ajax"),
+    path('get/ajax/', views.get_ajax, name="get_ajax"),
+    path('update/ajax/', views.update_ajax, name="update_ajax"),
 ]

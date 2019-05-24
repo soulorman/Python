@@ -16,6 +16,7 @@ def index(request):
 
     return render(request,'asset/index.html')
 
+
 def list_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403,'result' : []})
@@ -38,21 +39,26 @@ def delete_ajax(request):
 
 
 def gpu_info():
-    list = []
-    gpu = Resource.objects.all()
+
+    gpu = Resource.objects.all().order_by('ip')
+    d = []
+
     for i in gpu:
+        list = []
         a = model_to_dict(i).get('gpu','')
         b = eval(a)
-        c = b.get('gpu_user',[])
-    for j in c:
-        for k,v in j.items():
-            list.append(k + '(' +  v  +')')
+        c = (b.get('gpu_user',[]))
 
-    if list:
-        return hanshu(list,list,list)
+        for i in c:
+            for k,v in i.items():
+                list.append(k + '(' +  v  +')')
+
+        d.append(list)
+
+    return hanshu(d[0],d[0],d[1],d[2])
 
 
-def hanshu(list1,list2,list3):
+def hanshu(list1,list2,list3,list4):
 
     l1 = []
     for index,value in enumerate(list1):
@@ -60,6 +66,8 @@ def hanshu(list1,list2,list3):
     for index,value in enumerate(list2):
         l1[index][1].append(value)
     for index,value in enumerate(list3):
+        l1[index][1].append(value)
+    for index,value in enumerate(list4):
         l1[index][1].append(value)
 
     return l1
@@ -157,6 +165,3 @@ def resource_ajax(request):
         return JsonResponse({'code' : 200, 'result' : {'xAxis' : xAxis, 'CPU_datas' : CPU_datas, 'MEM_datas' : MEM_datas}})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'result' : []})
-
-
-

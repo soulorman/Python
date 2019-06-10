@@ -1,16 +1,29 @@
-#encoding: utf-8
-from django.db import models
+#enconding: utf-8
+from djongo import models
+import hashlib
 
+def encrypt_password(password):
+    if not isinstance(password, bytes):
+        password = str(password).encode()
 
-class AccessLogFileModel(models.Model):
-    name = models.CharField(max_length=128, null=False, default='')
-    path = models.CharField(max_length=1024, null=False, default='')
-    created_time = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(default=0)
+    md5 = hashlib.md5()
+    md5.update(password)
+    return md5.hexdigest()
 
-class AccessLog(models.Model):
-    file_id = models.IntegerField(default=0, null=False)
-    ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
-    url = models.CharField(max_length=1024, null=False, default='')
-    status_code = models.IntegerField(default=0, null=False)
-    access_time = models.DateTimeField(null=False)
+class User(models.Model):
+    name = models.CharField(max_length=32, null=False, default='')
+    password = models.CharField(max_length=512, null=False,default='')
+    age = models.IntegerField(null=False, default=0)
+    tel = models.CharField(max_length=32, null=False,default='')
+    sex = models.BooleanField(null=False, default=True)
+    create_time = models.DateTimeField(null=False)
+
+    def as_dict(self):
+        return {
+            'id' : self.id, 
+            'name' : self.name, 
+            'age' : self.age, 
+            'tel': self.tel, 
+            'sex' : self.sex, 
+            'password' : self.password
+        }

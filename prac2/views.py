@@ -1,87 +1,77 @@
-#enconding: utf-8
+#encoding: utf-8
 
-import os
-import time
-import json
-from functools import wraps
-
-from django.conf import settings
-
-from django.http import HttpResponse
 from django.shortcuts import render,redirect
+from django.http import HttpResponse,JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
-from .models import AccessLogFileModel,AccessLog
-from django.http import JsonResponse
-from django.db.models import Count
+from .models import User
+from .validators import UserValiator
 
-def login_required(func):
-
-    @wraps(func)
-    def wrapper(request, *args, **kwargs):
-        if request.session.get('user') is None:
-            if request.is_ajax():
-                return JsonResponse({'code' : 403, 'result' : []})
-            return redirect('user:login')
-        return func(request, *args, **kwargs)
-
-    return wrapper
-
-@login_required
 def index(request):
-    files = AccessLogFileModel.objects.filter(status=0).order_by('-created_time')[:10]
-    return render(request,'webanalysis/index.html', {"files" : files})
+    if not request.session.get('user'):
+        return redirect('user:login')
 
-@login_required
-def upload(request):
-    log = request.FILES.get('log')
-    if log:
-        path = os.path.join(settings.BASE_DIR,'media','uploads', str(time.time()))
-        fhandler = open(path, "wb")
+    return render(request,'user/index.html', {'users' : User.objects.all()})
 
-        for chunk in log.chunks():
-            fhandler.write(log.read(chunk))
-        fhandler.close()
 
-        obj = AccessLogFileModel(name=log.name, path=path)
-        obj.save()
+def login(request):
+    if 'GET' == request.method:
+        return render(request,'user/login.html')
+    else:
+        name = request.POST.get('name')
+        password = request.POST.get('password')
+        user = UserValiator.valid_login(name,password)
+        if user:
+            request.session['user'] = user.as_dict()
+            return redirect('user:index')
+        else:
+            return render(request,'user/login.html',{'name' : name,'errors':{'default' : '用户名或密码错误'}})          
 
-        path = os.path.join(settings.BASE_DIR,'media','notices', str(time.time()))
-        with open(path,'w') as fhandler:
-            fhandler.write(json.dumps({'id' : obj.id, 'path' : obj.path}))
+def logout(request):
+    request.session.flush()
+    return redirect('user:login')
 
-    return HttpResponse("upload")
 
-@login_required
-def dist_status_code(request):
-    objs = AccessLog.objects.values("status_code").filter(file_id=request.GET.get('id',0)).annotate(codecount=Count("status_code")).order_by('-codecount')
+def delete_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' :403})
 
-    legend = []
-    series = []
-    for line in objs:
-        legend.append(line.get('status_code'))
-        series.append({"name" : line.get('status_code'), "value" : line.get('codecount')})
+    uid = request.GET.get('id', '')
+    User.objects.filter(id=uid).delete()
 
-    return JsonResponse({'code' : 200, 'result' : {'legend' : legend, 'series' : series}})
+    return JsonResponse({'code' : 200})
 
-@login_required
-def trend_visit(request):
 
-    time = []
-    abc = {}
-    access_time= AccessLog.objects.filter(file_id=request.GET.get('id',0)).values("access_time")
-    for i in access_time:
-        time.append(i.get("access_time").strftime("%Y-%m-%d %H:00:00"))
+def create_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' :403})
 
-    for j in time:
-       if abc.get(j, None) is None:
-           abc[j] = 1
-       else:
-           abc[j] += 1
+    is_valid, user, errors = UserValiator.valid_create(request.POST)
+    if is_valid:
+        user.save()
+        return JsonResponse({'code' :200})
+    else:
+        return JsonResponse({'code' :400, 'errors' : errors})
 
-    series = []
-    xAxis = []
-    for k,v in abc.items():
-        xAxis.append(k)
-        series.append(v)
 
-    return JsonResponse({'code' : 200, 'result' : {'xAxis' : xAxis, 'series' : series}})
+def get_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' :403})
+
+    uid = request.GET.get('id','')
+    try:
+        user = User.objects.get(id=uid)
+        return JsonResponse({'code' : 200, 'result' : user.as_dict()})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400, 'errors' : { "id" : "操作对象不存在" }})
+
+def update_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' :403})
+
+    is_valid, user, errors = UserValiator.valid_update(request.POST)
+    if is_valid:
+        user.save()
+        return JsonResponse({'code' : 200})
+    else:
+        return JsonResponse({'code' :400, 'errors' : errors, 'user' : user.as_dict()})

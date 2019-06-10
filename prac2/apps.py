@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class WebanalysisConfig(AppConfig):
-    name = 'webanalysis'
+class UserConfig(AppConfig):
+    name = 'user'

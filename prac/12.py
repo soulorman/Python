@@ -1,1 +1,0 @@
-my name is kkmy age is 30

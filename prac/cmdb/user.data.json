@@ -1,9 +1,0 @@
-{
-"2": {"name": "woniu", "age": 28, "tel": "456", "password": "123", "sex" : 1},
-"3": {"name": "woniu", "age": 28, "tel": "456", "password": "123"},
-"4": {"name": "woniu", "age": 28, "tel": "456", "password": "123"},
-"5": {"name": "woniu", "age": 28, "tel": "456", "password": "123"},
-"6": {"name": "woniu", "age": 28, "tel": "456", "password": "123"},
-"7": {"name": "woniu", "age": 28, "tel": "456", "password": "123"},
-"8": {"name": "woniu", "age": 28, "tel": "456", "password": "123", "sex" : 0}
-}

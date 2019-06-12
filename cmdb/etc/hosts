@@ -1,0 +1,5 @@
+#localhost ansible_connection=local
+server1 ansible_connection=smart ansible_host=192.168.31.101 ansible_ssh_user="thorough" ansible_ssh_pass="iiis123456"
+server2 ansible_connection=smart ansible_host=192.168.31.102 ansible_ssh_user="ubuntu" ansible_ssh_pass="admin123"
+server3 ansible_connection=smart ansible_host=192.168.31.103 ansible_ssh_user="thorough" ansible_ssh_pass="iiis123456"
+server4 ansible_connection=smart ansible_host=192.168.31.104 ansible_ssh_user="thorough" ansible_ssh_pass="iiis123456"

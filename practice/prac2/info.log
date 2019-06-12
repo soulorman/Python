@@ -1,0 +1,4 @@
+2019-06-10 18:00:46,944 - __main__ - DEBUG:debug
+2019-06-10 18:00:46,944 - __main__ - ERROR:ex
+NoneType: None
+2019-06-10 18:00:46,944 - __main__ - ERROR:error

@@ -1,0 +1,4 @@
+2019-06-14 16:11:22,965 - __main__ - INFO : started: [12753]
+2019-06-14 16:11:22,965 - plugins.base - INFO : plugin[host] running ...
+2019-06-14 16:11:22,966 - plugins.base - DEBUG : plugin[host] make event:{'type': 'host', 'msg': {'mac': '', 'cpu': 0, 'cpu_core': 0, 'os': '', 'ip': '1.1.1.1', 'disk': '{}', 'arch': '', 'mem': 0, 'kernel': '', 'name': 'nameaaaa', 'cpu_thread': 0}}
+2019-06-14 16:11:27,967 - plugins.base - DEBUG : plugin[host] make event:{'type': 'host', 'msg': {'mac': '', 'cpu': 0, 'cpu_core': 0, 'os': '', 'ip': '1.1.1.1', 'disk': '{}', 'arch': '', 'mem': 0, 'kernel': '', 'name': 'nameaaaa', 'cpu_thread': 0}}

@@ -3,8 +3,25 @@
 import argparse
 import os
 import logging
+from queue import Queue
+import time
+
+from gconfig import Config
+from plugins.host import Host
+
 
 logger = logging.getLogger(__name__)
+
+
+def main(config):
+    ths = []
+    ths.append(Host(config))
+    for th in ths:
+        th.start()
+
+    while True:
+        time.sleep(3)
+
 
 if __name__  == '__main__':
     parser = argparse.ArgumentParser()
@@ -20,11 +37,16 @@ if __name__  == '__main__':
     pid = os.getpid()
 
     logging.basicConfig(
-                        level=level,
-                        format=fmt,
-                        filemode='w',
-                        filename=os.path.join(base_dir, 'logs', 'agentd.log')
-                    )
+        level=level,
+        format=fmt,
+        filemode='w',
+        filename=os.path.join(base_dir, 'logs', 'agentd.log')
+    )
 
     logger.info('started: [%s]', pid)
-    logger.debug('debug msg')
+    config = Config()
+
+    setattr(config, 'SERVER', '{0}:{1}'.format(args.host, args.port))
+    setattr(config, 'QUEUE', Queue())
+
+    main(config)

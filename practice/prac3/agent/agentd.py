@@ -8,7 +8,7 @@ import time
 
 from gconfig import Config
 from plugins.host import Host
-
+from plugins.ens import ENS
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 def main(config):
     ths = []
     ths.append(Host(config))
+    ths.append(ENS(config))
     for th in ths:
         th.start()
 

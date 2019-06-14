@@ -29,7 +29,6 @@ class BaseThread(Thread):
 
         while True:
             evt = self.make_event()
-            print('11111')
             if evt:
                 logger.debug('plugin[%s] make event:%s', _type, evt)
                 _queue.put(evt)

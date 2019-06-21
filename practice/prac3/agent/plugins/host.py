@@ -1,6 +1,7 @@
 #encoding: utf-8
 
 from .base import BaseThread
+from utils import sysutils
 
 class Host(BaseThread):
 
@@ -11,16 +12,12 @@ class Host(BaseThread):
         return {
             'type' : self._type,
             'msg' : {
-                'ip' : '1.1.1.1',
-                'name' : 'nameaaaa',
-                'mac' : '',
-                'os' : '',
-                'kernel' : '',
-                'cpu_core' : 0,
-                'cpu_thread' : 0,
-                'arch' : '',
-                'mem' : 0,
-                'cpu' : 0,
-                'disk' : '{}'
+                'name' : sysutils.get_name(),
+                'mac' : sysutils.get_mac(),
+                'os' : sysutils.get_os(),
+                'arch' : sysutils.get_arch(),
+                'mem' : sysutils.get_mem(),
+                'cpu' : sysutils.get_cpu(),
+                'disk' : sysutils.get_disk(),
             }
         }

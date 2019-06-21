@@ -30,7 +30,10 @@ def get_mem():
 def get_disk():
     disk = []
     for part in psutil.disk_partitions():             
-        disk.append({'name' : part.device, 'total' : psutil.disk_usage(part.device).total})
+        disk.append({
+                'name' : part.device, 
+                'total' : psutil.disk_usage(part.device).total
+            })
     return disk
 
 def get_cpu_percent():

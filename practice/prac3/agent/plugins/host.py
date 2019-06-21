@@ -11,6 +11,7 @@ class Host(BaseThread):
     def make_event(self):
         return {
             'type' : self._type,
+            'url' : 'client/{0}/'.format(sysutils.get_addr()),
             'msg' : {
                 'name' : sysutils.get_name(),
                 'mac' : sysutils.get_mac(),

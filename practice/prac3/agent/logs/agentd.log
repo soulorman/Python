@@ -1,7 +1,2 @@
-2019-06-21 10:12:48,239 - __main__ - INFO : started: [20125]
-2019-06-21 10:12:48,239 - plugins.base - INFO : plugin[host] running ...
-2019-06-21 10:12:48,239 - plugins.base - DEBUG : plugin[host] make event:{'msg': {'cpu_core': 0, 'ip': '1.1.1.1', 'cpu_thread': 0, 'cpu': 0, 'mac': '', 'kernel': '', 'arch': '', 'os': '', 'disk': '{}', 'name': 'nameaaaa', 'mem': 0}, 'type': 'host'}
-2019-06-21 10:12:48,240 - plugins.ens - DEBUG : ENS get event: {'msg': {'cpu_core': 0, 'ip': '1.1.1.1', 'cpu_thread': 0, 'cpu': 0, 'mac': '', 'kernel': '', 'arch': '', 'os': '', 'disk': '{}', 'name': 'nameaaaa', 'mem': 0}, 'type': 'host'}
-2019-06-21 10:12:53,245 - plugins.base - DEBUG : plugin[host] make event:{'msg': {'cpu_core': 0, 'ip': '1.1.1.1', 'cpu_thread': 0, 'cpu': 0, 'mac': '', 'kernel': '', 'arch': '', 'os': '', 'disk': '{}', 'name': 'nameaaaa', 'mem': 0}, 'type': 'host'}
-2019-06-21 10:12:54,243 - plugins.ens - DEBUG : ENS get event: {'msg': {'cpu_core': 0, 'ip': '1.1.1.1', 'cpu_thread': 0, 'cpu': 0, 'mac': '', 'kernel': '', 'arch': '', 'os': '', 'disk': '{}', 'name': 'nameaaaa', 'mem': 0}, 'type': 'host'}
-2019-06-21 10:12:58,250 - plugins.base - DEBUG : plugin[host] make event:{'msg': {'cpu_core': 0, 'ip': '1.1.1.1', 'cpu_thread': 0, 'cpu': 0, 'mac': '', 'kernel': '', 'arch': '', 'os': '', 'disk': '{}', 'name': 'nameaaaa', 'mem': 0}, 'type': 'host'}
+2019-06-24 09:53:14,309 - __main__ - INFO : started: [17875]
+2019-06-24 09:53:14,310 - plugins.base - INFO : plugin[host] running ...

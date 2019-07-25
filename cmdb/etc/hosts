@@ -1,8 +1,0 @@
-localhost ansible_connection=local
-server1 ansible_connection=smart ansible_ssh_host=192.168.31.101 ansible_ssh_user="thorough" ansible_ssh_pass="iiis123456"
-server2 ansible_connection=smart ansible_ssh_host=192.168.31.102 ansible_ssh_user="root" ansible_ssh_port=22 
-server3 ansible_connection=smart ansible_ssh_host=192.168.31.103 ansible_ssh_user="root"  ansible_ssh_port=22
-server4 ansible_connection=smart ansible_ssh_host=192.168.31.104 ansible_ssh_user="root" ansible_ssh_port=22
-GPU-189 ansible_connection=smart ansible_ssh_host=192.168.68.189 ansible_ssh_user="root" ansible_ssh_port=22 
-GPU-191 ansible_connection=smart ansible_ssh_host=192.168.68.191 ansible_ssh_user="root" ansible_ssh_port=22 
-GPU-192 ansible_connection=smart ansible_ssh_host=192.168.68.192 ansible_ssh_user="root" ansible_ssh_port=22 

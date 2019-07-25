@@ -1,0 +1,99 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <title>CMDB管理系统</title>
+        <link rel="icon" href="{% static 'favicon.ico' %}">
+
+        <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
+        <link href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+        {% block link %}{% endblock %}
+        {% block style %}{% endblock %}
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <ul class="nav nav-pills" role="tablist">
+                        <li><h4 style="font-size: 28px">CMDB</h4></li>
+                    </ul>
+                </div>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a>当前登录用户为: {{ request.session.user.name }}</a></li>
+                    <li class="active"><a href="{% url 'user:logout' %}">点我退出登录</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >
+                        开发管理
+                            <span class="caret"></span>
+                        </a>
+                    <ul id="menu2" class="dropdown-menu" aria-labelledby="drop2">
+                        <li class="{% block nav_asset_dev %}{% endblock %}"><a href="{% url 'asset:index' %}">资源管理</a></li>
+                        <li class="{% block nav_webanalysis_dev %}{% endblock %}"><a href="{% url 'webanalysis:index' %}">日志管理</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="{% block nav_bushu %}{% endblock %}"><a href="http://192.168.31.102:12000" target="_blank" >软件部署管理</a></li>
+                    </ul>
+                    </li>
+
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >
+                        算法管理
+                            <span class="caret"></span>
+                        </a>
+                    <ul id="menu2" class="dropdown-menu" aria-labelledby="drop2">
+                        <li class="{% block nav_asset_math %}{% endblock %}"><a href="{% url 'asset:index' %}">资源管理</a></li>
+                        <li class="{% block nav_webanalysis_math %}{% endblock %}"><a href="{% url 'webanalysis:index' %}">日志管理</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="{% block nav_ceshi %}{% endblock %}"><a href="{% url 'user:index' %}">测试管理</a></li>
+                    </ul>
+                    </li>
+
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >
+                        运维管理
+                            <span class="caret"></span>
+                        </a>
+                    <ul id="menu3" class="dropdown-menu" aria-labelledby="drop4">
+                        <li class="{% block nav_asset_ops %}{% endblock %}"><a href="{% url 'asset:index' %}">资源管理</a></li>
+                        <li class="{% block nav_webanalysis_ops %}{% endblock %}"><a href="{% url 'webanalysis:index' %}">日志管理</a></li>
+                    </ul>
+                    </li>
+
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >
+                        后台管理
+                            <span class="caret"></span>
+                        </a>
+                    <ul id="menu4" class="dropdown-menu" aria-labelledby="drop4">
+                        <li class="{% block nav_user %}{% endblock %}"><a href="{% url 'user:index' %}">登录用户管理</a></li>
+                    </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        {% block container %}{% endblock %}
+        {% block dialog %}{% endblock %}
+
+        <script  src="{% static 'jquery/jquery.min.js' %}"></script>
+        <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+        <script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+        <script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
+        <script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
+        {% block script %}{% endblock %}
+
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                {% block js %}{% endblock %}
+                });
+        </script>
+    </body>
+</html>

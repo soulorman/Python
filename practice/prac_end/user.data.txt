@@ -1,3 +1,1 @@
-1,kk,30,152xxxx,123
-2,wd,23,151xxxx,123
-3,wd,18,134xx,123
+{"1": {"name": "kk", "password": "123", "tel": "134xxx", "age": 12}, "2": {"name": "wd", "password": "123", "tel": "136xxx", "age": 18}}

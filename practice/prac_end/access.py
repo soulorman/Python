@@ -17,7 +17,7 @@ for j in range(10):
         if stats_list[i][1] > stats_list[i+1][1]:
             stats_list[i],stats_list[i+1] = stats_list[i+1],stats_list[i]
 
-print('{0:<18s}{1:<46s}{2:<7s}{3:<s}'.format('ip地址','访问目录','状态码','访问次数'))
+print('{0:<18s}{1:<46s}{2:<7s}{3:<s}'.format('IP地址','访问目录','状态码','访问次数'))
 for k,v in stats_list[:-11:-1]:
     print('{0:<20s}{1:<50s}{2:<10s}{3:<d}'.format(k[0],k[1],k[2],v))
 

@@ -22,11 +22,10 @@ def save_data(users):
     f = open(DATA_FILE, 'wt')
     f.write(json.dumps(users))
     f.close()
-    print('bye~')
 
-    return True
 
-def login(users):
+def login():
+    users = load_data()
     isLogin = False
     for _ in range(3):
         txt = input('请输入用户名和密码(user/passwd):')
@@ -44,7 +43,9 @@ def login(users):
 
     return isLogin
 
-def add_user(users):
+def valid_user():
+    is_valid = False
+    user = {}
     text = input('请输入用户信息(name,age,tel,password):')
     nodes = text.split(',')
     if len(nodes) != 4:
@@ -53,33 +54,52 @@ def add_user(users):
         if not nodes[1].isdigit():
             print('输入年龄有误，请重新操作')
         else:
-            uid = 1
-            if users:
-                uid = max(users) + 1
+            user = {
+                        'name' : nodes[0],
+                        'age' : int(nodes[1]),
+                        'tel' : nodes[2],
+                        'password' : nodes[3]
+                    }
+            is_valid = True
 
-            users[uid] = {
-                            'name' : nodes[0],
-                            'age' : int(nodes[1]),
-                            'tel' : nodes[2],
-                            'password' : nodes[3]
-                        }
-            
-            print('添加用户成功!')
+    return is_valid, user
 
+def add_user():
+    is_valid, user = valid_user()
+    if is_valid:
+        users = load_data()
+        uid = 1
+        if users:
+            uid = max(users) + 1
 
-def del_user(users):
+        users[uid] = user
+        save_data(users)
+        print('添加用户成功!')
+
+def input_del():
+    is_valid = False 
     uid = input('请输入删除的用户ID:')
     if not uid.isdigit():
         print('信息有误')
     else:
-        user = users.pop(int(uid), None)
-        if user:
-            print('删除成功')
-        else:
-            print('删除失败，用户不存在')
+        is_valid = True
+        uid = int(uid)
+
+    return is_valid, uid
 
 
-def update_user(users):
+def del_user():
+    is_valid, uid = input_del()
+    if is_valid:
+        users = load_data()
+        users.pop(int(uid), None)
+        save_data(users)
+        print('删除成功')
+
+def valid_update():
+    users = load_data()
+    is_valid = False
+    user = {}
     uid = input('请输入要更新的用户ID: ')
     if not uid.isdigit() or int(uid) not in users:
         print('信息有误')
@@ -92,12 +112,27 @@ def update_user(users):
             if not nodes[0].isdigit():
                 print('输入年龄有误，请重新操作')
             else:
-                users[int(uid)]['age'] = int(nodes[0])
-                users[int(uid)]['tel'] = nodes[1]
-                print('更新用户成功!')
+                is_valid = True
+                uid = int(uid)
+                user = {
+                        'age' : int(nodes[0]),
+                        'tel' : nodes[1],
+                }
+
+    return is_valid, uid, user
 
 
-def list_user(users):
+def update_user():
+    is_valid, uid, user = valid_update()
+    if is_valid:
+        users = load_data() 
+        users[uid].update(user)
+        save_data(users)
+        print('更新用户成功!')
+
+
+def list_user():
+    users = load_data()
     print(splitline)
     print(title)
     print(splitline)
@@ -106,7 +141,8 @@ def list_user(users):
     print(splitline)
 
 
-def find_user(users):
+def find_user():
+    users = load_data()
     text = input('请输入要查询的用户名:')
     #1. 如果数据重复，会只显示最后一个
     #end_print = '没有找到'
@@ -132,7 +168,8 @@ def find_user(users):
     if not exist:
         print('没有找到')
 
-def changepass_user(users):
+def changepass_user():
+    users = load_data()
     change_state = False
     old_pass = False
     for _ in range(3):
@@ -155,6 +192,7 @@ def changepass_user(users):
             passwd_new1 = input('再次输入密码:')
             if passwd_new == passwd_new1:
                 user['password'] = passwd_new
+                save_data(users)
                 change_state = True
                 print('密码修改成功')
                 break
@@ -166,37 +204,31 @@ def changepass_user(users):
 
 
 def main():
-
-    users = load_data()
-    login_ok = login(users)
+    login_ok = login()
+    actions = {
+        'add' : add_user,
+        'del' : del_user,
+        'update' : update_user,
+        'list' : list_user,
+        'find' : find_user,
+        'changepass' : changepass_user,
+        'exit' : save_data,
+    }
 
     if not login_ok:
         print('登录超时')
         return False
 
     while True:
-        operate = input('请输入操作(add/del/update/list/find/exit):')
-        if 'add' == operate:
-            add_user(users)
-
-        elif 'del' == operate:
-            del_user(users)
-
-        elif 'update' == operate:
-            update_user(users)
-
-        elif 'list' == operate:
-            list_user(users)
-
-        elif 'find' == operate:
-            find_user(users)
-            
-        elif 'changepass' == operate:
-            changepass_user(users)
-
-        elif 'exit' == operate:
-            save_data(users)
+        operate = input('请输入操作(add/del/update/list/find/changepass/exit):')
+        if operate == 'exit':
+            print('bye')
             break
+        func = actions.get(operate)
+        if func:
+            func()
+        else:
+            print('输入参数有误') 
 
-
-main()
+if __name__ == '__main__':
+    main()

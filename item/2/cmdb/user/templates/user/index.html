@@ -1,1 +1,27 @@
-当前时间为: {{  current_time }}
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>AGE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in users.items %}
+                <tr>
+                    <td>{{ item.0 }}</td>
+                    <td>{{ item.1.name }}</td>
+                    <td>{{ item.1.age }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

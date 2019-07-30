@@ -1,9 +1,1 @@
-
-{
-    "1": {
-        "name": "kk",
-        "age": 12,
-        "tel": "136xx",
-        "password": "123"
-    }
-}
+{"1": {"sex": 1, "tel": "136xx", "password": "123", "name": "kk", "age": "20"}}

@@ -1,25 +1,42 @@
 <!DOCTYPE html>
 <html>
     <head>
-        
+        <meta charset="utf-8">
+        <title>用户管理</title>
     </head>
 
     <body>
+        当前登录用户是:{{ request.session.user.name }}<br/>
+        <a href="{% url 'user:logout' %}">退出登录</a>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>NAME</th>
-                    <th>AGE</th>
+                    <th>姓名</th>
+                    <th>年龄</th>
+                    <th>性别</th>
+                    <th>联系方式</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in users.items %}
-                <tr>
-                    <td>{{ item.0 }}</td>
-                    <td>{{ item.1.name }}</td>
-                    <td>{{ item.1.age }}</td>
-                </tr>
+                {% for uid,user in users.items %}
+                    <tr>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.age }}</td>
+                        <td>
+                            {% if user.sex == 0 %}
+                            女
+                            {% else %}
+                            男
+                            {% endif %}
+                        </td>
+                        <td>{{ user.tel }}</td>
+                        <td>
+                            <a href="{% url 'user:view' %}?uid={{ uid }}">编辑</a>
+                            {% if request.session.user.id != uid %}
+                            <a href="{% url 'user:delete' %}?uid={{ uid }}">删除</a>
+                            {% endif %}
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

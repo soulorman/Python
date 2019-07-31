@@ -1,6 +1,6 @@
-create database cmdb_test1 default charset utf8;
+create database cmdb_test default charset utf8;
 
-use cmdb_test1;
+use cmdb_test;
 
 create table user(
     id int primary key auto_increment,

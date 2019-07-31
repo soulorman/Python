@@ -2,6 +2,8 @@
 import json
 from django.db import models
 
+from .dbutils import execute_mysql
+
 import MySQLdb
 
 MYSQL_HOST = '192.168.31.103'
@@ -10,6 +12,8 @@ MYSQL_USER = 'root'
 MYSQL_PASSWORD = '123456'
 MYSQL_DB = 'cmdb'
 MYSQL_CHARSET = 'utf8'
+
+
 
 SQL_LOGIN = '''
                 SELECT id,name,age,tel,sex 
@@ -45,35 +49,36 @@ SQL_UPDATE_USER = '''
                     WHERE id=%s;   
                     '''
 
+SQL_CREATE_USER = '''
+                     INSERT INTO user(name,password,age,tel,sex )
+                    VALUES(%s,%s,%s,%s,%s);
+                    '''
+
+SQL_DELETE_USER = '''
+                    DELETE FROM user WHERE id=%s;
+                    '''
 
 
 def valid_user(name, password):
-    conn = MySQLdb.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB, charset=MYSQL_CHARSET)
-    cur = conn.cursor()
-    cur.execute(SQL_LOGIN,(name,password))
-    result = cur.fetchone()
-    cur.close()
-    conn.close()
+    arg = (name, password)
+    cnt, result = execute_mysql(SQL_LOGIN, args=arg, one=True)
 
     return {'id' : result[0], 'name' : result[1]} if result else None
 
 
 def get_users():
-    conn = MySQLdb.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB, charset=MYSQL_CHARSET)
-    cur = conn.cursor()
-    cur.execute(SQL_LIST)
-    result = cur.fetchall()
-    cur.close()
-    conn.close()
+    cnt, result = execute_mysql(SQL_LIST)
 
     return [dict(zip(SQL_LIST_COLUMN, line)) for line in result]
 
 
 def delete_user(uid):
-    users = get_users()
-    users.pop(uid, None)
-    dump_users(users)
-
+    conn = MySQLdb.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB, charset=MYSQL_CHARSET)
+    cur = conn.cursor()
+    cur.execute(SQL_DELETE_USER, (uid, ))
+    conn.commit()
+    cur.close()
+    conn.close()
     return True
 
 
@@ -99,7 +104,7 @@ def get_user_by_name(name):
     return dict(zip(SQL_GET_USER_COLUMN, result)) if result else None  
 
 
-def valid_name_unique(name, uid):
+def valid_name_unique(name, uid=None):
     user = get_user_by_name(name)
     if uid is None:
         return True
@@ -154,19 +159,20 @@ def valid_add_user(params):
     is_valid = True
     errors = {}
     user = {}
-    users = get_users()
     
     user['name'] = params.get('name', '').strip()
-    for uid, cuser in users.items():
-        if cuser['name'] == user['name'] and uid == user['id']:
-            errors['name'] = '用户名已存在'
-            is_valid = False
-            break
+    
+    if user['name'] == '':
+        is_valid = False
+        errors['name'] = '用户名不能为空'
+    elif get_user_by_name(user['name']):
+        errors['name'] = '用户名已存在'
+        is_valid = False
 
     user['password'] = params.get('password', '').strip()
     user['password_1'] = params.get('password_1', '').strip()
-    if user['password'] != user['password_1']:
-        errors['password'] = '密码不匹配'
+    if user['password'] == '' or user['password'] != user['password_1']:
+        errors['password'] = '密码不能为空,且两次密码不匹配'
         is_valid = False
 
     user['age'] = params.get('age', 0).strip()
@@ -181,14 +187,14 @@ def valid_add_user(params):
 
 
 def add_user(params):
-    users = get_users()
-    uid = 1
-    if users:
-        uid = int(max(users)) + 1
-    
-    users[uid] = params
-
-    return dump_users(users)
+    conn = MySQLdb.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB, charset=MYSQL_CHARSET)
+    cur = conn.cursor()
+    args = (params['name'], params['password'], params['age'], params['tel'], params['sex'])
+    cur.execute(SQL_CREATE_USER, args)
+    conn.commit()
+    cur.close()
+    conn.close()
+    return True
 
 
 def valid_changepass(params):

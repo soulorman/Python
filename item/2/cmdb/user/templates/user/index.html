@@ -8,6 +8,7 @@
     <body>
         当前登录用户是:{{ request.session.user.name }}<br/>
         <a href="{% url 'user:logout' %}">退出登录</a>
+        <a href="{% url 'user:add_view' %}">添加用户</a>
         <table>
             <thead>
                 <tr>
@@ -18,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for uid,user in users.items %}
+                {% for user in users %}
                     <tr>
                         <td>{{ user.name }}</td>
                         <td>{{ user.age }}</td>
@@ -31,9 +32,14 @@
                         </td>
                         <td>{{ user.tel }}</td>
                         <td>
-                            <a href="{% url 'user:view' %}?uid={{ uid }}">编辑</a>
-                            {% if request.session.user.id != uid %}
-                            <a href="{% url 'user:delete' %}?uid={{ uid }}">删除</a>
+                            <a href="{% url 'user:view' %}?uid={{ user.id }}">编辑</a>
+                            {% if request.session.user.id != user.id %}
+                            <a href="{% url 'user:delete' %}?uid={{ user.id }}">删除</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.session.user.id == user.id %}
+                            <a href="{% url 'user:changepass_view' %}?uid={{ user.id }}">修改密码</a>
                             {% endif %}
                         </td>
                     </tr>

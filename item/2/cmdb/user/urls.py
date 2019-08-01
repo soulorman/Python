@@ -12,8 +12,8 @@ urlpatterns = [
     path('view/', views.view, name="view"),
     path('update/', views.update, name="update"),
 
-    path('add_view/', views.add_view, name="add_view"),
-    path('add/', views.add, name="add"),
+    path('create_view/', views.create_view, name="create_view"),
+    path('create/', views.create, name="create"),
 
     path('changepass_view/', views.changepass_view, name="changepass_view"),
     path('changepass/', views.changepass, name="changepass"),

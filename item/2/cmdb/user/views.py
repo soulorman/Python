@@ -1,7 +1,7 @@
 # encoding: utf-8
 from django.shortcuts import render,redirect
 
-from .models import get_users,valid_user,delete_user,get_user_by_id,valid_update_user,update_user,valid_add_user,add_user,valid_changepass,changepassword
+from .models import get_users,valid_login,delete_user,get_user_by_id,valid_update_user,update_user,valid_create_user,create_user,valid_changepass,changepassword
 
 def index(request):
     if not request.session.get('user'):
@@ -18,7 +18,7 @@ def login(request):
     else:
         name = request.POST.get('name')
         password = request.POST.get('password')
-        user = valid_user(name, password)
+        user = valid_login(name, password)
         if user:
             request.session['user'] = user
             return redirect('user:index')
@@ -72,23 +72,23 @@ def view(request):
     return  render(request, 'user/view.html', {'user': user})
 
 
-def add_view(request):
+def create_view(request):
     if not request.session.get('user'):
         return redirect('user:login')   
     
-    return render(request, 'user/add.html')
+    return render(request, 'user/create.html')
 
 
-def add(request):
+def create(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid, user, errors = valid_add_user(request.POST)
+    is_valid, user, errors = valid_create_user(request.POST)
     if is_valid:
-        add_user(user)
+        create_user(user)
         return redirect('user:index')
     else:
-        return render(request, 'user/add.html', {'errors' : errors})
+        return render(request, 'user/create.html', {'errors' : errors})
 
 
 def changepass_view(request):

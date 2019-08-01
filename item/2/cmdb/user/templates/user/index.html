@@ -8,7 +8,7 @@
     <body>
         当前登录用户是:{{ request.session.user.name }}<br/>
         <a href="{% url 'user:logout' %}">退出登录</a>
-        <a href="{% url 'user:add_view' %}">添加用户</a>
+        <a href="{% url 'user:create_view' %}">添加用户</a>
         <table>
             <thead>
                 <tr>

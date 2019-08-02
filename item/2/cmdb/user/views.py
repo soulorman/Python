@@ -1,14 +1,15 @@
 # encoding: utf-8
 from django.shortcuts import render,redirect
 
-from .models import get_users,valid_login,delete_user,get_user_by_id,valid_update_user,update_user,valid_create_user,create_user,valid_changepass,changepassword
+from .models import valid_changepass,changepassword
+from .models import User
 
 def index(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
     return  render(request, 'user/index.html', {
-                    'users' : get_users()
+                    'users' : User.get_list()
                     })
 
 
@@ -18,12 +19,15 @@ def login(request):
     else:
         name = request.POST.get('name')
         password = request.POST.get('password')
-        user = valid_login(name, password)
+        user = User.valid_login(name, password)
         if user:
-            request.session['user'] = user
+            request.session['user'] = user.as_dict()
             return redirect('user:index')
         else:
-            return render(request, 'user/login.html', {'name': name, 'errors': {'default':'用户名或者密码错误'}})
+            return render(request, 'user/login.html', {
+                'name': name, 
+                'errors': {'default':'用户名或者密码错误'}
+                })
 
 
 def logout(request):
@@ -36,7 +40,7 @@ def delete(request):
         return redirect('user:login')
 
     uid = request.GET.get('uid', '')
-    delete_user(uid)
+    User.delete_by_id(uid)
 
     return redirect('user:index')
 
@@ -47,29 +51,21 @@ def view(request):
 
     uid = request.GET.get('uid', '')
 
-    return  render(request, 'user/view.html', {'user': get_user_by_id(uid)})
+    return  render(request, 'user/view.html', {
+        'user': User.get_by_id(uid)
+        })
 
 
 def update(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid, user, errors = valid_update_user(request.POST)
+    is_valid, user, errors = User.valid_update(request.POST)
     if is_valid:
-        update_user(user)
+        user.update()
         return redirect('user:index')
     else:
         return  render(request, 'user/view.html', {'user': user, 'errors' : errors})
-
-
-def view(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    uid = request.GET.get('uid', '')
-    user = get_user_by_id(uid)
-
-    return  render(request, 'user/view.html', {'user': user})
 
 
 def create_view(request):
@@ -83,9 +79,9 @@ def create(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid, user, errors = valid_create_user(request.POST)
+    is_valid, user, errors = User.valid_create(request.POST)
     if is_valid:
-        create_user(user)
+        user.create()
         return redirect('user:index')
     else:
         return render(request, 'user/create.html', {'errors' : errors})

@@ -1,15 +1,15 @@
 # encoding: utf-8
 from django.shortcuts import render,redirect
 
-from .models import valid_changepass,changepassword
 from .models import User
+from .validators import UserValiator
 
 def index(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
     return  render(request, 'user/index.html', {
-                    'users' : User.get_list()
+                    'users' : User.objects.all()
                     })
 
 
@@ -19,7 +19,7 @@ def login(request):
     else:
         name = request.POST.get('name')
         password = request.POST.get('password')
-        user = User.valid_login(name, password)
+        user = UserValiator.valid_login(name, password)
         if user:
             request.session['user'] = user.as_dict()
             return redirect('user:index')
@@ -39,8 +39,8 @@ def delete(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    uid = request.GET.get('uid', '')
-    User.delete_by_id(uid)
+    id = request.GET.get('uid', '')
+    User.objects.filter(id=id).delete()
 
     return redirect('user:index')
 
@@ -52,7 +52,7 @@ def view(request):
     uid = request.GET.get('uid', '')
 
     return  render(request, 'user/view.html', {
-        'user': User.get_by_id(uid)
+        'user': User.objects.get(pk=uid)
         })
 
 
@@ -60,9 +60,9 @@ def update(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid, user, errors = User.valid_update(request.POST)
+    is_valid, user, errors = UserValiator.valid_update(request.POST)
     if is_valid:
-        user.update()
+        user.save()
         return redirect('user:index')
     else:
         return  render(request, 'user/view.html', {'user': user, 'errors' : errors})
@@ -79,9 +79,9 @@ def create(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid, user, errors = User.valid_create(request.POST)
+    is_valid, user, errors = UserValiator.valid_create(request.POST)
     if is_valid:
-        user.create()
+        user.save()
         return redirect('user:index')
     else:
         return render(request, 'user/create.html', {'errors' : errors})
@@ -92,18 +92,17 @@ def changepass_view(request):
         return redirect('user:login')
 
     uid = request.GET.get('uid', '')
-    user = get_user_by_id(uid)
-    
-    return render(request, 'user/changepass.html', {'user': user})
+
+    return render(request, 'user/changepass.html', {'user': User.objects.get(pk=uid)})
 
 
 def changepass(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    is_valid, user, errors = valid_changepass(request.POST)
+    is_valid, user, errors = UserValiator.valid_changepass(request.POST)
     if is_valid:
-        changepassword(user)
+        user.changepassword()
         return redirect('user:index')
     else:
         return render(request, 'user/changepass.html', {'user': user,'errors' : errors})

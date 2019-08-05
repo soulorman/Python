@@ -102,7 +102,7 @@ def changepass(request):
 
     is_valid, user, errors = UserValiator.valid_changepass(request.POST)
     if is_valid:
-        user.changepassword()
+        User.objects.filter(id=user.id).update(password=user.password)
         return redirect('user:index')
     else:
         return render(request, 'user/changepass.html', {'user': user,'errors' : errors})

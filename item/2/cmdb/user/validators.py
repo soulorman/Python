@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from .models import User
+from .models import User, encrypt_password
 from django.utils import timezone
 
 class ValidatorUtils(object):
@@ -27,6 +27,7 @@ class UserValiator(object):
         if user is None:
             return None
         
+        password = encrypt_password(password)
         if user.password == password:
             return user
 
@@ -111,6 +112,9 @@ class UserValiator(object):
             is_valid = False
             errors['password'] = '密码不能为空,且两次密码不匹配'
 
+        else:
+            user.password = encrypt_password(user.password)
+
         user.age = params.get('age', '0').strip()
         if not ValidatorUtils.is_integer(user.age):
             is_valid = False
@@ -132,7 +136,8 @@ class UserValiator(object):
             user = User.objects.get(pk=uid)
         except BaseException as e:
             pass
-            
+        
+        password = encrypt_password(password)
         if user is None or user.password != password:
             return True
         else:
@@ -170,6 +175,6 @@ class UserValiator(object):
             errors['password_new'] = '新密码不匹配'
 
         else:
-            user.password = password_new
+            user.password = encrypt_password(password_new)
 
         return is_valid, user, errors

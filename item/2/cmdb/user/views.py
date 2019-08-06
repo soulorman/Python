@@ -36,79 +36,6 @@ def logout(request):
     return redirect('user:login')
 
 
-def delete(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    id = request.GET.get('uid', '')
-    User.objects.filter(id=id).delete()
-
-    return redirect('user:index')
-
-
-def view(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    uid = request.GET.get('uid', '')
-
-    return  render(request, 'user/view.html', {
-        'user': User.objects.get(pk=uid)
-        })
-
-
-def update(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    is_valid, user, errors = UserValiator.valid_update(request.POST)
-    if is_valid:
-        user.save()
-        return redirect('user:index')
-    else:
-        return  render(request, 'user/view.html', {'user': user, 'errors' : errors})
-
-
-def create_view(request):
-    if not request.session.get('user'):
-        return redirect('user:login')   
-    
-    return render(request, 'user/create.html')
-
-
-def create(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    is_valid, user, errors = UserValiator.valid_create(request.POST)
-    if is_valid:
-        user.save()
-        return redirect('user:index')
-    else:
-        return render(request, 'user/create.html', {'errors' : errors})
-
-
-def changepass_view(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    uid = request.GET.get('uid', '')
-
-    return render(request, 'user/changepass.html', {'user': User.objects.get(pk=uid)})
-
-
-def changepass(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
-
-    is_valid, user, errors = UserValiator.valid_changepass(request.POST)
-    if is_valid:
-        User.objects.filter(id=user.id).update(password=user.password)
-        return redirect('user:index')
-    else:
-        return render(request, 'user/changepass.html', {'user': user,'errors' : errors})
-
-
 def create_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
@@ -116,6 +43,61 @@ def create_ajax(request):
     is_valid, user, errors = UserValiator.valid_create(request.POST)
     if is_valid:
         user.save()
+        return JsonResponse({'code' : 200 })
+    else:
+        return JsonResponse({'code' : 400, 'errors' : errors })
+
+
+def delete_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    id = request.GET.get('id', '')
+    User.objects.filter(id=id).delete()
+
+    return JsonResponse({'code' : 200 })
+
+
+def edit_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    is_valid, user, errors = UserValiator.valid_update(request.POST)
+    if is_valid:
+        user.save()
+        return JsonResponse({'code' : 200 })
+    else:
+        return JsonResponse({'code' : 400, 'errors' : errors, 'result' : user.as_dict()})
+
+
+def get_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    uid = request.GET.get('id', '')
+    user = User.objects.get(pk=uid)
+
+    return  JsonResponse({'code' : 200, 'result': user.as_dict()})
+
+
+
+def get_pass_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    uid = request.GET.get('id', '')
+    user = User.objects.get(pk=uid)
+
+    return  JsonResponse({'code' : 200, 'result': user.as_dict()})
+
+
+def changepass_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    is_valid, user, errors = UserValiator.valid_changepass(request.POST)
+    if is_valid:
+        User.objects.filter(id=user.id).update(password=user.password)
         return JsonResponse({'code' : 200 })
     else:
         return JsonResponse({'code' : 400, 'errors' : errors })

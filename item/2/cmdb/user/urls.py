@@ -17,4 +17,7 @@ urlpatterns = [
 
     path('changepass_view/', views.changepass_view, name="changepass_view"),
     path('changepass/', views.changepass, name="changepass"),
+
+    path('create/ajax/', views.create_ajax, name="create_ajax"),
+
 ]

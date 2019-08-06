@@ -9,6 +9,10 @@
     <title>用户显示</title>
 
     <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet">
+    <link href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+
     <style type="text/css">
         body {
           padding-top: 70px;
@@ -80,16 +84,86 @@
         </table>
     </div>
 
+    <div class="modal fade" id="dialog-user-create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">新建用户</h4>
+          </div>
+          <div class="modal-body">
+            
+            <form class="form-horizontal form-create-user" method="POST">
+                  {% csrf_token %}
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">用户名: </label>
+                    <div class="col-md-7">
+                     <input type="text" class="form-control" name="name" value="" />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">密码: </label>
+                      <div class="col-md-7">
+                      <input type="password" class="form-control" name="password" value=""  />
+                      </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">再次输入密码: </label>
+                    <div class="col-md-7">                  
+                      <input type="password" class="form-control" name="password_new" value=""  />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">年龄: </label>
+                    <div class="col-md-7">    
+                      <input type="text" class="form-control"  name="age" value="" />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">联系方式: </label>
+                    <div class="col-md-7">   
+                      <input type="text" class="form-control" name="tel"  value=""  />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">性别: </label>
+                    <div class="col-md-7">  
+                      <label class="radio-inline">
+                        <input type="radio" name="sex" value="1" checked="checked" />男
+                      </label>
+
+                      <label class="radio-inline">
+                        <input type="radio" name="sex" value="0" />女
+                      </label>
+                    </div>
+                  </div>
+
+             </form>
+
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">关闭</a>
+            <a class="btn btn-primary btn-save-user">保存</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script  src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
     <script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+    
     <script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
     <script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
 
 
     <script type="text/javascript">
     jQuery(document).ready(function() {
-      
       jQuery('#table_user').DataTable({
           "language": {
               "processing": "处理中...",
@@ -127,17 +201,44 @@
             
       });
 
-     jQuery('.btn-create-user').on('click', function(){
-                jQuery('#dialog-user-create').modal({
-                    show: true,
-                    backdrop: false,
-                    keyboard: false
+      jQuery('.btn-create-user').on('click', function(){
+          jQuery('#dialog-user-create').modal({
+                show: true,
+                backdrop: false,
+                keyboard: false
+          });
+      });
+      
+      jQuery('.btn-save-user').on('click', function() {
+          var data = jQuery('.form-create-user').serializeArray()
+          
+          jQuery.post("{% url 'user:create_ajax' %}", data, function(result)
+            {
+            console.log(result);
+            if(result['code'] == 200){
+              swal("成功", "", "success")
+              jQuery('#dialog-user-create').modal('hide');
+              window.location.reload()
+            } else if(result['code'] == 400){
+              var errors = []
+              jQuery.each(result['errors'], function(k, v){
+                errors.push(v)
+              });
+              swal("验证失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+              swal({
+                  title: "未登录",
+                  text: "",
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+            }
 
-                });
-            });
+          }, 'json')
 
+      });
 
-       });
+    });
      </script>
   </body>
 </html>

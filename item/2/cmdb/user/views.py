@@ -1,5 +1,6 @@
 # encoding: utf-8
 from django.shortcuts import render,redirect
+from django.http import JsonResponse
 
 from .models import User
 from .validators import UserValiator
@@ -106,3 +107,15 @@ def changepass(request):
         return redirect('user:index')
     else:
         return render(request, 'user/changepass.html', {'user': user,'errors' : errors})
+
+
+def create_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    is_valid, user, errors = UserValiator.valid_create(request.POST)
+    if is_valid:
+        user.save()
+        return JsonResponse({'code' : 200 })
+    else:
+        return JsonResponse({'code' : 400, 'errors' : errors })

@@ -1,45 +1,11 @@
+{% extends "base.html" %}
+
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="{% static 'favicon.ico' %}" />
-    <title>用户显示</title>
+{% block title %}用户管理{% endblock %}
+{% block nav_user %}active{% endblock %}
 
-    <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
-    <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
-    <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
-    <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
-
-    <style type="text/css">
-        body {
-          padding-top: 70px;
-        }
-    </style>
-
-  </head>
-
-  <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand">CMDB</a>
-        </div>
-
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">用户管理</a></li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            <li><a>当前登录用户是:{{ request.session.user.name }}</a></li>
-            <li class="active"><a href="{% url 'user:logout' %}">退出登录</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+{% block container %}
     <div class="container">
         <a class="btn btn-primary btn-create-user" href="javascript:void(0);">创建用户</a>
         <br/>
@@ -84,7 +50,10 @@
             </tbody>
         </table>
     </div>
+{% endblock %}
 
+
+{% block dialog %}
     <div class="modal fade" id="dialog-user-create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -255,21 +224,10 @@
         </div>
       </div>
     </div>
+{% endblock %}
 
 
-    <script  src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
-    <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
-    <script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
-    <script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
-
-    <script type="text/javascript">
-    // 初始化jquery
-    // jQuery(document).ready(function(){
-    
-    // });
-
-    jQuery(document).ready(function() {
+{% block js %}
       jQuery('#table_user').DataTable({
           "language": {
               "processing": "处理中...",
@@ -510,10 +468,6 @@
               });
             }
           }, 'json')
-        });
+          });
 
-    });
-
-  </script>
-  </body>
-</html>
+{% endblock %}

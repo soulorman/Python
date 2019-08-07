@@ -22,34 +22,22 @@ class ResultCallback(CallbackBase):
         if result.task_name == 'collect_host':
             self.collect_host(result._result)
 
-
     def collect_host(self, result):
         facts = result.get('ansible_facts', {})
         resource = {
           'ip' : facts.get('ansible_default_ipv4', {}).get('address', ''),
           'name' : facts.get('ansible_nodename', ''),
-          'mac' : facts.get('ansible_default_ipv4', {}).get('macaddress', ''),
           'os' : facts.get('ansible_lsb', {}).get('description', ''),
           'kernel' : facts.get('ansible_kernel', ''),
           'cpu' : facts.get('ansible_processor_count', 0),
           'cpu_core': facts.get('ansible_processor_cores', 0),
           'cpu_thread': facts.get('ansible_processor_vcpus', 0),
           'arch' : facts.get('ansible_architecture', ''),
-          'mem': facts.get('ansible_memtotal_mb', 0),
-          'disk': get_disk(facts)
-        }
-
+          'mem': str(int(facts.get('ansible_memtotal_mb', 0)) // 1024)+'GB',
+          'disk': [ { k : v.get('size', '')} for k,v in facts.get('ansible_devices', {}).items() if "sd" in k]
+          }
+          
         Host.create_or_replace(**resource)
-
-
-def get_disk(facts):
-    disk_list = []
-    for k,v in facts.get('ansible_devices', {}).items():
-        if "d" in k:
-            for k1,v1 in v.get('partitions',{}).items():
-                disk_list.append({k1 : v1.get('size', '')})
-    
-    return disk_list
 
 
 class Command(BaseCommand):

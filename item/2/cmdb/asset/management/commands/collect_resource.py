@@ -18,8 +18,25 @@ from django.conf import settings
 from asset.models import Host,Host_All
 
 class ResultCallback(CallbackBase):
+
+    def __init__(self):
+        super(ResultCallback, self).__init__()
+        self._cache_host = {}
+
+
     def v2_runner_on_ok(self, result, **kwargs):
-        print(result._result)
+
+        if result.task_name == 'collect_host':
+            facts = result._result.get('ansible_facts', {})
+            ip  = facts.get('ansible_default_ipv4', {}).get('address', '')
+            self._cache_host[result._host.name] = ip
+
+        elif result.task_name == 'copy_file':
+            pass
+
+        elif result.task_name == 'collect_resource':
+            ip = self._cache_host.get(result._host.name)
+            resource = result._result.get('stdout_lines', [])
 
 
 class Command(BaseCommand):
@@ -35,20 +52,24 @@ class Command(BaseCommand):
         inventory = InventoryManager(loader=loader, sources=os.path.join(settings.BASE_DIR, 'etc', 'hosts'))
         variable_manager = VariableManager(loader=loader, inventory=inventory)
 
-        path_resource = /tmp/cmdb_resoruce.py
+        path_resource = '/tmp/cmdb_resoruce.py'
         play_source =  {
                 'name' : "cmdb",
                 'hosts' : 'all',
                 'gather_facts' : 'no',
                 'tasks' : [
-                      {
-                        'name' : 'copy_file',
-                        'copy' : 'src={0} dest={1} mode=700'.format(os.path.join(settings.BASE_DIR, 'etc', 'collect_resource.py'), path_resource)
-                      },
-                      {
-                        'name' : 'collect_resource',
-                        'command' : 'python {0}'.format(path_resource)
-                      }
+                        {
+                            'name': 'collect_host',
+                            'setup' : ''
+                        },
+                        {
+                            'name' : 'copy_file',
+                            'copy' : 'src={0} dest={1} mode=700'.format(os.path.join(settings.BASE_DIR, 'etc', 'collect_resource.py'), path_resource)
+                        },
+                        {
+                            'name' : 'collect_resource',
+                            'command' : 'python {0}'.format(path_resource)
+                        }
                  ]
             }
 

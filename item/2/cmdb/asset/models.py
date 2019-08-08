@@ -68,7 +68,6 @@ class Host(models.Model):
 
         return rt
 
-
 class Host_All(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
@@ -90,6 +89,7 @@ class Host_All(models.Model):
 
     @classmethod
     def create_or_replace(cls, ip, mac, cpu_name, server_producter, server_name, serial, network, partitons):
+
         obj = None
         try:
             obj = cls.objects.get(ip=ip)

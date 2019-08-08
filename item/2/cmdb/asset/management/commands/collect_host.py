@@ -46,7 +46,7 @@ class ResultCallback(CallbackBase):
         resource = {
             'ip' : facts.get('ansible_default_ipv4', {}).get('address', ''),
             'mac' : facts.get('ansible_default_ipv4', {}).get('macaddress', ''),
-            'cpu_name' : facts.get('ansible_processor', [])[2],
+            'cpu_name' : [ i for i in facts.get('ansible_processor', []) if 'CPU' in i ],
             'server_producter' : facts.get('ansible_system_vendor', ''),
             'server_name' : facts.get('ansible_product_version', ''),
             'serial' : facts.get('ansible_product_serial', ''),

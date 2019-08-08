@@ -26,8 +26,7 @@
                 <th>内核版本</th>
                 <th>CPU信息</th>
                 <th>内存</th>
-                <th>磁盘名称</th>
-                <th>磁盘大小</th>
+                <th>磁盘信息</th>
                 <th>最后更新时间</th>
                 <th>备注</th>
                 <th>操作</th>
@@ -218,7 +217,6 @@ var table = jQuery('#table_asset').DataTable({
         },
         {"data" : "mem_size"},
         {"data": "disk_info"},
-        {"data": "disk_info"},
         {"data" : "update_time"},
         {"data" : "remark"},
         {
@@ -244,7 +242,7 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
         form.find('[name=os_arch]').val(result['result']['os'] + ' ( ' + result['result']['arch'] + ' )');
         form.find('[name=kernel]').val(result['result']['kernel']);
         
-        form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
+        form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'][0])
         
         form.find('[name=mem_size]').val(result['result']['mem_size']);
 

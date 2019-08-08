@@ -15,46 +15,29 @@ import ansible.constants as C
 from django.core.management import BaseCommand
 from django.conf import settings
 
-from asset.models import Host,Host_All
+from asset.models import Host
 
 class ResultCallback(CallbackBase):
     def v2_runner_on_ok(self, result, **kwargs):
         if result.task_name == 'collect_host':
             self.collect_host(result._result)
-            self.collect_host_all(result._result)
-
 
     def collect_host(self, result):
         facts = result.get('ansible_facts', {})
         resource = {
-            'ip' : facts.get('ansible_default_ipv4', {}).get('address', ''),
-            'name' : facts.get('ansible_nodename', ''),
-            'os' : facts.get('ansible_lsb', {}).get('description', ''),
-            'kernel' : facts.get('ansible_kernel', ''),
-            'cpu_number' : facts.get('ansible_processor_count', 0),
-            'cpu_core': facts.get('ansible_processor_cores', 0),
-            'cpu_vcore': facts.get('ansible_processor_vcpus', 0),
-            'arch' : facts.get('ansible_architecture', ''),
-            'mem_size': str(int(facts.get('ansible_memtotal_mb', 0)) // 1024)+'GB',
-            'disk_info': [ { k : v.get('size', '')} for k,v in facts.get('ansible_devices', {}).items() if "sd" in k]
-            }
+          'ip' : facts.get('ansible_default_ipv4', {}).get('address', ''),
+          'name' : facts.get('ansible_nodename', ''),
+          'os' : facts.get('ansible_lsb', {}).get('description', ''),
+          'kernel' : facts.get('ansible_kernel', ''),
+          'cpu' : facts.get('ansible_processor_count', 0),
+          'cpu_core': facts.get('ansible_processor_cores', 0),
+          'cpu_thread': facts.get('ansible_processor_vcpus', 0),
+          'arch' : facts.get('ansible_architecture', ''),
+          'mem': str(int(facts.get('ansible_memtotal_mb', 0)) // 1024)+'GB',
+          'disk': [ { k : v.get('size', '')} for k,v in facts.get('ansible_devices', {}).items() if "sd" in k]
+          }
+          
         Host.create_or_replace(**resource)
-
-
-    def collect_host_all(self, result):
-        facts = result.get('ansible_facts', {})
-        resource = {
-            'ip' : facts.get('ansible_default_ipv4', {}).get('address', ''),
-            'mac' : facts.get('ansible_default_ipv4', {}).get('macaddress', ''),
-            'cpu_name' : facts.get('ansible_processor', [])[2],
-            'server_producter' : facts.get('ansible_system_vendor', ''),
-            'server_name' : facts.get('ansible_product_version', ''),
-            'serial' : facts.get('ansible_product_serial', ''),
-            'network' : [i for i in facts.get('ansible_interfaces', []) if "veth" not in i and "br" not in i and "d" not in i],
-            'partitons' : [ { i.get('device','') : {i.get('mount','') : str(int(i.get('size_total',0)) // 1024 // 1024//1024)+'GB'}}  for i in facts.get('ansible_mounts', {})],
-            }
- 
-        Host_All.create_or_replace(**resource)
 
 
 class Command(BaseCommand):

@@ -53,7 +53,7 @@ def delete_ajax(request):
         return JsonResponse({'code' : 403})
 
     id = request.GET.get('id', '')
-    User.objects.filter(id=id).delete()
+    User.objects.filter(pk=id).delete()
 
     return JsonResponse({'code' : 200 })
 
@@ -97,7 +97,7 @@ def changepass_ajax(request):
 
     is_valid, user, errors = UserValiator.valid_changepass(request.POST)
     if is_valid:
-        User.objects.filter(id=user.id).update(password=user.password)
+        User.objects.filter(pk=user.id).update(password=user.password)
         return JsonResponse({'code' : 200 })
     else:
         return JsonResponse({'code' : 400, 'errors' : errors })

@@ -15,7 +15,7 @@ import ansible.constants as C
 from django.core.management import BaseCommand
 from django.conf import settings
 
-from asset.models import Host,Host_All
+from asset.models import Host,Host_All,Resource
 
 class ResultCallback(CallbackBase):
 
@@ -37,7 +37,8 @@ class ResultCallback(CallbackBase):
         elif result.task_name == 'collect_resource':
             ip = self._cache_host.get(result._host.name)
             resource = result._result.get('stdout_lines', [])
-
+            Resource.create_obj(ip, resource[0], resource[1])
+            
 
 class Command(BaseCommand):
 

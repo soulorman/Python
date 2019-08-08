@@ -20,7 +20,7 @@ class Host(models.Model):
     disk_info = models.CharField(max_length=512, null=False, default='{}')
     
     remark = models.TextField(null=False, default='')
-    discover_time = models.DateTimeField(null=False)
+    discover_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(null=False)
 
 
@@ -117,3 +117,21 @@ class Host_All(models.Model):
     @classmethod
     def update_user(cls, ip, user):
         return Host_All.objects.filter(ip=ip).update(user=user)
+
+
+
+class Resource(models.Model):
+    ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
+    cpu = models.FloatField(null=False, default=0)
+    mem = models.FloatField(null=False, default=0)  
+
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def create_obj(cls, ip, cpu, mem):
+        resoruce = Resource()
+        resoruce.ip = ip
+        resoruce.cpu = cpu
+        resoruce.mem = mem
+        resoruce.save()
+        return resoruce

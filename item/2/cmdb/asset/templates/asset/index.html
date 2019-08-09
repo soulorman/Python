@@ -221,9 +221,11 @@ var table = jQuery('#table_asset').DataTable({
         {"data" : "remark"},
         {
             "data" : function(row){
-              return '<a class="btn btn-xs btn-success btn-info-asset" date-id="' + row['id'] + '" href="javascript:void(0);">详细信息</a>'
+              return '<a class="btn btn-xs btn-success btn-info-asset" date-id="' + row['id'] + '" href="javascript:void(0);">查看详细信息</a>'
               + 
-              '<a class="btn btn-xs btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删         除</a>';
+              '<a class="btn btn-xs btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删除目标主机</a>'
+              + 
+              '<a class="btn btn-xs btn-warning" target="_blank" href="{% url 'asset:resource' %}?ip=' + row['ip'] + '" >查看监控资源</a>';
             }
         }
       ]
@@ -241,33 +243,31 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
         form.find('[name=mac]').val(result['result']['mac']);
         form.find('[name=os_arch]').val(result['result']['os'] + ' ( ' + result['result']['arch'] + ' )');
         form.find('[name=kernel]').val(result['result']['kernel']);
-        
         form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'][0])
-        
+
         form.find('[name=mem_size]').val(result['result']['mem_size']);
-
         form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
+        
         form.find('[name=serial]').val(result['result']['serial']);
-
         form.find('[name=network]').val(result['result']['network']);
-
-
         //form.find('[name=partitons]').html(JSON.stringify(result['result']['partitons'], '', '5'));
         form.find('[name=partitons]').val(result['result']['partitons']);
-
-
-
-
         form.find('[name=time]').val('发现时间: ' + result['result']['discover_time']+'\n更新时间: '+result['result']['update_time']);
         form.find('[name=remark]').val(result['result']['remark']);
-        
+
         jQuery('#dialog-asset').modal({
             show: true,
             backdrop: false,
             keyboard: false
         });
 
-    } else if(result['code'] == 403){
+    }  else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("删除失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
       swal({
           title: "未登录",
           text: "",
@@ -313,6 +313,12 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
                 form.find('[name=partitons]').val(result['result']['partitons']);
                 form.find('[name=time]').val('发现时间: ' + result['result']['discover_time']+'\n更新时间: '+result['result']['update_time']);
                 form.find('[name=remark]').val(result['result']['remark']);
+            }  else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("删除失败:", errors.join('\n'), "error");
             } else if(result['code'] == 403){
               swal({
                   title: "未登录",
@@ -365,5 +371,8 @@ jQuery('#table_asset').on('click','.btn-delete-asset', function(){
         }, 'json')
     });
 });
+
+
+
 
 {% endblock %}

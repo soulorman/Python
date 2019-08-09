@@ -1,0 +1,122 @@
+{% load static %} 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>监控页面</title>
+    <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+
+    <style type="text/css">
+        .container-fluid{
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <h2 id="ip" ></h2>
+    <div id="main" style="width: 100% ;height: 500px; padding-top: 30px;"></div>
+
+</div>
+
+<script type="text/javascript" src="{% static 'incubator-echarts-4.1.0/dist/echarts.min.js' %}"></script> 
+<script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
+
+<script type="text/javascript">
+    var chart_resource = echarts.init(document.getElementById('main'));
+
+    var option = {
+            title: {
+                left: '4%',
+                text: 'CPU/内存使用率'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['CPU','内存']
+            },
+            grid: {
+                left: '4%',
+                right: '4%',
+                bottom: '4%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: []
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'CPU',
+                    type:'line',
+                    stack: '总量',
+                    data:[]
+                },
+                {
+                    name:'内存',
+                    type:'line',
+                    stack: '总量',
+                    data:[]
+                }
+            ]
+        };
+
+
+    function reload_resource_chart(ip){
+      jQuery.get("{% url 'asset:resource_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+        if(result['code'] == 200) {
+            console.log(option)
+            option.xAxis.data = result['result']['xAxis'];
+            option.series[0].data = result['result']['CPU_datas'];
+            option.series[1].data = result['result']['MEM_datas'];
+
+            chart_resource.setOption(option);
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+    jQuery(document).ready(function() {
+        //切出ip
+        ip = window.location.search.substring(1).split("&")[0].split("=")[1]
+        jQuery('#ip').html('主机名:' + ip)
+
+        reload_resource_chart(ip);
+        setInterval(function(){
+            reload_resource_chart(ip);
+        }, 300000);
+
+      
+
+    });
+</script>
+
+</body>
+</html>

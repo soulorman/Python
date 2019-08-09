@@ -4,6 +4,8 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 import datetime
+from datetime import timedelta
+
 
 class Host(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
@@ -45,7 +47,7 @@ class Host(models.Model):
         obj.mem_size = mem_size
         obj.disk_info = disk_info
 
-        obj.update_time = timezone.now()
+        obj.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
         obj.save()
         return obj
 
@@ -109,7 +111,7 @@ class Host_All(models.Model):
         obj.network = network
         obj.partitons = partitons
         
-        obj.update_time = timezone.now()
+        obj.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
         obj.save()
         return obj
 
@@ -117,7 +119,6 @@ class Host_All(models.Model):
     @classmethod
     def update_user(cls, ip, user):
         return Host_All.objects.filter(ip=ip).update(user=user)
-
 
 
 class Resource(models.Model):
@@ -135,3 +136,36 @@ class Resource(models.Model):
         resoruce.mem = mem
         resoruce.save()
         return resoruce
+
+    @classmethod
+    def get_resource_data(cls, ip):
+        start_time = timezone.now() - timedelta(hours=5)
+        end_time = timezone.now()
+        resources = Resource.objects.filter(ip=ip, created_time__gte=start_time).order_by('created_time')
+
+        tmp_resources = {}
+        for resource in resources:
+            tmp_resources[resource.created_time.strftime('%m-%d %H:%M')] = {'cpu' : resource.cpu,'mem' : resource.mem}
+
+        xAxis = []
+        CPU_datas = []
+        MEM_datas = []
+        while start_time <= end_time:
+            key = start_time.strftime('%m-%d %H:%M')
+            resource = tmp_resources.get(key, {})  
+
+            xAxis.append(key)
+            CPU_datas.append(resource.get('cpu', 0))
+            MEM_datas.append(resource.get('mem',0))
+            start_time += timedelta(minutes=1)
+
+ #       xAxis = []
+ #       CPU_datas = []
+ #       MEM_datas = []
+
+ #       for resource in resources:
+  #          xAxis.append(resource.created_time.strftime('%m-%d %H:%M'))
+   #         CPU_datas.append(resource.cpu)
+   #         MEM_datas.append(resource.mem)
+
+        return xAxis, CPU_datas, MEM_datas

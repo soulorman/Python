@@ -7,10 +7,10 @@
         <title>{% block title %}{% endblock %}</title>
         <link rel="icon" href="{% static 'favicon.ico' %}" />
 
-        <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
-        <link href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
-        <link href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
-        <link href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
         {% block link %}{% endblock %}
         
         {% block style %}{% endblock %}

@@ -80,7 +80,6 @@
     function reload_resource_chart(ip){
       jQuery.get("{% url 'asset:resource_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
         if(result['code'] == 200) {
-            console.log(option)
             option.xAxis.data = result['result']['xAxis'];
             option.series[0].data = result['result']['CPU_datas'];
             option.series[1].data = result['result']['MEM_datas'];

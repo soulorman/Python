@@ -157,7 +157,7 @@ class Resource(models.Model):
             xAxis.append(key)
             CPU_datas.append(resource.get('cpu', 0))
             MEM_datas.append(resource.get('mem',0))
-            start_time += timedelta(minutes=1)
+            start_time += timedelta(minutes=10)
 
  #       xAxis = []
  #       CPU_datas = []

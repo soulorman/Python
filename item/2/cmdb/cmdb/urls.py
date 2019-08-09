@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/',include('user.urls')),
     path('asset/',include('asset.urls')),
+    path('webanalysis/',include('webanalysis.urls')),
 ]

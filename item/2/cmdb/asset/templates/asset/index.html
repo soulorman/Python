@@ -115,12 +115,12 @@
                         <div class="form-group">
                             <label class="control-label col-md-3">分区信息:</label>
                             <div class="col-md-8">
-                                <textarea class="form-control" rows="20" name="partitons"  value="" style="resize: none" readonly ></textarea>
+                                <textarea class="form-control" rows="5" name="partitons"  value="" style="resize: none" readonly ></textarea>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">网络信息:</label>
+                            <label class="control-label col-md-3">网卡设备信息:</label>
                             <div class="col-md-8">
                                 <textarea class="form-control" rows="2"  name="network"  value="" style="resize: none" readonly ></textarea>
                             </div>
@@ -243,7 +243,7 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
         form.find('[name=mac]').val(result['result']['mac']);
         form.find('[name=os_arch]').val(result['result']['os'] + ' ( ' + result['result']['arch'] + ' )');
         form.find('[name=kernel]').val(result['result']['kernel']);
-        form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'][0])
+        form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
 
         form.find('[name=mem_size]').val(result['result']['mem_size']);
         form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);

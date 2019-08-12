@@ -75,7 +75,7 @@ class Host_All(models.Model):
 
     user = models.CharField(max_length=128, null=False, default='admin')
     mac = models.CharField(max_length=128, null=False, default='')
-    cpu_name = models.CharField(max_length=128, null=False, default='')
+    cpu_name = models.CharField(max_length=1024, null=False, default='')
    # mem_scalable = models.IntegerField(null=False, default=0)
    # mem_slot = models.IntegerField(null=False, default=0)
 
@@ -157,7 +157,7 @@ class Resource(models.Model):
             xAxis.append(key)
             CPU_datas.append(resource.get('cpu', 0))
             MEM_datas.append(resource.get('mem',0))
-            start_time += timedelta(minutes=10)
+            start_time += timedelta(minutes=30)
 
  #       xAxis = []
  #       CPU_datas = []

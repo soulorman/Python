@@ -21,4 +21,5 @@ urlpatterns = [
     path('user/',include('user.urls')),
     path('asset/',include('asset.urls')),
     path('webanalysis/',include('webanalysis.urls')),
+    path('api/',include('api.urls')),
 ]

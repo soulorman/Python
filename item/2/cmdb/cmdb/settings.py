@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'asset.apps.AssetConfig',
     'webanalysis.apps.WebanalysisConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [

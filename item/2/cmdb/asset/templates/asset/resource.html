@@ -41,6 +41,7 @@
                 text: 'CPU/内存使用率'
             },
             tooltip: {
+                name : '时间',
                 trigger: 'axis'
             },
             legend: {
@@ -59,10 +60,15 @@
                 data: []
 
             },
-            yAxis: {
-                name : '百分比',
-                type: 'value'
-            },
+            yAxis: [
+                {
+                    name : '百分比',
+                    type: 'value',
+                    axisLabel : {
+                    formatter : '{value}%'
+                    }
+                }
+            ],
             series: [
                 {
                     name:'CPU',
@@ -114,9 +120,6 @@
         setInterval(function(){
             reload_resource_chart(ip);
         }, 300000);
-
-      
-
     });
 </script>
 

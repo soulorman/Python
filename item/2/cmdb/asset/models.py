@@ -145,18 +145,18 @@ class Resource(models.Model):
 
         tmp_resources = {}
         for resource in resources:
-            tmp_resources[resource.created_time.strftime('%m-%d %H:%M')] = {'cpu' : resource.cpu,'mem' : resource.mem}
+            tmp_resources[resource.created_time.strftime('%Y-%m-%d %H:%M')] = {'cpu' : resource.cpu,'mem' : resource.mem}
 
         xAxis = []
         CPU_datas = []
         MEM_datas = []
         while start_time <= end_time:
-            key = start_time.strftime('%m-%d %H:%M')
-            resource = tmp_resources.get(key, {})  
+            key = start_time.strftime('%Y-%m-%d %H:%M')
+            resource = tmp_resources.get(key, {})
 
             xAxis.append(key)
             CPU_datas.append(resource.get('cpu', 0))
-            MEM_datas.append(resource.get('mem',0))
+            MEM_datas.append(resource.get('mem', 0))
             start_time += timedelta(minutes=5)
 
  #       xAxis = []

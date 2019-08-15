@@ -10,7 +10,7 @@ urlpatterns = [
     path('delete/ajax', views.delete_ajax, name='delete_ajax'),
     path('get/ajax', views.get_ajax, name='get_ajax'),
     path('edit/ajax', views.edit_ajax, name='edit_ajax'),
-    path('resource/', views.resource, name='resource'),
     path('resource/ajax', views.resource_ajax, name='resource_ajax'),
-
+    ## 跳转资源页面
+    path('resource/', views.resource, name='resource'),
 ]

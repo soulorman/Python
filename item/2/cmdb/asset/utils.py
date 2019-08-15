@@ -4,6 +4,7 @@ from .models import Host,Host_All
 
 def compose(id):
 
+    result = None
     host = Host.objects.get(pk=id)
     host_alls = Host_All.objects.filter(ip=host.ip)
 

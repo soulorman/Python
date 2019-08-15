@@ -17,14 +17,9 @@ def main(config):
     ths = []
     ths.append(ENS(config))
     ths.append(Host(config))
-    ths.append(Resource(config))
 
     for th in ths:
         th.start()
-
-    while True:
-        time.sleep(3)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -35,8 +30,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     level = logging.DEBUG if args.verbose else logging.INFO
 
+    # 处理日志
     fmt = '%(asctime)s - %(name)s - %(levelname)s:%(message)s'
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    
     pid = os.getpid()
 
     logging.basicConfig(
@@ -51,7 +48,6 @@ if __name__ == '__main__':
 
     # 初始化配置
     config = Config()
-
 
     setattr(config, 'SERVER', '{0}:{1}'.format(args.host, args.port))
     setattr(config, 'QUEUE', Queue())

@@ -135,3 +135,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+
+
+REDIS = {
+    'host' : '192.168.31.103',
+    'port' : 6379,
+    'db' : 0,
+    'decode_responses' : True,
+    'password' : None,
+}

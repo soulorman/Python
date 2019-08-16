@@ -70,6 +70,7 @@ class Host(models.Model):
 
         return rt
 
+
 class Host_All(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
@@ -119,6 +120,14 @@ class Host_All(models.Model):
     @classmethod
     def update_user(cls, ip, user):
         return Host_All.objects.filter(ip=ip).update(user=user)
+
+    def as_dict(self):
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str,datetime.datetime)):
+                rt[k] = v
+
+        return rt
 
 
 class Resource(models.Model):

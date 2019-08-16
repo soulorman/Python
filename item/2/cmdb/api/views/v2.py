@@ -1,19 +1,64 @@
 #encoding: utf-8
 
 import json
+import time
 
 from django.views.generic import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
+from utils.signutils import get_sign
 from asset.models import Host, Host_All, Resource
 
 class APIView(View):
 
+    def __init__(self):
+        super(APIView, self).__init__()
+        self.secret_key = {'123456789' : 'abcdef'}
+
+
+    def valid_sign(self, request):
+        data = {}
+        for key in request.GET:
+            data[key] = request.GET.get(key)
+
+        for key in request.POST:
+            data[key] = request.POST.get(key)
+
+        data.update(self.get_json())
+
+        key = data.pop('key', '')
+        sign = data.pop('sign', '')
+        unix_time = data.pop('time', '')
+
+        secret = self.secret_key.get(key, '')
+        
+        if not secret:
+            return False, 'error key'
+
+        data_sign = get_sign(data, unix_time, key, secret)
+        if sign != data_sign:
+            return False, 'error data'
+
+        try:
+            unix_time = int(unix_time)
+            current_unix_time = time.time()
+            if not(unix_time >= current_unix_time - 5 *60 and unix_time <= current_unix_time + 5 *60):
+                return False, 'error time'
+        except BaseException as e:
+            return False, 'error time'
+
+        return True, ''
+
+
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        return super(APIView, self).dispatch(request, *args, **kwargs)
+        is_valid, errors =  self.valid_sign(request)
+        if is_valid:
+            return super(APIView, self).dispatch(request, *args, **kwargs)
+        else:
+            return self.response(code=400, errors=errors)
 
     def get_json(self):
         try:

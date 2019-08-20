@@ -10,7 +10,7 @@ def index(request):
         return redirect('user:login')
 
     return  render(request, 'user/index.html', {
-                    'users' : User.objects.all()
+                    'users' : User.objects.all().using('db2')
                     })
 
 

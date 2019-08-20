@@ -81,7 +81,19 @@ WSGI_APPLICATION = 'cmdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME' : 'cmdb_test',
+        'NAME' : 'cmdb',
+        'HOST' : '192.168.31.103',
+        'PORT' : 3306,
+        'USER' : 'root',
+        'PASSWORD' : '123456',
+        'CHARSET' : 'utf8',
+        'OPTIONS' : {
+            'init_command' : "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
+    },
+    'db2': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME' : 'cmdb',
         'HOST' : '192.168.31.103',
         'PORT' : 13306,
         'USER' : 'root',
@@ -144,4 +156,23 @@ REDIS = {
     'db' : 0,
     'decode_responses' : True,
     'password' : None,
+}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+    }
 }

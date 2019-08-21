@@ -18,13 +18,13 @@ def get_cpu_name():
     return subprocess.getoutput("cat /proc/cpuinfo |grep 'model name'|uniq|awk '{for(i=4;i<=NF;i++) printf$i}'")
 
 def get_server_producter():
-    return subprocess.getoutput("dmidecode -s baseboard-manufacturer")
+    return subprocess.getoutput("dmidecode -s baseboard-manufacturer|head -1")
 
 def get_server_name():
-    return subprocess.getoutput("dmidecode -s system-version")
+    return subprocess.getoutput("dmidecode -s system-version|head -1")
 
 def get_serial():
-    return subprocess.getoutput("dmidecode -s baseboard-serial-number")
+    return subprocess.getoutput("dmidecode -s baseboard-serial-number|head -1")
 
 def get_network():
     network_name = subprocess.getoutput("ip add|awk '{print $2}'|egrep 'en|do'|cut -d: -f 1").split('\n')

@@ -19,7 +19,7 @@ def list_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403 })
 
-    result = [ host.as_dict() for host in Host.objects.all() ]
+    result = [ host.as_dict() for host in Host.objects.all().using('db2')]
     return JsonResponse({'code' : 200, 'result': result })
 
 
@@ -30,6 +30,7 @@ def delete_ajax(request):
     _id = request.GET.get('id', 0)
     try:
         Host.delete(_id)
+        Host_All.delete(_id)
         return JsonResponse({'code' : 200 })
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400 ,'errors' : e})

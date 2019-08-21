@@ -24,8 +24,10 @@ class Host(BaseThread):
                 'cpu_number' : sysutils.get_cpu_number(),
                 'cpu_core' : sysutils.get_cpu_core(),
                 'cpu_vcore' : sysutils.get_cpu_vcore(),
-                'mem_size' : sysutils.get_mem_size(),
+                'get_mem_info' : sysutils.get_mem_info(),
                 'disk_info' : sysutils.get_disk_info(),
+                'get_gpu_info' : sysutils.get_gpu_info(),
+
                 'mac' : hostall_util.get_mac(),
                 'cpu_name' : hostall_util.get_cpu_name(),
                 'server_producter' : hostall_util.get_server_producter(),

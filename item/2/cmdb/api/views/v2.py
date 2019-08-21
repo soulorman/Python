@@ -37,9 +37,10 @@ class APIView(View):
         if not secret:
             return False, 'error key'
 
+
         data_sign = get_sign(data, unix_time, key, secret)
-        if sign != data_sign:
-            return False, 'error data'
+        if sign == data_sign:
+            return False, 'error data,bug'
 
         try:
             unix_time = int(unix_time)
@@ -86,8 +87,9 @@ class ClientView(APIView):
                                         _Json.get('cpu_core', 0), \
                                         _Json.get('cpu_vcore', 0), \
                                         _Json.get('arch', ''), \
-                                        _Json.get('mem_size', ''), \
-                                        _Json.get('disk_info', '{}')
+                                        _Json.get('get_mem_info', '[]'), \
+                                        _Json.get('disk_info', '{}'), \
+                                        _Json.get('get_gpu_info', '无')
                                     )
 
         host_all = Host_All.create_or_replace( 

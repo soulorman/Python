@@ -75,7 +75,7 @@ def get_ajax(request):
         return JsonResponse({'code' : 403})
 
     uid = request.GET.get('id', '')
-    user = User.objects.get(pk=uid)
+    user = User.objects.using('db2').get(pk=uid)
 
     return  JsonResponse({'code' : 200, 'result': user.as_dict()})
 
@@ -86,7 +86,7 @@ def get_pass_ajax(request):
         return JsonResponse({'code' : 403})
 
     uid = request.GET.get('id', '')
-    user = User.objects.get(pk=uid)
+    user = User.objects.using('db2').get(pk=uid)
 
     return  JsonResponse({'code' : 200, 'result': user.as_dict()})
 

@@ -16,10 +16,11 @@ class Host(models.Model):
     cpu_number = models.IntegerField(null=False, default=0)  
     cpu_core = models.IntegerField(null=False, default=0)
     cpu_vcore = models.IntegerField(null=False, default=0)
-    arch = models.CharField(max_length=16, null=False, default='X86')
+    arch = models.CharField(max_length=16, null=False, default='x86')
 
-    mem_size = models.CharField(max_length=32,null=False, default='')
+    mem_info = models.CharField(max_length=512,null=False, default='[]')
     disk_info = models.CharField(max_length=512, null=False, default='{}')
+    gpu_info = models.CharField(max_length=512,null=False, default='')
     
     remark = models.TextField(null=False, default='')
     discover_time = models.DateTimeField(auto_now_add=True)
@@ -27,7 +28,7 @@ class Host(models.Model):
 
 
     @classmethod
-    def create_or_replace(cls, ip, name, os, kernel, cpu_number, cpu_core, cpu_vcore, arch, mem_size, disk_info):
+    def create_or_replace(cls, ip, name, os, kernel, cpu_number, cpu_core, cpu_vcore, arch, mem_info, disk_info, gpu_info):
         obj = None
         try:
             obj = cls.objects.get(ip=ip)
@@ -44,8 +45,9 @@ class Host(models.Model):
         obj.cpu_core = cpu_core
         obj.cpu_vcore = cpu_vcore
         obj.arch = arch
-        obj.mem_size = mem_size
+        obj.mem_info = mem_info
         obj.disk_info = disk_info
+        obj.gpu_info = gpu_info
 
         obj.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
         obj.save()
@@ -74,24 +76,25 @@ class Host(models.Model):
 class Host_All(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
-    user = models.CharField(max_length=128, null=False, default='admin')
+    user = models.CharField(max_length=16, null=False, default='admin')
     mac = models.CharField(max_length=128, null=False, default='')
-    cpu_name = models.CharField(max_length=1024, null=False, default='')
-   # mem_scalable = models.IntegerField(null=False, default=0)
-   # mem_slot = models.IntegerField(null=False, default=0)
+    cpu_name = models.CharField(max_length=512, null=False, default='')
 
     server_producter = models.CharField(max_length=64, null=False, default='made in china')
-    server_name = models.CharField(max_length=2048, null=False, default='')
-    serial = models.CharField(max_length=128, null=False, default='')
-    #gpu_info = models.CharField(max_length=128, null=False, default='')
+    server_name = models.CharField(max_length=64, null=False, default='')
+    serial = models.CharField(max_length=64, null=False, default='')
     network = models.CharField(max_length=512, null=False, default='{}')
-    partitons = models.CharField(max_length=512, null=False, default='{}')
+    partitions = models.CharField(max_length=512, null=False, default='{}')
 
     update_time = models.DateTimeField(null=False)
 
+    @classmethod
+    def delete(cls, id):
+        return Host_All.objects.filter(pk=id).delete()
+
 
     @classmethod
-    def create_or_replace(cls, ip, mac, cpu_name, server_producter, server_name, serial, network, partitons):
+    def create_or_replace(cls, ip, mac, cpu_name, server_producter, server_name, serial, network, partitions):
 
         obj = None
         try:
@@ -103,14 +106,11 @@ class Host_All(models.Model):
 
         obj.mac = mac 
         obj.cpu_name = cpu_name
-       # obj.mem_scalable = mem_scalable
-       # obj.mem_slot = mem_slot
         obj.server_producter = server_producter
         obj.server_name =server_name
         obj.serial = serial
-       # obj.gpu_info = gpu_info
         obj.network = network
-        obj.partitons = partitons
+        obj.partitions = partitions
         
         obj.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
         obj.save()

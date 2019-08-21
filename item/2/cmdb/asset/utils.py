@@ -5,8 +5,8 @@ from .models import Host,Host_All
 def compose(id):
 
     result = None
-    host = Host.objects.get(pk=id)
-    host_alls = Host_All.objects.filter(ip=host.ip)
+    host = Host.objects.using('db2').get(pk=id)
+    host_alls = Host_All.objects.using('db2').filter(ip=host.ip)
 
     for host_all in host_alls:
         result  = {
@@ -22,15 +22,17 @@ def compose(id):
             'cpu_core' : host.cpu_core,
             'cpu_vcore' : host.cpu_vcore,
             'cpu_name' : host_all.cpu_name,
-            'mem_size' : host.mem_size,
+            'mem_info' : host.mem_info,
             'server_name' : host_all.server_name,
             'server_producter' : host_all.server_producter,
             'serial' : host_all.serial,
             'network' : host_all.network,
-            'partitons' : host_all.partitons,
+            'partitions' : host_all.partitions,
             'discover_time' : host.discover_time,
             'update_time' : host.update_time,
-            'remark' : host.remark
+            'remark' : host.remark,
+            'gpu_info' : host.gpu_info
+
         }
 
     return result

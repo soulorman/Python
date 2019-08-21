@@ -25,8 +25,9 @@
                 <th>操作系统(架构)</th>
                 <th>内核版本</th>
                 <th>CPU信息</th>
-                <th>内存</th>
+                <th>内存信息</th>
                 <th>磁盘信息</th>
+                <th>显卡信息</th>
                 <th>最后更新时间</th>
                 <th>备注</th>
                 <th>操作</th>
@@ -92,9 +93,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">内存容量:</label>
+                            <label class="control-label col-md-3">内存信息:</label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="mem_size" value="" readonly  />
+                                <input type="text" class="form-control" name="mem_info" value="" readonly  />
                             </div>
                         </div>
 
@@ -115,7 +116,7 @@
                         <div class="form-group">
                             <label class="control-label col-md-3">分区信息:</label>
                             <div class="col-md-8">
-                                <textarea class="form-control" rows="5" name="partitons"  value="" style="resize: none" readonly ></textarea>
+                                <textarea class="form-control" rows="8" name="partitions"  value="" style="resize: none" readonly ></textarea>
                             </div>
                         </div>
 
@@ -215,8 +216,9 @@ var table = jQuery('#table_asset').DataTable({
                 return '<pre>'+'颗       数: '+row['cpu_number']+"\n核       数: "+row['cpu_core']+'\n逻辑核数: '+row['cpu_vcore']+'</pre>';
             }
         },
-        {"data" : "mem_size"},
+        {"data" : "mem_info"},
         {"data": "disk_info"},
+        {"data": "gpu_info"},
         {"data" : "update_time"},
         {"data" : "remark"},
         {
@@ -241,17 +243,17 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
         form.find('[name=name]').val(result['result']['name']);
         form.find('[name=user]').val(result['result']['user']);
         form.find('[name=mac]').val(result['result']['mac']);
-        form.find('[name=os_arch]').val(result['result']['os'] + ' ( ' + result['result']['arch'] + ' )');
+        form.find('[name=os_arch]').val(result['result']['os'] + '(' + result['result']['arch'] + ')');
         form.find('[name=kernel]').val(result['result']['kernel']);
         form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
 
-        form.find('[name=mem_size]').val(result['result']['mem_size']);
+        form.find('[name=mem_info]').val(result['result']['mem_info']);
         form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
         
         form.find('[name=serial]').val(result['result']['serial']);
         form.find('[name=network]').val(result['result']['network']);
-        //form.find('[name=partitons]').html(JSON.stringify(result['result']['partitons'], '', '5'));
-        form.find('[name=partitons]').val(result['result']['partitons']);
+        //form.find('[name=partitions]').html(JSON.stringify(result['result']['partitions'], '', '5'));
+        form.find('[name=partitions]').val(result['result']['partitions']);
         form.find('[name=time]').val('发现时间: ' + result['result']['discover_time']+'\n更新时间: '+result['result']['update_time']);
         form.find('[name=remark]').val(result['result']['remark']);
 
@@ -303,14 +305,14 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
                 form.find('[name=name]').val(result['result']['name']);
                 form.find('[name=user]').val(result['result']['user']);
                 form.find('[name=mac]').val(result['result']['mac']);
-                form.find('[name=os_arch]').val(result['result']['os'] + ' ( ' + result['result']['arch'] + ' )');
+                form.find('[name=os_arch]').val(result['result']['os'] + '(' + result['result']['arch'] + ')');
                 form.find('[name=kernel]').val(result['result']['kernel']);
                 form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
-                form.find('[name=mem_size]').val(result['result']['mem_size']);
+                form.find('[name=mem_info]').val(result['result']['mem_info']);
                 form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
                 form.find('[name=serial]').val(result['result']['serial']);
                 form.find('[name=network]').val(result['result']['network']);
-                form.find('[name=partitons]').val(result['result']['partitons']);
+                form.find('[name=partitions]').val(result['result']['partitions']);
                 form.find('[name=time]').val('发现时间: ' + result['result']['discover_time']+'\n更新时间: '+result['result']['update_time']);
                 form.find('[name=remark]').val(result['result']['remark']);
             }  else if(result['code'] == 400){

@@ -84,7 +84,7 @@ class Host_All(models.Model):
     server_name = models.CharField(max_length=64, null=False, default='')
     serial = models.CharField(max_length=64, null=False, default='')
     network = models.CharField(max_length=512, null=False, default='{}')
-    partitions = models.CharField(max_length=512, null=False, default='{}')
+    partitions = models.CharField(max_length=1024, null=False, default='{}')
 
     update_time = models.DateTimeField(null=False)
 
@@ -132,49 +132,67 @@ class Host_All(models.Model):
 
 class Resource(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
-    cpu = models.FloatField(null=False, default=0)
-    mem = models.FloatField(null=False, default=0)  
+
+    process_isalive = models.CharField(max_length=512, null=False, default='[]')
+    process_cpu_use = models.CharField(max_length=512, null=False, default='[]')
+    process_mem_use = models.CharField(max_length=512, null=False, default='[]')
+
+    cpu_total_use = models.FloatField(null=False, default=0)
+    mem_free = models.FloatField(null=False, default=0)
+    disk_read = models.FloatField(null=False, default=0)
+    disk_write = models.FloatField(null=False, default=0)
+
+    network_upload = models.FloatField(null=False, default=0)
+    network_download = models.FloatField(null=False, default=0)
+    network_total_use = models.FloatField(null=False, default=0)
 
     created_time = models.DateTimeField(auto_now_add=True)
 
-    @classmethod
-    def create_obj(cls, ip, cpu, mem):
-        resoruce = Resource()
-        resoruce.ip = ip
-        resoruce.cpu = cpu
-        resoruce.mem = mem
-        resoruce.save()
-        return resoruce
 
     @classmethod
-    def get_resource_data(cls, ip):
-        start_time = timezone.now() - timedelta(hours=5)
-        end_time = timezone.now()
-        resources = Resource.objects.filter(ip=ip, created_time__gte=start_time).order_by('created_time')
+    def create_or_replace(cls, ip, process_isalive, process_cpu_use, process_mem_use, cpu_total_use, mem_free, disk_read, disk_write, network_upload, network_download, network_total_use):
+        resource = Resource()
+        resource.ip = ip
 
-        tmp_resources = {}
-        for resource in resources:
-            tmp_resources[resource.created_time.strftime('%Y-%m-%d %H:%M')] = {'cpu' : resource.cpu,'mem' : resource.mem}
+        resource.process_isalive = process_isalive
+        resource.process_cpu_use = process_cpu_use
+        resource.process_mem_use = process_mem_use
 
-        xAxis = []
-        CPU_datas = []
-        MEM_datas = []
-        while start_time <= end_time:
-            key = start_time.strftime('%Y-%m-%d %H:%M')
-            resource = tmp_resources.get(key, {})
+        resource.cpu_total_use = cpu_total_use
+        resource.mem_free = mem_free
+        resource.disk_read = disk_read
+        resource.disk_write = disk_write
 
-            xAxis.append(key)
-            CPU_datas.append(resource.get('cpu', 0))
-            MEM_datas.append(resource.get('mem', 0))
-            start_time += timedelta(minutes=5)
+        resource.network_upload = network_upload
+        resource.network_download = network_download
+        resource.network_total_use = network_total_use
 
- #       xAxis = []
- #       CPU_datas = []
- #       MEM_datas = []
+        resource.created_time = timezone.now()
+        resource.save()
+        return resource
 
- #       for resource in resources:
-  #          xAxis.append(resource.created_time.strftime('%m-%d %H:%M'))
-   #         CPU_datas.append(resource.cpu)
-   #         MEM_datas.append(resource.mem)
 
-        return xAxis, CPU_datas, MEM_datas
+    def as_dict(self):
+        rt = {}
+        for k,v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str, tuple, datetime.datetime)):
+                rt[k] = v
+        return rt
+
+
+class Gpu(models.Model):
+    ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
+
+    gpu = models.CharField(max_length=1024, null=False, default='[]')
+
+    created_time = models.DateTimeField(auto_now_add=True)
+
+
+    @classmethod
+    def create_or_replace(cls, ip, gpu):
+        gpu = Gpu()
+        gpu.ip = ip
+        gpu.gpu = gpu
+
+        gpu.save()
+        return gpu

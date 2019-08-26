@@ -17,7 +17,7 @@
 
 
 {% block container %}
-<div class="container">
+<div class="container" style="width: auto">
     <table id="table_asset" class="table table-striped table-bordered table-hover table-condensed">
         <thead>
             <tr>
@@ -72,30 +72,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">操作系统(架构):</label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" name="os_arch" value="" readonly />
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label col-md-3">内核版本:</label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" name="kernel" value="" readonly />
-                            </div>
-                        </div>
-
-                        <div class="form-group">
                             <label class="control-label col-md-3">CPU信息:</label>
                             <div class="col-md-8">
                                 <textarea rows="5" class="form-control" name="cpu" value="" style="resize: none" readonly /></textarea>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label col-md-3">内存信息:</label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" name="mem_info" value="" readonly  />
                             </div>
                         </div>
 
@@ -201,33 +180,49 @@ var table = jQuery('#table_asset').DataTable({
       columns : [
         {
             "data" : function(row, type, set, meta){
-                return row['name'] + '(' + row['ip'] + ')';
+                return '<pre>' + row['name'] + '\n' + row['ip'] + '</pre>';
             }
 
         },
         {
             "data" : function(row, type, set, meta){
-                return row['os'] + '(' + row['arch'] + ')';
+                return '<pre>' + row['os'] + '\n' + row['arch'] + '</pre>'; 
             }
         },
-        {"data" : "kernel"},
+        {"data" : function(row, type, set, meta){
+                return '<pre>' + row['kernel'] + '</pre>'; 
+            }
+        },   
         {
             "data" : function(row, type, set, meta){
                 return '<pre>'+'颗       数: '+row['cpu_number']+"\n核       数: "+row['cpu_core']+'\n逻辑核数: '+row['cpu_vcore']+'</pre>';
             }
         },
         {"data" : "mem_info"},
-        {"data": "disk_info"},
-        {"data": "gpu_info"},
-        {"data" : "update_time"},
-        {"data" : "remark"},
+        {"data": function(row, type, set, meta){
+                return '<pre>' + row['disk_info'] + '</pre>'; 
+            }
+        },
+        {"data": function(row, type, set, meta){
+                return '<pre>' + row['gpu_info'] + '</pre>'; 
+            }
+
+        },
+        {"data" : function(row, type, set, meta){
+                return '<pre>' + row['update_time'] + '</pre>'; 
+            }
+        },
+        {"data" : function(row, type, set, meta){
+                return '<pre>' + row['remark'] + '</pre>'; 
+            }
+        },
         {
             "data" : function(row){
-              return '<a class="btn btn-xs btn-success btn-info-asset" date-id="' + row['id'] + '" href="javascript:void(0);">查看详细信息</a>'
+              return '<pre><a class="btn btn-sm btn-success btn-info-asset" date-id="' + row['id'] + '" href="javascript:void(0);">查看详细信息</a></pre>'
               + 
-              '<a class="btn btn-xs btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删除目标主机</a>'
+              '<pre><a class="btn btn-sm btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删除目标主机</a></pre>'
               + 
-              '<a class="btn btn-xs btn-warning" target="_blank" href="{% url 'asset:resource' %}?ip=' + row['ip'] + '" >查看监控资源</a>';
+              '<pre><a class="btn btn-sm btn-warning" target="_blank" href="{% url 'asset:resource' %}?ip=' + row['ip'] + '" >查看监控资源</a></pre>';
             }
         }
       ]
@@ -243,11 +238,8 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
         form.find('[name=name]').val(result['result']['name']);
         form.find('[name=user]').val(result['result']['user']);
         form.find('[name=mac]').val(result['result']['mac']);
-        form.find('[name=os_arch]').val(result['result']['os'] + '(' + result['result']['arch'] + ')');
-        form.find('[name=kernel]').val(result['result']['kernel']);
         form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
 
-        form.find('[name=mem_info]').val(result['result']['mem_info']);
         form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
         
         form.find('[name=serial]').val(result['result']['serial']);
@@ -305,10 +297,7 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
                 form.find('[name=name]').val(result['result']['name']);
                 form.find('[name=user]').val(result['result']['user']);
                 form.find('[name=mac]').val(result['result']['mac']);
-                form.find('[name=os_arch]').val(result['result']['os'] + '(' + result['result']['arch'] + ')');
-                form.find('[name=kernel]').val(result['result']['kernel']);
                 form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
-                form.find('[name=mem_info]').val(result['result']['mem_info']);
                 form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
                 form.find('[name=serial]').val(result['result']['serial']);
                 form.find('[name=network]').val(result['result']['network']);

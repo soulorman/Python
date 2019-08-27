@@ -36,7 +36,6 @@
 
 <div class="container-fluid">
     <h2 id="ip" ></h2>
-
     <div class="row">
         <div class="col-md-12">
             <table id="table-program" class="table table-striped table-hover table-bordered table-condensed" style="text-align: center;vertical-align: middle; height: 300px">
@@ -69,24 +68,20 @@
                     </tr>
 
                     <tr>
-                        <td><a class="btn btn-danger btn-sm btn-log-info" data-id=id  ><b>查看日志</b></a></td>
-                        <td><a class="btn btn-danger btn-sm btn-log-info" data-id=id  ><b>查看日志</b></a></td>
-                       <!--  {% for i in result.isalive %}
-                        {% if i == '0' %}  -->
-                            <td><a class="btn btn-danger btn-sm btn-log-info" data-id=id href="javascript:void(0)" ><b>查看日志</b></a></td>
-<!--                          {% else %} 
- -->                            <td><a class="btn btn-success btn-sm btn-program" href="javascript:void(0)"><b>进程存在</b></a></td>
-                        <!--  {% endif %} 
-                         {% endfor %}  -->
+                        {% for i in result.process_isalive %}
+                        {% if i == '0' %} 
+                        <td><a class="btn btn-danger btn-sm btn-log-info" data-id=id href="javascript:void(0)" ><b>查看日志</b></a></td>
+                        {% else %} 
+                        <td><a class="btn btn-success btn-sm btn-program" href="javascript:void(0)"><b>进程存在</b></a></td>
+                        {% endif %} 
+                        {% endfor %} 
                     </tr>
         
                     <tr>
-                         <td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>
-
-<!--                        //  {% for _ in result.isalive %} 
- -->                        <td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>
-<!--                         // {%  endfor %} 
- -->                </tr>
+                         {% for _ in result.process_isalive %} 
+                        <td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>
+                         {%  endfor %} 
+                </tr>
                 </tbody>
 
             </table>
@@ -422,7 +417,28 @@
     jQuery(document).ready(function() {
         //切出ip
         ip = window.location.search.substring(1).split("&")[0].split("=")[1]
-        jQuery('#ip').html('主机名:' + ip)
+        jQuery('#ip').html('主机名:' + ip);
+
+        jQuery.get("{% url 'asset:show_ajax' %}", {'ip' : ip}, function(result) {
+            if(result['code'] == 200){
+                
+            }
+            });
+
+
+} else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("数据获取失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
 
 
     });

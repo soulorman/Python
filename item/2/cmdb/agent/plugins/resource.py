@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 from .base import BaseThread
-from utils import sysutils
+from utils import process_util
 
 class Resource(BaseThread):
 
@@ -11,9 +11,11 @@ class Resource(BaseThread):
     def make_event(self):
         return {
             'type' : self._type,
-            'url' : 'client/{0}/resource/'.format(sysutils.get_addr()),
+            'url' : 'client/{0}/resource/'.format(process_util.get_addr()),
             'msg' : {
-                'cpu' : sysutils.get_cpu_precent(),
-                'mem' : sysutils.get_mem_precent(),
+                'process_isalive' : process_util.get_program()['isalive'],
+                'process_cpu_use' : process_util.get_program()['cpu'],
+                'process_mem_use' : process_util.get_program()['mem'],
+
                 }
         }

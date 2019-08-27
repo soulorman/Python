@@ -80,4 +80,26 @@ def resource(request):
     if not request.session.get('user'):
         return redirect('user:login')
 
-    return render(request, 'asset/resource.html')
+    _ip = request.GET.get('ip', '')
+    result =  Resource.objects.filter(ip=_ip).order_by('-created_time')[0]
+    result.process_isalive = result.process_isalive.replace(' ','').split(',')[:-1:]
+    result.process_cpu_use = result.process_cpu_use.replace(' ','').split(',')[:-1:]
+    result.process_mem_use = result.process_mem_use.replace(' ','').split(',')[:-1:]
+
+    return render(request, 'asset/resource.html', {'result':result.as_dict()})
+
+
+def show_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    _ip = request.GET.get('ip', '')
+    
+    try:
+        resource_all =  Resource.objects.filter(ip=_ip, ).order_by('-created_time')[0]
+        
+        result = resource_all.process_isalive.replace(' ','').split(',')[:-1:]
+
+        return JsonResponse({'code' : 200, 'result' : result})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400, 'errors' : e})

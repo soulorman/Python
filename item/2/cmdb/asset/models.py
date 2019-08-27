@@ -175,11 +175,11 @@ class Resource(models.Model):
     def as_dict(self):
         rt = {}
         for k,v in self.__dict__.items():
-            if isinstance(v, (int, float, bool, str, tuple, datetime.datetime)):
+            if isinstance(v, (int, float, bool, str, tuple, list,datetime.datetime)):
                 rt[k] = v
         return rt
 
-
+'''
 class Gpu(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
@@ -196,3 +196,4 @@ class Gpu(models.Model):
 
         gpu.save()
         return gpu
+        '''

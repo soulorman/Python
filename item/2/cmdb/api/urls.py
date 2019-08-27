@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 from django.urls import path, include
-from .views import v1, v2, v3
+from .views import v1, v2, v3, v4
 
 app_name = 'api'
 
@@ -17,4 +17,8 @@ urlpatterns = [
     path('v3/client/', v3.ClientView.as_view(), name='v3_client'),
     path('v3/client/<ip>/', v3.ClientView.as_view(), name='v3_client_key'),
     path('v3/client/<ip>/resource/', v3.ResourceView.as_view(), name='v3_resource'),
+
+    path('v4/client/', v4.ClientView.as_view(), name='v4_client'),
+    path('v4/client/<ip>/', v4.ClientView.as_view(), name='v4_client_key'),
+    path('v4/client/<ip>/resource/', v4.ResourceView.as_view(), name='v4_resource'),
 ]

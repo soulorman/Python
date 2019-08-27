@@ -41,7 +41,7 @@ class ENS(Thread):
 
         sign = get_sign(evt.get('msg'), unix_time, key, secret)
         
-        _url = 'http://{0}/api/v3/{1}'.format(getattr(self._config, 'SERVER'), evt.get('url'))
+        _url = 'http://{0}/api/v4/{1}'.format(getattr(self._config, 'SERVER'), evt.get('url'))
         _url += '?' + urllib.parse.urlencode({'time' : unix_time, 'key' : key, 'sign' : sign})
 
         response =  requests.post(_url, json=evt.get('msg'))

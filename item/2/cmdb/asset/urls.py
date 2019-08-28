@@ -14,4 +14,8 @@ urlpatterns = [
     ## 跳转资源页面
     path('resource/', views.resource, name='resource'),
     path('show/ajax', views.show_ajax, name='show_ajax'),
+   # path('log/ajax', views.log_ajax, name='log_ajax'),
+    path('cpu/ajax', views.cpu_ajax, name='cpu_ajax'),
+    path('pmem/ajax', views.pmem_ajax, name='pmem_ajax'),
+   
 ]

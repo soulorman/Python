@@ -4,11 +4,10 @@ import re
 import os
 import MySQLdb
 from datetime import datetime
-
-
+ 
 SELECT_SQL =    '''
                     SELECT dir
-                    FROM dir;
+                    FROM dir; 
                 '''
 
 
@@ -18,6 +17,13 @@ INSERT_SQL =    '''
                 '''
 
 pattern = r'.*\.(kfb|tif|tiff|tmap|svs|bif|dmetrix|KFB|TIF|TIFF|TMAP|SVS|BIF|DMETRIX)$'
+
+MYSQL_HOST = '192.168.31.103'
+MYSQL_PORT = 13306
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '123456'
+MYSQL_DB = 'file_test'
+MYSQL_CHARSET = 'utf8'
 
 
 # 递归去收集文件名
@@ -36,7 +42,7 @@ def isDir(file_list, dir):
 
 
 def putDB(file_list):
-    conn = MySQLdb.connect(host="192.168.31.103", port=13306, user="root", passwd="123456", db="file_test", charset='utf8')
+    conn = MySQLdb.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB, charset=MYSQL_CHARSET)
     cur = conn.cursor()
 
     ok_count, error_count = 0, 0
@@ -60,26 +66,37 @@ def putDB(file_list):
     return ok_count, error_count, errors
 
 
-if __name__ == '__main__':
-    conn = MySQLdb.connect(host="192.168.31.103", port=13306, user="root", passwd="123456", db="file_test", charset='utf8')
+def read_dir():
+    conn = MySQLdb.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB, charset=MYSQL_CHARSET)
     cur = conn.cursor()
 
     try:
         cur.execute(SELECT_SQL)
         result = cur.fetchall()
-
+        
     except BaseException as e:
         pass
-
     cur.close()
     conn.close()
+    
+    return result
 
-    file_list = []    
-    for dir in result:
-        isDir(file_list, dir[0])
+def main():
+    dir_result = read_dir()
+
+    file_list = []   
+    for dir in dir_result:
+        try:
+            isDir(file_list, dir[0])
+        except BaseException as e:
+            print(e)
 
     ok_count, error_count, errors = putDB(file_list)
     print("成功次数 : ", ok_count)
     print("失败次数 : ", error_count)
     if error_count != 0:
         print("失败的文件为：", errors)
+
+
+if __name__ == '__main__':
+    main()

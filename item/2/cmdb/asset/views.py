@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from collections import defaultdict
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -85,27 +86,39 @@ def resource(request):
 
     _ip = request.GET.get('ip', '')
     result =  Resource.objects.filter(ip=_ip).order_by('-created_time')[0]
-    result.process_isalive = result.process_isalive.replace(' ','').split(',')[:-1:]
-    result.process_cpu_use = result.process_cpu_use.replace(' ','').split(',')[:-1:]
-    result.process_mem_use = result.process_mem_use.replace(' ','').split(',')[:-1:]
 
     return render(request, 'asset/resource.html', {'result':result.as_dict()})
 
 
-def show_ajax(request):
+def other_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
     try:
-        resource_all =  Resource.objects.filter(ip=_ip, ).order_by('-created_time')[0]
+        result =  Resource.objects.filter(ip=_ip, ).order_by('-created_time')[0]
+        print(result)
+        return JsonResponse({'code' : 200, 'result' : result.as_dict()})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400, 'errors' : e})
+
+
+def table_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    _ip = request.GET.get('ip', '')
+    
+    try:
+        resource_all = Resource.objects.filter(ip=_ip, ).order_by('-created_time')[0]
         
         result = resource_all.process_isalive.replace(' ','').split(',')[:-1:]
 
         return JsonResponse({'code' : 200, 'result' : result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})
+
 
 '''
 def log_ajax(request):
@@ -115,7 +128,6 @@ def log_ajax(request):
     os.
 
     '''
-
 
 def cpu_ajax(request):
     if not request.session.get('user'):
@@ -133,7 +145,7 @@ def cpu_ajax(request):
 
 def pmem_ajax(request):
     if not request.session.get('user'):
-        return JsonResponse({'code' : 403,'result' : []})
+        return JsonResponse({'code' : 403})
 
     legend = [
         'auth',
@@ -154,23 +166,123 @@ def pmem_ajax(request):
         _ip = request.GET.get('ip', 0)
 
         end_time = timezone.now()
-        start_time = timezone.now() - timedelta(hours=5)
+        start_time = end_time - timedelta(hours=1)
 
         resources = Resource.objects.filter(ip=_ip, created_time__gte=start_time).order_by('created_time')
 
         tmp_resources = {}
         for resource in resources:
             tmp_resources[resource.created_time.strftime('%m-%d %H:%M')] = {'process_mem_use' : resource.process_mem_use }
-    
+
+        xAxis = []
+        MEM_datas = []
+        while start_time <= end_time:   
+            key = start_time.strftime('%m-%d %H:%M')  
+            resource = tmp_resources.get(key, {})   
+            xAxis.append(key)                              
+            MEM_datas.append(resource.get('process_mem_use', '[]').replace(' ','').split(',')[:-1:])
+            start_time += timedelta(minutes=5)
+        # dict_text = {}
+        # for name in legend:
+        #     dict_text[name] = []
+    #     for five_all in MEM_datas:
+    #         if five_all == []:       
+    #             dict_text[name].append(0)
+    #     else:
+    #         for mem_use in five_all:
+    #             dict_text[name].append(mem_use)
+        # 
+
+        #     导入的这个包 相当于下面这话
+        #     for name in legend:
+        #     dict_text[name] = []
+
+        dict_text = defaultdict(list) 
+        for five_all in MEM_datas:
+            five_all = [0] * len(legend) if five_all == [] else five_all
+            for i in range(len(five_all)):
+                dict_text[legend[i]].append(five_all[i])
+
+        series = []
+        for k,v in dict_text.items():
+            text_first = ['name', 'type', 'data']
+            text_second = [k, 'line', v]
+
+            series.append(dict(zip(text_first,text_second)))
+
+        return JsonResponse({'code' : 200, 'result' : {'legend': legend, 'xAxis' : xAxis, 'series':series}})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400, 'result' : e})
+
+
+def pcpu_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    legend = [
+        'auth',
+        'path',
+        'insights',
+        'thoslide',
+        'config',
+        'registry',
+        'tensorflow_model_server',
+        'save_log',
+        'celery',
+        'redis',
+        'nginx',
+        'mysql'
+    ]
+
+    try:
+        _ip = request.GET.get('ip', 0)
+
+        end_time = timezone.now()
+        start_time = end_time - timedelta(hours=1)
+
+        resources = Resource.objects.filter(ip=_ip, created_time__gte=start_time).order_by('created_time')
+
+        tmp_resources = {}
+        for resource in resources:
+            tmp_resources[resource.created_time.strftime('%m-%d %H:%M')] = {'process_cpu_use' : resource.process_cpu_use }
+
         xAxis = []
         MEM_datas = []
         while start_time <= end_time:
             key = start_time.strftime('%m-%d %H:%M')
-            resource =  tmp_resources.get(key, {})
+            resource = tmp_resources.get(key, {})
             xAxis.append(key)
-            MEM_datas.append(resource.get('process_mem_use', '[]').replace(' ','').split(',')[:-1:])
-            start_time += timedelta(minutes=1)
+            MEM_datas.append(resource.get('process_cpu_use', '[]').replace(' ','').split(',')[:-1:])
+            start_time += timedelta(minutes=5)
 
-        return JsonResponse({'code' : 200, 'result' : {'legend': legend, 'xAxis' : xAxis, 'MEM_datas' : MEM_datas}})
+        # dict_text = {}
+        # for name in legend:
+        #     dict_text[name] = []
+    #     for five_all in MEM_datas:
+    #         if five_all == []:       
+    #             dict_text[name].append(0)
+    #     else:
+    #         for mem_use in five_all:
+    #             dict_text[name].append(mem_use)
+        # 
+
+        #     导入的这个包 相当于下面这话
+        #     for name in legend:
+        #     dict_text[name] = []
+
+        dict_text = defaultdict(list) 
+        for five_all in MEM_datas:
+            five_all = [0] * len(legend) if five_all == [] else five_all
+            for i in range(len(five_all)):
+                dict_text[legend[i]].append(five_all[i])
+
+        series = []
+        for k,v in dict_text.items():
+            text_first = ['name', 'type', 'data']
+            text_second = [k, 'line', v]
+
+            series.append(dict(zip(text_first,text_second)))
+
+        return JsonResponse({'code' : 200, 'result' : {'legend': legend, 'xAxis' : xAxis, 'series':series}})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'result' : e})

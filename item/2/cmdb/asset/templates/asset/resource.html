@@ -108,10 +108,10 @@
                     <thead>
                         <tr>
                             <th>显卡编号</th>
-                            <th>185 使用者（显存使用率）</th>
-                            <th>189 使用者（显存使用率）</th>
-                            <th>191 使用者（显存使用率）</th>
-                            <th>192 使用者（显存使用率）</th>
+                            <th>185</th>
+                            <th>189</th>
+                            <th>191</th>
+                            <th>192</th>
                         </tr>
                     </thead>
 
@@ -157,37 +157,7 @@
 
         <div class="col-md-3">
             <table class="table table-striped table-hover table-bordered table-condensed">
-                <tbody >
-                    <tr>
-                        <td>内存(available)</td>
-                        <td>{{ result.mem_free }}MB</td>
-                    </tr>
-
-                    <tr>
-                        <td>系统盘<br/>读速率</td>
-                        <td>{{ result.disk_read }}Mb/s</td>
-                    </tr>
-
-                    <tr>
-                        <td>系统盘<br/>写速率</td>
-                        <td>{{ result.disk_write }}Mb/s</td>
-                    </tr>
-
-                    <tr>
-                        <td>网络上传</td>
-                        <td>{{ result.network_upload }}Mb/s</td>
-                    </tr>
-
-                    <tr>
-                        <td>网络下载</td>
-                        <td>{{ result.network_download }}Mb/s</td>
-                    </tr>
-
-                    <tr>
-                        <td>网络总流量</td>
-                        <td>{{ result.network_total_use }}Mb/s</td>
-                    </tr>
-
+                <tbody id="tbody_other">
                 </tbody>
             </table>
         </div>
@@ -270,68 +240,7 @@
                 }
             }
         ],
-        series: [
-            {
-                name:'auth',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'path',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'insights',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'thoslide',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'config',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'registry',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'tensorflow_model_server',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'save_log',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'celery',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'redis',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'nginx',
-                type:'line',
-                data:[]
-            },
-            {
-                name:'mysql',
-                type:'line',
-                data:[]
-            }
-        ]
+        series: []
         };
 
         option_cpu_use = {
@@ -364,74 +273,14 @@
                     }
                 }
             ],
-            series: [
-                {
-                    name:'auth',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'path',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'insights',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'thoslide',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'config',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'registry',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'tensorflow_model_server',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'save_log',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'celery',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'redis',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'nginx',
-                    type:'line',
-                    data:[]
-                },
-                {
-                    name:'mysql',
-                    type:'line',
-                    data:[]
-                }
-            ]
+            series: []
         };
 
 
 function reload_table_program(ip){
-    jQuery.get("{% url 'asset:show_ajax' %}", {'ip' : ip}, function(ms) {
+    jQuery.get("{% url 'asset:table_ajax' %}", {'ip' : ip}, function(ms) {
         if(ms['code'] == 200){
+            console.log(ms)
             var str = ""
             var str_1 = ""
             var pro_end = ms.result
@@ -484,21 +333,8 @@ function reload_mem_use(ip){
 
             option_mem_use.legend.data = result['result']['legend']
             option_mem_use.xAxis.data = result['result']['xAxis']
-            test = result['result']['MEM_datas']
-            console.log(test)
-            
-            for (i in test) {
-                if (test[i]['length'] == 0){
-                    for (j in test[i]){
-                        option_mem_use.series[j].data = 0
-                    }
-                 } else{
-                    for (z in test[i]){
-                        option_mem_use.series[z].data = test[i][z]
-                    }
-                    }
-            }
-        
+            option_mem_use.series = result['result']['series']
+
             myChart_mem_use.setOption(option_mem_use);
 
             } else if(result['code'] == 400){
@@ -519,27 +355,13 @@ function reload_mem_use(ip){
     }
 
 
-
 function reload_cpu_use(ip){
-      jQuery.get("", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+      jQuery.get("{% url 'asset:pcpu_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
         if(result['code'] == 200) {
 
-            option_cpu_use.xAxis.data = ['8/28-1', '8/28-2' ,'8/28-3','8/28-4','8/28-5']
-            option_cpu_use.legend.data = ['auth','path','insights','thoslide','config','registry','tensorflow_model_server','save_log','celery','redis','nginx','mysql']
-            
-            option_cpu_use.series[0].data = [1,2,3,4,5]
-            option_cpu_use.series[1].data = [6,7,8,9,10]
-            option_cpu_use.series[2].data = [15,14,13,12,11]
-            option_cpu_use.series[3].data = [16,17,18,19,20]
-            option_cpu_use.series[4].data = [16,17,18,19,20]
-            option_cpu_use.series[5].data = [11,22,33,42,21]
-            option_cpu_use.series[6].data = [13,42,32,44,54]
-            option_cpu_use.series[7].data = [14,24,34,44,54]
-            option_cpu_use.series[8].data = [14,42,43,44,54]
-            option_cpu_use.series[9].data = [17,62,31,44,45]
-            option_cpu_use.series[10].data = [18,92,36,94,95]
-            option_cpu_use.series[11].data = [18,82,83,84,59]
-
+            option_cpu_use.legend.data = result['result']['legend']
+            option_cpu_use.xAxis.data = result['result']['xAxis']
+            option_cpu_use.series = result['result']['series']
             myChart_cpu_use.setOption(option_cpu_use);
 
             } else if(result['code'] == 400){
@@ -560,13 +382,49 @@ function reload_cpu_use(ip){
     }
 
 
+function reload_other(ip){
+      jQuery.get("{% url 'asset:other_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+        if(result['code'] == 200) {
+            var str = ""
+            str += 
+            '<tr><td>内存(available)</td><td>' + result['result']['mem_free'] + 'MB</td></tr>' 
+            +
+            '<tr><td>系统盘<br/>读速率</td><td>' + result['result']['disk_read'] + 'Mb/s</td></tr>' 
+            +
+            '<tr><td>系统盘<br/>写速率</td><td>' + result['result']['disk_write'] + 'Mb/s</td></tr>' 
+            +
+            '<tr><td>网络上传</td><td>' + result['result']['network_upload'] + 'Mb/s</td></tr>' 
+            +
+            '<tr><td>网络下载</td><td>' + result['result']['network_download'] + 'Mb/s</td></tr>' 
+            +
+            '<tr><td>网络总流量</td><td>' + result['result']['network_total_use'] + 'Mb/s</td></tr>' 
+
+            $('#tbody_other').html(str)
+ 
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
 function reload(ip){
     reload_table_program(ip);
     reload_cpu_total_use(ip);
     reload_mem_use(ip);
     reload_cpu_use(ip);
+    reload_other(ip)
 }
-
 
     jQuery(document).ready(function() {
         //切出ip
@@ -587,7 +445,6 @@ function reload(ip){
                 keyboard: false
             });
         });
-
 
     });
 

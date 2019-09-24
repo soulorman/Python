@@ -85,7 +85,10 @@ def resource(request):
         return redirect('user:login')
 
     _ip = request.GET.get('ip', '')
-    result =  Resource.objects.filter(ip=_ip).order_by('-created_time')[0]
+    try:
+        result =  Resource.objects.filter(ip=_ip).order_by('-created_time')[0]
+    except ObjectDoesNotExist as e:
+        raise e
 
     return render(request, 'asset/resource.html', {'result':result.as_dict()})
 

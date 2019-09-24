@@ -10,7 +10,7 @@ from utils import sysutils, hostall_util
 class Host(BaseThread):
 
     def __init__(self, queue):
-        super(Host, self).__init__('host', 5, queue)
+        super(Host, self).__init__('host', 10, queue)
     
     def make_event(self):
         return {

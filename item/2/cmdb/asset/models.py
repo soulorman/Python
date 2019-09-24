@@ -144,13 +144,13 @@ class Resource(models.Model):
 
     network_upload = models.FloatField(null=False, default=0)
     network_download = models.FloatField(null=False, default=0)
-    network_total_use = models.FloatField(null=False, default=0)
+    volume = models.CharField(max_length=1024, null=False, default='[]')
 
     created_time = models.DateTimeField(auto_now_add=True)
 
 
     @classmethod
-    def create_or_replace(cls, ip, process_isalive, process_cpu_use, process_mem_use, cpu_total_use, mem_free, disk_read, disk_write, network_upload, network_download, network_total_use):
+    def create_or_replace(cls, ip, process_isalive, process_cpu_use, process_mem_use, cpu_total_use, mem_free, disk_read, disk_write, network_upload, network_download, volume):
         resource = Resource()
         resource.ip = ip
 
@@ -165,7 +165,7 @@ class Resource(models.Model):
 
         resource.network_upload = network_upload
         resource.network_download = network_download
-        resource.network_total_use = network_total_use
+        resource.volume = volume
 
         resource.created_time = timezone.now()
         resource.save()

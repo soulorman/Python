@@ -148,7 +148,7 @@ class ResourceView(APIView):
                                 _Json.get('disk_write', 0), \
                                 _Json.get('network_upload', 0), \
                                 _Json.get('network_download', 0), \
-                                _Json.get('network_total_use', 0), \
+                                _Json.get('volume', 0), \
                             )
 
         return self.response()

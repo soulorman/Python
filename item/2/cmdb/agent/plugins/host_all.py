@@ -8,7 +8,7 @@ from utils import hostall_util
 class Host_All(BaseThread):
 
     def __init__(self, queue):
-        super(Host_All, self).__init__('hostall', 5, queue)
+        super(Host_All, self).__init__('hostall', 10, queue)
     
     def make_event(self):
         return {

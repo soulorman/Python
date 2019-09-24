@@ -11,6 +11,7 @@ from plugins.ens import ENS
 from plugins.host import Host
 from plugins.resource import Resource
 
+
 logger = logging.getLogger(__name__)
 
 def main(config):

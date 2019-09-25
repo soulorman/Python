@@ -179,21 +179,22 @@ class Resource(models.Model):
                 rt[k] = v
         return rt
 
-'''
+
 class Gpu(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
-    gpu = models.CharField(max_length=1024, null=False, default='[]')
+    gpu_user = models.CharField(max_length=1024, null=False, default='[]')
+    gpu_mem = models.CharField(max_length=1024, null=False, default='[]')
 
     created_time = models.DateTimeField(auto_now_add=True)
 
 
     @classmethod
-    def create_or_replace(cls, ip, gpu):
+    def create_or_replace(cls, ip, gpu_user, gpu_mem):
         gpu = Gpu()
         gpu.ip = ip
-        gpu.gpu = gpu
+        gpu.gpu_user = gpu_user
+        gpu.gpu_mem = gpu_mem
 
         gpu.save()
         return gpu
-        '''

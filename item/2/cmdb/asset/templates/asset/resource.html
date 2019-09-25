@@ -389,15 +389,15 @@ function reload_other(ip){
             str += 
             '<tr><td>内存(available)</td><td>' + result['result']['mem_free'] + 'MB</td></tr>' 
             +
-            '<tr><td>系统盘<br/>读速率</td><td>' + result['result']['disk_read'] + 'Mb/s</td></tr>' 
+            '<tr><td>系统盘<br/>读速率</td><td>' + result['result']['disk_read'] + 'KB/s</td></tr>' 
             +
-            '<tr><td>系统盘<br/>写速率</td><td>' + result['result']['disk_write'] + 'Mb/s</td></tr>' 
+            '<tr><td>系统盘<br/>写速率</td><td>' + result['result']['disk_write'] + 'KB/s</td></tr>' 
             +
-            '<tr><td>网络上传</td><td>' + result['result']['network_upload'] + 'Mb/s</td></tr>' 
+            '<tr><td>网络上传</td><td>' + result['result']['network_upload'] + 'KB/s</td></tr>' 
             +
-            '<tr><td>网络下载</td><td>' + result['result']['network_download'] + 'Mb/s</td></tr>' 
+            '<tr><td>网络下载</td><td>' + result['result']['network_download'] + 'KB/s</td></tr>' 
             +
-            '<tr><td>网络总流量</td><td>' + result['result']['network_total_use'] + 'Mb/s</td></tr>' 
+            '<tr><td>存储情况</td><td>' + result['result']['volume'] + '</td></tr>' 
 
             $('#tbody_other').html(str)
  

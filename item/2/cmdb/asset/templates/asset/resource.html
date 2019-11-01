@@ -390,12 +390,30 @@ function reload_gpu(ip){
                     str += '<tr><td>' + [i]
 
                 for (y in ms['result'][i]){
-                    if(ms['result'][i][y] == '0'){
+                    if(ms['result'][i][y] == 'liucanc+'){
+
                     str += 
-                    '<td><a class="btn btn-danger btn-sm" href="javascript:void(0)"><b>没有人用</b></a></td>'
-                    } else {
+                    '<td><b>刘灿城</b></td>'
+                    } else if(ms['result'][i][y] == 'root'){
+                    str += 
+                    '<td><b>刘灿城</b></td>'
+
+                    }else if (ms['result'][i][y] == '1'){
+
                     str +=
-                    '<td>' + ms['result'][i][y]+'</td>'
+                    '<td><b>顾健白</b></td>'
+                    } else if (ms['result'][i][y] == 'sunzhuo'){
+
+                    str +=
+                    '<td><b>孙卓</b></td>'
+                    } else if (ms['result'][i][y] == 'swang'){ 
+
+                    str +=
+                    '<td><b>王书浩</b></td>'
+                    } else {
+
+                    str +=
+                    '<td><a class="btn btn-danger btn-sm" href="javascript:void(0)"><b>没有人使用</b></a></td>'
                     }
                 }
             }

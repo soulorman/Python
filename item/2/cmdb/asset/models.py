@@ -183,21 +183,17 @@ class Resource(models.Model):
 class Gpu(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
-    gpu_use_process = models.CharField(max_length=1024, null=False, default='[]')
-    gpu_user_uid = models.CharField(max_length=1024, null=False, default='[]')
-    gpu_use_mem = models.CharField(max_length=1024, null=False, default='[]')
+    gpu_user_name = models.CharField(max_length=1024, null=False, default='[]')
 
-    created_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now_add=True)
 
     @classmethod
-    def create_or_replace(cls, ip, gpu_use_process, gpu_user_uid, gpu_use_mem):
+    def create_or_replace(cls, ip, gpu_user_name):
         gpu = Gpu()
         gpu.ip = ip
-        gpu.gpu_use_process = gpu_use_process
-        gpu.gpu_user_uid = gpu_user_uid
-        gpu.gpu_use_mem = gpu_use_mem
+        gpu.gpu_user_name = gpu_user_name
 
-        gpu.created_time = timezone.now()
+        gpu.update_time = timezone.now()
         gpu.save()
         return gpu
 

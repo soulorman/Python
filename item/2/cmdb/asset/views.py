@@ -241,7 +241,7 @@ def pcpu_ajax(request):
         end_time = timezone.now()
         start_time = end_time - timedelta(hours=1)
 
-        resources = Resource.objects.filter(ip=_ip, created_time__gte=start_time).order_by('created_time')
+        resources = Resource.objects.filter(ip=_ip, created_time__gte=start_time).order_by('update_time')
 
         tmp_resources = {}
         for resource in resources:
@@ -310,6 +310,7 @@ def gpu_ajax(request):
                     result[txt[0]] = []
                 result[txt[0]].append(txt[1])
 
+   
         return JsonResponse({'code' : 200, 'result' : result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})

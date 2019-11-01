@@ -11,7 +11,7 @@ def get_addr():
 
 # 在服务器上需要这个脚本
 def get_program():
-    program = subprocess.getoutput("bash /home/ubuntu/program.sh")
+    program = subprocess.getoutput("bash program.sh")
     return json.loads(program)
 
 

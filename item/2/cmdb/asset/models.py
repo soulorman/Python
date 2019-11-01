@@ -133,9 +133,9 @@ class Host_All(models.Model):
 class Resource(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
-    process_isalive = models.CharField(max_length=512, null=False, default='[]')
-    process_cpu_use = models.CharField(max_length=512, null=False, default='[]')
-    process_mem_use = models.CharField(max_length=512, null=False, default='[]')
+    process_isalive = models.CharField(max_length=128, null=False, default='[]')
+    process_cpu_use = models.CharField(max_length=128, null=False, default='[]')
+    process_mem_use = models.CharField(max_length=128, null=False, default='[]')
 
     cpu_total_use = models.FloatField(null=False, default=0)
     mem_free = models.FloatField(null=False, default=0)
@@ -183,18 +183,29 @@ class Resource(models.Model):
 class Gpu(models.Model):
     ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
-    gpu_user = models.CharField(max_length=1024, null=False, default='[]')
-    gpu_mem = models.CharField(max_length=1024, null=False, default='[]')
+    gpu_use_process = models.CharField(max_length=1024, null=False, default='[]')
+    gpu_user_uid = models.CharField(max_length=1024, null=False, default='[]')
+    gpu_use_mem = models.CharField(max_length=1024, null=False, default='[]')
 
     created_time = models.DateTimeField(auto_now_add=True)
 
-
     @classmethod
-    def create_or_replace(cls, ip, gpu_user, gpu_mem):
+    def create_or_replace(cls, ip, gpu_use_process, gpu_user_uid, gpu_use_mem):
         gpu = Gpu()
         gpu.ip = ip
-        gpu.gpu_user = gpu_user
-        gpu.gpu_mem = gpu_mem
+        gpu.gpu_use_process = gpu_use_process
+        gpu.gpu_user_uid = gpu_user_uid
+        gpu.gpu_use_mem = gpu_use_mem
 
+        gpu.created_time = timezone.now()
         gpu.save()
         return gpu
+
+
+    def as_dict(self):
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str,datetime.datetime)):
+                rt[k] = v
+
+        return rt        

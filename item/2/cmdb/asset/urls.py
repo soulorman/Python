@@ -19,5 +19,5 @@ urlpatterns = [
     path('pmem/ajax', views.pmem_ajax, name='pmem_ajax'),
     path('pcpu/ajax', views.pcpu_ajax, name='pcpu_ajax'),
     path('table/ajax', views.table_ajax, name='table_ajax'),
-
+    path('gpu/ajax', views.gpu_ajax, name='gpu_ajax'),
 ]

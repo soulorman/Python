@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Host, Host_All, Resource
+from .models import Host, Host_All, Resource, Gpu
 from .utils import compose
 
 from datetime import timedelta
@@ -69,8 +69,8 @@ def edit_ajax(request):
 
 
 def resource_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     try:
@@ -81,8 +81,8 @@ def resource_ajax(request):
 
 
 def resource(request):
-    if not request.session.get('user'):
-        return redirect('user:login')
+    #if not request.session.get('user'):
+    #    return redirect('user:login')
 
     _ip = request.GET.get('ip', '')
     try:
@@ -94,8 +94,8 @@ def resource(request):
 
 
 def other_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
@@ -108,8 +108,8 @@ def other_ajax(request):
 
 
 def table_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
@@ -127,14 +127,12 @@ def table_ajax(request):
 def log_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
-
     os.
-
     '''
 
 def cpu_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
@@ -147,8 +145,8 @@ def cpu_ajax(request):
 
 
 def pmem_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
 
     legend = [
         'auth',
@@ -180,9 +178,9 @@ def pmem_ajax(request):
         xAxis = []
         MEM_datas = []
         while start_time <= end_time:   
-            key = start_time.strftime('%m-%d %H:%M')  
-            resource = tmp_resources.get(key, {})   
-            xAxis.append(key)                              
+            key = start_time.strftime('%m-%d %H:%M')
+            resource = tmp_resources.get(key, {})
+            xAxis.append(key)
             MEM_datas.append(resource.get('process_mem_use', '[]').replace(' ','').split(',')[:-1:])
             start_time += timedelta(minutes=5)
         # dict_text = {}
@@ -219,8 +217,8 @@ def pmem_ajax(request):
 
 
 def pcpu_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
 
     legend = [
         'auth',
@@ -289,3 +287,29 @@ def pcpu_ajax(request):
         return JsonResponse({'code' : 200, 'result' : {'legend': legend, 'xAxis' : xAxis, 'series':series}})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'result' : e})
+
+
+def gpu_ajax(request):
+    #if not request.session.get('user'):
+    #    return JsonResponse({'code' : 403})
+
+    _ip = request.GET.get('ip', '')
+    #end_time = timezone.now()
+    #start_time = end_time - timedelta(minutes=1)
+
+    try:
+        #result = Gpu.objects.filter(ip=_ip, created_time__gte=start_time).order_by('-created_time')[0]
+        resource_all = Gpu.objects.all().values('ip','gpu_user_uid').order_by('ip')
+        
+        result = {}
+        for handle in resource_all:
+            handle['gpu_user_uid'] = handle['gpu_user_uid'].replace(' ','').split(',')[:-1:]
+
+            for txt in enumerate(handle['gpu_user_uid']):
+                if txt[0] not in result:
+                    result[txt[0]] = []
+                result[txt[0]].append(txt[1])
+
+        return JsonResponse({'code' : 200, 'result' : result})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400, 'errors' : e})

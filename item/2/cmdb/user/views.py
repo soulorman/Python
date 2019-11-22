@@ -10,7 +10,7 @@ def index(request):
         return redirect('user:login')
 
     return  render(request, 'user/index.html', {
-                    'users' : User.objects.all().using('db2')
+                    'users' : User.objects.all()
                     })
 
 
@@ -21,6 +21,7 @@ def login(request):
         name = request.POST.get('name')
         password = request.POST.get('password')
         user = UserValiator.valid_login(name, password)
+        print(user)
         if user:
             request.session['user'] = user.as_dict()
             return redirect('user:index')
@@ -41,6 +42,7 @@ def create_ajax(request):
         return JsonResponse({'code' : 403})
 
     is_valid, user, errors = UserValiator.valid_create(request.POST)
+    
     if is_valid:
         user.save()
         return JsonResponse({'code' : 200 })
@@ -75,7 +77,7 @@ def get_ajax(request):
         return JsonResponse({'code' : 403})
 
     uid = request.GET.get('id', '')
-    user = User.objects.using('db2').get(pk=uid)
+    user = User.objects.get(pk=uid)
 
     return  JsonResponse({'code' : 200, 'result': user.as_dict()})
 
@@ -86,7 +88,7 @@ def get_pass_ajax(request):
         return JsonResponse({'code' : 403})
 
     uid = request.GET.get('id', '')
-    user = User.objects.using('db2').get(pk=uid)
+    user = User.objects.get(pk=uid)
 
     return  JsonResponse({'code' : 200, 'result': user.as_dict()})
 

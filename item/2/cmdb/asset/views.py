@@ -69,8 +69,8 @@ def edit_ajax(request):
 
 
 def resource_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     try:
@@ -81,8 +81,8 @@ def resource_ajax(request):
 
 
 def resource(request):
-    #if not request.session.get('user'):
-    #    return redirect('user:login')
+    if not request.session.get('user'):
+        return redirect('user:login')
 
     _ip = request.GET.get('ip', '')
     try:
@@ -94,22 +94,21 @@ def resource(request):
 
 
 def other_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
     try:
         result =  Resource.objects.filter(ip=_ip, ).order_by('-created_time')[0]
-        print(result)
         return JsonResponse({'code' : 200, 'result' : result.as_dict()})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})
 
 
 def table_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
@@ -128,11 +127,11 @@ def log_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
     os.
-    '''
+'''
 
 def cpu_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     
@@ -145,8 +144,8 @@ def cpu_ajax(request):
 
 
 def pmem_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     legend = [
         'auth',
@@ -217,8 +216,8 @@ def pmem_ajax(request):
 
 
 def pcpu_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     legend = [
         'auth',
@@ -241,7 +240,7 @@ def pcpu_ajax(request):
         end_time = timezone.now()
         start_time = end_time - timedelta(hours=1)
 
-        resources = Resource.objects.filter(ip=_ip, created_time__gte=start_time).order_by('update_time')
+        resources = Resource.objects.filter(ip=_ip, created_time__gte=start_time).order_by('created_time')
 
         tmp_resources = {}
         for resource in resources:
@@ -290,8 +289,8 @@ def pcpu_ajax(request):
 
 
 def gpu_ajax(request):
-    #if not request.session.get('user'):
-    #    return JsonResponse({'code' : 403})
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
     #end_time = timezone.now()
@@ -299,13 +298,13 @@ def gpu_ajax(request):
 
     try:
         #result = Gpu.objects.filter(ip=_ip, created_time__gte=start_time).order_by('-created_time')[0]
-        resource_all = Gpu.objects.all().values('ip','gpu_user_uid').order_by('ip')
+        resource_all = Gpu.objects.all().values('ip','gpu_user_name').order_by('ip')
         
         result = {}
         for handle in resource_all:
-            handle['gpu_user_uid'] = handle['gpu_user_uid'].replace(' ','').split(',')[:-1:]
+            handle['gpu_user_name'] = handle['gpu_user_name'].replace(' ','').split(',')[:-1:]
 
-            for txt in enumerate(handle['gpu_user_uid']):
+            for txt in enumerate(handle['gpu_user_name']):
                 if txt[0] not in result:
                     result[txt[0]] = []
                 result[txt[0]].append(txt[1])

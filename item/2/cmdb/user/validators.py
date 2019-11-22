@@ -20,7 +20,7 @@ class UserValiator(object):
     def valid_login(cls, name, password):
         user = None
         try:
-            user = User.objects.using('db2').get(name=name)
+            user = User.objects.get(name=name)
         except BaseException as e:
             pass
 
@@ -38,7 +38,7 @@ class UserValiator(object):
     def valid_name_unique(cls, name, uid=None):
         user = None
         try:
-            user = User.objects.using('db2').get(name=name)
+            user = User.objects.get(name=name)
         except BaseException as e:
             pass
 
@@ -54,7 +54,7 @@ class UserValiator(object):
         errors = {}
         user = None
         try:
-            user = User.objects.using('db2').get(pk=params.get('id', '').strip())
+            user = User.objects.get(pk=params.get('id', '').strip())
         except BaseException as e:
             is_valid = False
             errors['id'] = '用户信息不存在'
@@ -100,7 +100,7 @@ class UserValiator(object):
             errors['name'] = '用户名不能为空'
         else:
             try:
-                User.objects.using('db2').get(name=user.name)
+                User.objects.get(name=user.name)
                 is_valid = False
                 errors['name'] = '用户名已存在'
             except BaseException as e:
@@ -133,7 +133,7 @@ class UserValiator(object):
     def valid_passwd(cls, password, uid=None):
         user = None
         try:
-            user = User.objects.using('db2').get(pk=uid)
+            user = User.objects.get(pk=uid)
         except BaseException as e:
             pass
         
@@ -150,7 +150,7 @@ class UserValiator(object):
         errors = {}
         user = None
         try:
-            user = User.objects.using('db2').get(pk=params.get('id', '').strip())
+            user = User.objects.get(pk=params.get('id', '').strip())
         except BaseException as e:
             is_valid = False
             errors['id'] = '用户信息不存在'

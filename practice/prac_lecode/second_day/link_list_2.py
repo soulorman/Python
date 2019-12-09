@@ -1,5 +1,5 @@
 # encoding:utf-8
-
+# error use list index!!!
 class Node:
     def __init__(self, value, next=None):
         self.value = value

@@ -24,15 +24,14 @@ def create_link(Lists):
 
 def del_list(head, node):
     try:
-        pre = head
         current = head.next        
 
         while current != None:
             if current.value == node:
-                pre.next = current.next
+                current.value = current.next.value
+                current.next = current.next.next
                 break
 
-            pre = pre.next
             current = current.next
 
     except Exception as e:

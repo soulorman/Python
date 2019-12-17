@@ -5,8 +5,8 @@ from .models import Host,Host_All
 def compose(id):
 
     result = None
-    host = Host.objects.using('db2').get(pk=id)
-    host_alls = Host_All.objects.using('db2').filter(ip=host.ip)
+    host = Host.objects.get(pk=id)
+    host_alls = Host_All.objects.filter(ip=host.ip)
 
     for host_all in host_alls:
         result  = {

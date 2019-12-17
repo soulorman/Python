@@ -39,8 +39,8 @@ class APIView(View):
 
 
         data_sign = get_sign(data, unix_time, key, secret)
-        if sign != data_sign:
-            return False, 'error data,bug'
+        #if sign != data_sign:
+        #    return False, 'error data,bug'
 
         try:
             unix_time = int(unix_time)
@@ -141,7 +141,7 @@ class ResourceView(APIView):
                                 _ip, \
                                 _Json.get('process_isalive', ''), \
                                 _Json.get('process_cpu_use', ''), \
-                                _Json.get('process_mem_use', ''), \
+                                _Json.get('process_mem_free', ''), \
                                 _Json.get('cpu_total_use', 0), \
                                 _Json.get('mem_free', 0), \
                                 _Json.get('disk_read', 0), \

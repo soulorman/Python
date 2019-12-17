@@ -45,6 +45,7 @@ def get_ajax(request):
         return JsonResponse({'code' : 403})
 
     _id = request.GET.get('id', 0)
+    print(_id)
     try:
         result = compose(_id)
         return JsonResponse({'code' : 200,'result': result  })

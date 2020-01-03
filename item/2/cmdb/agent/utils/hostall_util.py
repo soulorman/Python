@@ -2,7 +2,6 @@
 
 import socket
 import platform
-import psutil
 import uuid
 import subprocess
 
@@ -27,15 +26,15 @@ def get_serial():
     return subprocess.getoutput("dmidecode -s baseboard-serial-number|head -1")
 
 def get_network():
+    # 上传服务器有可能字典乱序，但是改成其他类型，上传的时候符号不对  总是[]
     network_name = subprocess.getoutput("ip add|awk '{print $2}'|egrep 'en|do'|cut -d: -f 1").split('\n')
     network_address = subprocess.getoutput("ip add|grep inet|grep -v inet6|awk '{print $2}'|grep -v '127.0.0.1'").split('\n')
     return dict(zip(network_name,network_address))
 
 def get_partitons():
-
+    # 上传服务器有可能字典乱序，但是改成其他类型，上传的时候符号不对  总是[]
     partitons_name = subprocess.getoutput("df -Th |grep ^/dev|awk '{print $1}'").split('\n')
     partitons_info = subprocess.getoutput("df -Th |grep ^/dev|awk '{print $2\",\"$3\",\"$NF}'").split('\n')
-    
     return dict(zip(partitons_name,partitons_info))
 
 if __name__ == '__main__':

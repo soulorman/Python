@@ -21,5 +21,6 @@ urlpatterns = [
     path('v4/client/', v4.ClientView.as_view(), name='v4_client'),
     path('v4/client/<ip>/', v4.ClientView.as_view(), name='v4_client_key'),
     path('v4/client/<ip>/resource/', v4.ResourceView.as_view(), name='v4_resource'),
-    path('', RedirectView.as_view(url='/user/login')),
+    # 根路径直接跳转
+    #path('', RedirectView.as_view(url='/user/login')),
 ]

@@ -5,9 +5,10 @@ import platform
 import psutil
 import subprocess
 
+import collections
+
 def get_addr():
     return socket.gethostbyname(socket.gethostname())
-
 
 def get_name():
     return socket.gethostname()
@@ -37,6 +38,7 @@ def get_cpu_vcore():
 
 
 def get_disk_info():
+    # 上传服务器有可能字典乱序，但是改成其他类型，上传的时候符号不对  总是[]
     disk_name = subprocess.getoutput("lsblk -d|awk 'NR!=1{print $1}'").split('\n')
     disk_size = subprocess.getoutput("lsblk -d|awk 'NR!=1{print $4}'").split('\n')
 

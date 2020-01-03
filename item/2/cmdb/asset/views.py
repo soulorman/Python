@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Host, Host_All, Resource, Gpu
 from .utils import compose
+from .select_sql import select
 
 from datetime import timedelta
 from django.utils import timezone
@@ -151,7 +152,7 @@ def pmem_ajax(request):
     legend = [
         'auth',
         'path',
-        'insights',
+        'recovery',
         'thoslide',
         'config',
         'registry',
@@ -223,7 +224,7 @@ def pcpu_ajax(request):
     legend = [
         'auth',
         'path',
-        'insights',
+        'recovery',
         'thoslide',
         'config',
         'registry',
@@ -314,3 +315,14 @@ def gpu_ajax(request):
         return JsonResponse({'code' : 200, 'result' : result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})
+
+
+def gpu_yuce(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    try:
+        result = select()
+        return JsonResponse({'code' : 200, 'result': result})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400 ,'errors' : e})

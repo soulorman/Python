@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def main(config):
     ths = []
     ths.append(ENS(config))
-   # ths.append(Host(config))
+    ths.append(Host(config))
     ths.append(Resource(config))
 
     for th in ths:

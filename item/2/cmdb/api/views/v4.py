@@ -11,51 +11,53 @@ from django.core.exceptions import ObjectDoesNotExist
 from utils.signutils import get_sign
 from asset.models import Host, Host_All, Resource
 
+# 继承view的类
 class APIView(View):
 
     def __init__(self):
+        # 继承构造函数，并加一个属性 secret_key
         super(APIView, self).__init__()
-        self.secret_key = {'123456789' : 'abcdef'}
+        #self.secret_key = {'123456789' : 'abcdef'}
+    # 验证客户端的数据是否完整，但是因为字典乱序，其他类型符号总是[] 暂时抛弃
+    # def valid_sign(self, request):
+    #     data = {}
+    #     for key in request.GET:
+    #         data[key] = request.GET.get(key)
 
+    #     for key in request.POST:
+    #         data[key] = request.POST.get(key)
 
-    def valid_sign(self, request):
-        data = {}
-        for key in request.GET:
-            data[key] = request.GET.get(key)
+    #     data.update(self.get_json())
+    #     print(data)
+    #     key = data.pop('key', '')
+    #     sign = data.pop('sign', '')
+    #     unix_time = data.pop('time', '')
 
-        for key in request.POST:
-            data[key] = request.POST.get(key)
-
-        data.update(self.get_json())
-
-        key = data.pop('key', '')
-        sign = data.pop('sign', '')
-        unix_time = data.pop('time', '')
-
-        secret = self.secret_key.get(key, '')
+    #     secret = self.secret_key.get(key, '')
         
-        if not secret:
-            return False, 'error key'
+    #     if not secret:
+    #         return False, 'error key'
 
+    #     data_sign = get_sign(data, unix_time, key, secret)
 
-        data_sign = get_sign(data, unix_time, key, secret)
-        #if sign != data_sign:
-        #    return False, 'error data,bug'
+    #     if sign != data_sign:
+    #         return False, 'error data'
 
-        try:
-            unix_time = int(unix_time)
-            current_unix_time = time.time()
-            if not(unix_time >= current_unix_time - 5 *60 and unix_time <= current_unix_time + 5 *60):
-                return False, 'error time'
-        except BaseException as e:
-            return False, 'error time'
+    #     try:
+    #         unix_time = int(unix_time)
+    #         current_unix_time = time.time()
+    #         if not(unix_time >= current_unix_time - 5 *60 and unix_time <= current_unix_time + 5 *60):
+    #             return False, 'error time'
+    #     except BaseException as e:
+    #         return False, 'error time'
 
-        return True, ''
+    #     return True, ''
 
 
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        is_valid, errors =  self.valid_sign(request)
+        is_valid = True
+        #is_valid, errors =  self.valid_sign(request)
         if is_valid:
             return super(APIView, self).dispatch(request, *args, **kwargs)
         else:
@@ -136,7 +138,7 @@ class ResourceView(APIView):
     def post(self, request, *args, **kwargs):
         _ip = kwargs.get('ip', '')
         _Json = self.get_json()
-
+        
         Resource.create_or_replace(
                                 _ip, \
                                 _Json.get('process_isalive', ''), \

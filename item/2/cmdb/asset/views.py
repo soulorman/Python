@@ -5,8 +5,8 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Host, Host_All, Resource, Gpu
-from .utils import compose
+from .models import Host, Host_All, Resource, Gpu, Deploy
+from .utils import compose, compose_up
 from .select_sql import select
 
 from datetime import timedelta
@@ -24,7 +24,7 @@ def list_ajax(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403 })
 
-    result = [ host.as_dict() for host in Host.objects.all().using('db2')]
+    result = [ host.as_dict() for host in Host.objects.all()]
     return JsonResponse({'code' : 200, 'result': result })
 
 
@@ -46,7 +46,6 @@ def get_ajax(request):
         return JsonResponse({'code' : 403})
 
     _id = request.GET.get('id', 0)
-    print(_id)
     try:
         result = compose(_id)
         return JsonResponse({'code' : 200,'result': result  })
@@ -122,14 +121,6 @@ def table_ajax(request):
         return JsonResponse({'code' : 200, 'result' : result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})
-
-
-'''
-def log_ajax(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
-    os.
-'''
 
 def cpu_ajax(request):
     if not request.session.get('user'):
@@ -295,8 +286,8 @@ def gpu_ajax(request):
         return JsonResponse({'code' : 403})
 
     _ip = request.GET.get('ip', '')
-    #end_time = timezone.now()
-    #start_time = end_time - timedelta(minutes=1)
+    end_time = timezone.now()
+    start_time = end_time - timedelta(minutes=1)
 
     try:
         #result = Gpu.objects.filter(ip=_ip, created_time__gte=start_time).order_by('-created_time')[0]
@@ -326,3 +317,88 @@ def gpu_yuce(request):
         return JsonResponse({'code' : 200, 'result': result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400 ,'errors' : e})
+
+
+def deploy(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+
+    return  render(request, 'asset/deploy.html')
+
+
+def info_up_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403 })
+
+    result = [ deploy.as_dict() for deploy in Deploy.objects.all()]
+    return JsonResponse({'code' : 200, 'result': result })    
+
+
+def get_up_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    _id = request.GET.get('id', 0)
+    try:
+        result = compose_up(_id)
+
+        return JsonResponse({'code' : 200,'result': result  })
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400 ,'errors' : e})
+
+
+def edit_up_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    _hospital_address = request.POST.get('hospital_address', '')
+    _project_name = request.POST.get('project_name', '')
+    _deploy_version = request.POST.get('deploy_version', '')
+    _update_time = request.POST.get('update_time', '')
+    _remark = request.POST.get('remark', '')
+
+    try:
+        Deploy.update_remark(_hospital_address, _project_name, _deploy_version, _update_time, _remark)
+        return JsonResponse({'code' : 200 })
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400, 'errors' : e})
+
+
+def delete_up_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403 })
+
+    _id = request.GET.get('id', 0)
+    try:
+        Deploy.delete(_id)
+        return JsonResponse({'code' : 200 })
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400 ,'errors' : e})
+
+
+def create_up_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    is_valid = True
+    errors = {}
+    
+    deploy = Deploy()
+    deploy.hospital_address = request.POST.get('hospital_address','')
+    deploy.project_name = request.POST.get('project_name', '')
+    deploy.deploy_version = request.POST.get('deploy_version', '')
+    deploy.update_time = request.POST.get('update_time', timezone.now())
+    deploy.remark = request.POST.get('remark', '')
+    
+    try:
+        Deploy.objects.get(hospital_address=request.POST.get('hospital_address',''))
+        is_valid = False
+        errors['hospital_address'] = '医院已存在,请重新填写'
+    except BaseException as e:
+        pass
+
+    if is_valid:
+        deploy.save()
+        return JsonResponse({'code' : 200 })
+    else:
+        return JsonResponse({'code' : 400, 'errors' : errors })

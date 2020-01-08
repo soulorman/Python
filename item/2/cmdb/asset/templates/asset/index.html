@@ -234,7 +234,6 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
     var form = jQuery('.form-asset-info');
     jQuery.get("{% url 'asset:get_ajax' %}", {'id' : id}, function(result) {
     if(result['code'] == 200) {
-        console.log(result)
         form.find('[name=ip]').val(result['result']['ip'] );
         form.find('[name=name]').val(result['result']['name']);
         form.find('[name=user]').val(result['result']['user']);

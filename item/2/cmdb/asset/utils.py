@@ -1,5 +1,5 @@
 # encoding: utf-8
-from .models import Host,Host_All
+from .models import Host,Host_All,Deploy
 
 
 def compose(id):
@@ -29,6 +29,22 @@ def compose(id):
             'remark' : host.remark,
             'gpu_info' : host.gpu_info
 
+        }
+
+    return result
+
+
+def compose_up(id):
+
+    result = None
+    deploy = Deploy.objects.get(pk=id)
+
+    result  = {
+            'hospital_address' : deploy.hospital_address,
+            'project_name' : deploy.project_name,
+            'deploy_version' : deploy.deploy_version,
+            'update_time' : deploy.update_time,
+            'remark' : deploy.remark,
         }
 
     return result

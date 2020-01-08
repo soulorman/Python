@@ -79,22 +79,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="dialog-detail-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">进程信息</h4>
-                </div>
-                <div class="modal-body">
-                    <textarea class="form-control" rows="10" style="resize: none">tail -f 100 服务名</textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 <div class="container-fluid">
@@ -275,7 +259,7 @@ function reload_table_program(ip){
                 '<td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>'
                 if(pro_end[i] == '0'){
                     str += 
-                '<td><a class="btn btn-danger btn-sm btn-program-log" data-id='+ i +' href="javascript:void(0)" ><b>查看日志</b></a></td>'
+                '<td><a class="btn btn-danger btn-sm btn-program-log" data-id='+ i +' href="http://192.168.31.107:5601" target="_blank"" ><b>查看日志</b></a></td>'
                 } else{
                     str += 
                 '<td><a class="btn btn-success btn-sm" href="javascript:void(0)"><b>我还活着</b></a></td>'
@@ -505,19 +489,9 @@ function reload(ip){
         jQuery('#ip').add('错误信息：' + '莫得')
 
         reload(ip);
-        // setInterval(function(){
-        //       reload(ip);
-        // },3000);
-
-        jQuery('body').on('click', '.btn-program-log',function(){
-            var id = jQuery(this).attr('data-id');
-
-            jQuery('#dialog-detail-info').modal({
-                show: true,
-                backdrop: false,
-                keyboard: false
-            });
-        });
+        setInterval(function(){
+               reload(ip);
+        },30000);
 
     });
 

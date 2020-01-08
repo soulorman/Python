@@ -204,4 +204,45 @@ class Gpu(models.Model):
             if isinstance(v, (int, float, bool, str,datetime.datetime)):
                 rt[k] = v
 
-        return rt        
+        return rt
+
+
+class Deploy(models.Model):
+    hospital_address = models.CharField(max_length=128, null=False, default='无')
+    project_name = models.CharField(max_length=64, null=False, default='无')
+    deploy_version = models.CharField(max_length=64, null=False, default='无')
+    update_time = models.CharField(max_length=64, null=False, default='无时间')
+    remark = models.TextField(null=False, default='无')
+
+    @classmethod
+    def create_or_replace(cls, hospital_address, project_name, deploy_version, remark='无'):
+        deploy = None
+        try:
+            deploy = cls.objects.get(hospital_address=hospital_address)
+        except ObjectDoesNotExist as e:
+            deploy = Deploy()
+            deploy.hospital_address = hospital_address
+            
+        deploy.project_name = project_name
+        deploy.deploy_version = deploy_version
+        deploy.remark = remark
+
+        deploy.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+        deploy.save()
+        return deploy
+
+    @classmethod
+    def delete(cls, id):
+        return Deploy.objects.filter(pk=id).delete()
+
+    @classmethod
+    def update_remark(cls, hospital_address, project_name, deploy_version, update_time, remark):
+        return Deploy.objects.filter(hospital_address=hospital_address).update(project_name=project_name, deploy_version=deploy_version, update_time=update_time, remark=remark)
+
+    def as_dict(self):
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str,datetime.datetime)):
+                rt[k] = v
+
+        return rt

@@ -246,3 +246,39 @@ class Deploy(models.Model):
                 rt[k] = v
 
         return rt
+
+
+class Wealth(models.Model):
+    ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
+    name = models.CharField(max_length=32, null=False, default='')
+    host_address = models.CharField(max_length=32, null=False, default='无')
+    service_role = models.CharField(max_length=256, null=False, default='')
+    
+    update_time = models.DateTimeField(auto_now_add=True)
+    remark = models.TextField(null=False, default='无')
+
+    @classmethod
+    def create_or_replace(cls, ip, name, host_address, service_role):
+        wealth = None
+        try:
+            wealth = cls.objects.get(ip=ip)
+        except ObjectDoesNotExist as e:
+            wealth = Wealth()
+            wealth.ip = ip
+            
+        wealth.name = name
+        wealth.host_address = host_address
+        wealth.service_role = service_role
+        wealth.remark = '无'
+
+        wealth.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+        wealth.save()
+        return wealth
+
+    def as_dict(self):
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str,datetime.datetime)):
+                rt[k] = v
+
+        return rt

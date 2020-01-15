@@ -5,10 +5,10 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Host, Host_All, Resource, Gpu, Deploy
+from .models import Host, Host_All, Resource, Gpu, Deploy, Wealth
 from .utils import compose, compose_up
 from .select_sql import select
-
+from .error_info import  get_error_info
 from datetime import timedelta
 from django.utils import timezone
 
@@ -331,7 +331,7 @@ def info_up_ajax(request):
         return JsonResponse({'code' : 403 })
 
     result = [ deploy.as_dict() for deploy in Deploy.objects.all()]
-    return JsonResponse({'code' : 200, 'result': result })    
+    return JsonResponse({'code' : 200, 'result': result })
 
 
 def get_up_ajax(request):
@@ -402,3 +402,34 @@ def create_up_ajax(request):
         return JsonResponse({'code' : 200 })
     else:
         return JsonResponse({'code' : 400, 'errors' : errors })
+
+
+def error_info_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    _ip = request.GET.get('ip', '')
+    end_time = timezone.now()
+    start_time = end_time - timedelta(hours=1000)
+    try: 
+        #result = '内存容量不足！！！'
+        #result = select()
+        result = get_error_info(_ip,start_time)
+        return JsonResponse({'code' : 200, 'result': result})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400 ,'errors' : e})
+
+
+def resource_other(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+
+    return  render(request, 'asset/resource_other.html')
+
+
+def asset_dev_ajax(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403 })
+
+    result = [ wealth.as_dict() for wealth in Wealth.objects.all()]
+    return JsonResponse({'code' : 200, 'result': result })

@@ -36,6 +36,7 @@
 
 <div class="container-fluid">
     <h2 id="ip" ></h2>
+    <h5 style="color:#FF0000" id="error_info"></h5>
 
     <div class="row">
         <div class="col-md-12">
@@ -472,6 +473,35 @@ function reload_yuce(ip){
         }, 'json');
     }
 
+
+function reload_error_info(ip){
+      jQuery.get("{% url 'asset:error_info_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(ms) {
+
+        if(ms['code'] == 200) {
+            var str = ""
+            if (ms['result'] != ''){
+                str +=  "<h3>注意！错误信息如下: " + ms['result']
+            }
+            
+            $('#error_info').html(str)
+
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
 function reload(ip){
     reload_table_program(ip);
     reload_cpu_total_use(ip);
@@ -480,18 +510,18 @@ function reload(ip){
     reload_other(ip)
     reload_gpu(ip)
     reload_yuce(ip)
+    reload_error_info(ip)
 }
 
     jQuery(document).ready(function() {
         //切出ip
         var ip = window.location.search.substring(1).split("&")[0].split("=")[1]
-        jQuery('#ip').html('主机名:' + ip ); 
-        jQuery('#ip').add('错误信息：' + '莫得')
+        jQuery('#ip').html('主机名: ' + ip); 
 
         reload(ip);
-        setInterval(function(){
+        /*setInterval(function(){
                reload(ip);
-        },30000);
+        },30000);*/
 
     });
 

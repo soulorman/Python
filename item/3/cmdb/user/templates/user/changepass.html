@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>修改密码</title>
+    </head>
+
+    <body>
+       <form action="{% url 'user:changepass' %}" method="POST">
+            {% csrf_token %}
+            {% if errors %}
+                {% for error in errors.values %}
+                    {{ error }}<br/>
+                {% endfor %}
+            {% endif %}
+            <input type="hidden" name="id" value="{{ user.id }}" />
+            旧密码: <input type="password" name="password" /><br />
+            新密码: <input type="password" name="password_new" /><br />
+            再次输入新密码: <input type="password" name="password_new_1" /><br />
+            <input type="submit" value="修改密码" />
+       </form>
+    </body>
+</html>

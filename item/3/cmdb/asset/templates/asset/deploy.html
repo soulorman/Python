@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}线上环境信息{% endblock %}
+{% block nav_up %}active{% endblock %}
+
+{% block container %}
+<div class="container">
+    <a class="btn btn-primary btn-create-up" href="javascript:void(0);">创建项目</a>
+    <br/>
+    <br/> 
+    <table id="table_up" class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+            <tr>
+                <th>医院名称</th>
+                <th>项目名称</th>
+                <th>部署版本</th>
+                <th>更新时间</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+{% block dialog%}
+  <div class="modal fade" id="dialog-create-up" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">新建医院项目</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal form-create-up">
+                  {% csrf_token %}
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">医院名称:</label>
+                    <div class="col-md-8">
+                     <input type="text" class="form-control" name="hospital_address" value="" />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">项目名称:</label>
+                    <div class="col-md-8">    
+                      <input type="text" class="form-control"  name="project_name" value="" />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">部署版本:</label>
+                    <div class="col-md-8">   
+                      <input type="text" class="form-control" name="deploy_version"  value=""  />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">更新时间:</label>
+                    <div class="col-md-8">    
+                      <input type="text" class="form-control"  name="update_time" value="" />
+                    </div>
+                  </div>
+
+                  <div class="form-group"> 
+                    <label class="control-label col-md-3">备注:</label>
+                    <div class="col-md-8">   
+                      <input type="text" class="form-control" name="remark"  value=""  />
+                    </div>
+                  </div>
+
+             </form>
+
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">关闭</a>
+            <a class="btn btn-primary btn-save-up">保存</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id=dialog-asset-up tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">更改备注详细信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal form-asset-up">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="control-label col-md-3">医院名称:</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="hospital_address" value="" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">项目名称:</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="project_name" value=""  />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">部署版本:</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="deploy_version" value=""  />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">更新时间:</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="update_time" value=""  />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">备注:</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="remark"  value="" />
+                            </div>
+                        </div>
+                    </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-success btn-asset-up-save">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock %}
+
+
+{% block js %}
+var table = jQuery('#table_up').DataTable({
+    "language": {
+      "processing": "处理中...",
+      "lengthMenu": "显示 _MENU_ 项结果",
+      "zeroRecords": "没有匹配结果",
+      "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+      "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+      "infoFiltered": "(由 _MAX_ 项结果过滤)",
+      "infoPostFix": "",
+      "search": "搜索:",
+      "searchPlaceholder": "搜索...",
+      "url": "",
+      "emptyTable": "表中数据为空",
+      "loadingRecords": "载入中...",
+      "infoThousands": ",",
+      "paginate": {
+        "first": "首页",
+        "previous": "上页",
+        "next": "下页",
+        "last": "末页"
+      },
+      "aria": {
+        paginate: {
+            first: '首页',
+            previous: '上页',
+            next: '下页',
+            last: '末页'
+        },
+        "sortAscending": ": 以升序排列此列",
+        "sortDescending": ": 以降序排列此列"
+      },
+      "decimal": "-",
+      "thousands": "."
+      },
+      ajax : {
+            url : '{% url 'asset:info_up_ajax' %}',
+            dataSrc: 'result',
+      },
+      columns : [
+        {
+            "data" : function(row, type, set, meta){
+                return  row['hospital_address'];
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return  row['project_name'] ;
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return row['deploy_version'] ;
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return  row['update_time'] ;
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return  row['remark'] ;
+            }
+
+        },
+        {
+            "data" : function(row){
+              return '<a class="btn btn-sm btn-success btn-up" date-id="' + row['id'] + '" href="javascript:void(0);">修改信息</a>    '
+              + 
+              '<a class="btn btn-sm btn-danger btn-delete-asset-up" date-id="' + row['id'] + '" href="javascript:void(0);">删除信息</a>'
+            }
+        }
+      ]
+});
+
+
+jQuery('#table_up').on('click','.btn-up', function(){
+    var id = jQuery(this).attr('date-id');
+    var form = jQuery('.form-asset-up');
+
+    jQuery.get("{% url 'asset:get_up_ajax' %}", {'id' : id}, function(result) {
+    if(result['code'] == 200) {
+        
+        form.find('[name=hospital_address]').val(result['result']['hospital_address'] );
+        form.find('[name=project_name]').val(result['result']['project_name'] );
+        form.find('[name=deploy_version]').val(result['result']['deploy_version'] );
+        form.find('[name=update_time]').val(result['result']['update_time'] );
+        form.find('[name=remark]').val(result['result']['remark']);
+        
+        jQuery('#dialog-asset-up').modal({
+            show: true,
+            backdrop: false,
+            keyboard: false
+        });
+
+    }  else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("删除失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+      swal({
+          title: "未登录",
+          text: "",
+          timer: 2000,
+          showConfirmButton: false
+      });
+    }
+    }, 'json');
+});
+
+
+jQuery('.btn-asset-up-save').on('click', function() {
+    var form = jQuery('.form-asset-up').serializeArray();
+    jQuery.post("{% url 'asset:edit_up_ajax' %}", form, function(result) {
+      if(result['code'] == 200) {
+        swal({
+          title: "更新成功",
+          text: "",
+          type: "success",
+          closeOnConfirm: false
+          }, function(){
+              jQuery('#dialog-asset-up').modal('hide');
+              swal.close();
+              window.location.reload()
+          });
+      } else if(result['code'] == 400) {
+        var errors = [];
+        jQuery.each(result['errors'], function(k, v){
+           errors.push(v)
+        });
+          swal("更新失败:", errors.join('\n'), "error");
+
+          form.find('[name=hospital_address]').val(result['result']['hospital_address'] );
+          form.find('[name=project_name]').val(result['result']['project_name'] );
+          form.find('[name=deploy_version]').val(result['result']['deploy_version'] );
+          form.find('[name=update_time]').val(result['result']['update_time'] );
+          form.find('[name=remark]').val(result['result']['remark']);
+
+      }  else if(result['code'] == 400){
+          var errors = []
+          jQuery.each(result['errors'], function(k, v){
+            errors.push(v)
+      });
+          swal("删除失败:", errors.join('\n'), "error");
+      } else if(result['code'] == 403){
+        swal({
+            title: "未登录",
+            text: "",
+            timer: 2000,
+            showConfirmButton: false
+        });
+      }
+    }, 'json')
+});
+
+
+jQuery('#table_up').on('click','.btn-delete-asset-up', function(){
+    var id = jQuery(this).attr('date-id');
+    swal({
+        title: "确认删除吗？",
+        text: "",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "确定删除！", 
+        cancelButtonText: "取消删除！",
+        closeOnConfirm: false, 
+        closeOnCancel: true
+    },function() {
+        jQuery.get("{% url 'asset:delete_up_ajax' %}", {'id' : id}, function(result) {
+            if(result['code'] == 200){
+                swal({
+                  title: "删除成功",
+                  text: "",
+                  type: "success",
+                  closeOnConfirm: false
+                }, function(){
+                    swal.close();
+                    table.ajax.reload(null, false);
+            });
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("删除失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+    }
+        }, 'json')
+    });
+});
+
+
+jQuery('.btn-create-up').on('click', function(){
+    jQuery('#dialog-create-up').modal({
+          show: true,
+          backdrop: false,
+          keyboard: false
+    });
+});
+
+jQuery('.btn-save-up').on('click', function() {
+    var data = jQuery('.form-create-up').serializeArray()
+    jQuery.post("{% url 'asset:create_up_ajax' %}", data, function(result) {
+      if(result['code'] == 200) {
+        swal({
+          title: "创建成功",
+          text: "",
+          type: "success",
+          closeOnConfirm: false
+          }, function(){
+              jQuery('#dialog-create-up').modal('hide');
+              swal.close();
+              window.location.reload()
+          });
+
+      } else if(result['code'] == 400) {
+        var errors = [];
+        jQuery.each(result['errors'], function(k, v){
+           errors.push(v)
+        });
+        swal("验证失败:", errors.join('\n'), "error");
+
+      } else if(result['code'] == 403){
+        swal({
+            title: "未登录",
+            text: "",
+            timer: 2000,
+            showConfirmButton: false
+        });
+      }
+    }, 'json')
+});
+
+{% endblock %}

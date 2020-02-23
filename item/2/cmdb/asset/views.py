@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Host, Host_All, Resource, Gpu, Deploy, Wealth
+from .models import Host, Host_All, Resource, Gpu, Deploy, Wealth, Interview
 from .utils import compose, compose_up
 from .select_sql import select
 from .error_info import  get_error_info
@@ -410,7 +410,7 @@ def error_info_ajax(request):
 
     _ip = request.GET.get('ip', '')
     end_time = timezone.now()
-    start_time = end_time - timedelta(hours=1000)
+    start_time = end_time - timedelta(hours=24)
     try: 
         result = get_error_info(_ip,start_time)
         return JsonResponse({'code' : 200, 'result': result})
@@ -431,3 +431,25 @@ def asset_dev_ajax(request):
 
     result = [ wealth.as_dict() for wealth in Wealth.objects.all()]
     return JsonResponse({'code' : 200, 'result': result })
+
+def interview(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+
+    return  render(request, 'asset/interview.html')
+
+def interview_answer_ajax(request):
+    if not request.session.get('user'):
+        return redirect('user:login')
+
+    scores = 0
+    
+    for j in request.POST.keys():
+        answer_test = request.POST.get(j,0)
+        results = Interview.objects.filter(question_type_number=j).values('question_answer','scores')
+        for result in results:
+            if result.get('question_answer',0) == answer_test:
+                scores += result.get('scores',0)
+
+    print(scores)
+    return  render(request, 'asset/interview_ok.html')

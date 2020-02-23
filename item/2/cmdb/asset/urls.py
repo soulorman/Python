@@ -34,5 +34,8 @@ urlpatterns = [
     path('table/ajax', views.table_ajax, name='table_ajax'),
     path('gpu/ajax', views.gpu_ajax, name='gpu_ajax'),
     path('yuce/ajax', views.gpu_yuce, name='gpu_yuce'),
-
+ 
+    path('interview/ajax', views.interview, name='interview'),
+    path('interview', views.interview, name='interview'),
+    path('interview_answer/ajax', views.interview_answer_ajax, name="interview_answer"),
 ]

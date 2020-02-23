@@ -282,3 +282,11 @@ class Wealth(models.Model):
                 rt[k] = v
 
         return rt
+
+
+class Interview(models.Model):
+    question_type_number = models.CharField(max_length=128, null=False, default='无')
+    question_answer = models.TextField(null=False, default='无')
+    scores = models.IntegerField(null=False, default=0) 
+    
+    update_time = models.DateTimeField(null=False)

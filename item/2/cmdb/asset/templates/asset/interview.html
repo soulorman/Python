@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}面试系统{% endblock %}
+{% block nav_inter %}active{% endblock %}
+
+{% block style %}
+<style type="text/css">
+    .p1 {
+        border : none !important;
+        background-color : transparent !important;
+        font-family: sans-serif;
+        font-size: 18px;
+    }
+    .p2 {
+        border : none !important;
+        background-color : transparent !important;
+        font-family: sans-serif;
+        font-size: 17px;
+    }
+</style>
+{% endblock %}
+
+{% block container %}
+<h1 style='text-align: center'>面试题(更新时间:20-2-21)</h1>
+<div class="container">
+       <form action="{% url 'asset:interview_answer' %}" method="POST">
+            {% csrf_token %}
+            <h3>一、选择题（每题3分）</h3>
+            <p class="p1">1. 你常用的linux版本是:() </p>&thinsp;<input type="radio" name="select_questions_1" value="A"/>
+            <span class="p2">Ubuntu </span>&thinsp;
+            <input type="radio" name="select_questions_1" value="B" />
+            <span class="p2">Centos </span>&thinsp;
+            <input type="radio" name="select_questions_1" value="C" />
+            <span class="p2">Suse </span>&thinsp;
+            <input type="radio" name="select_questions_1" value="D" />
+            <span class="p2">Other</span><br /><br />
+
+            <p class="p1">2. 下面哪个命令是筛选文件里的内容:() </p>&thinsp;<input type="radio" name="select_questions_2" value="A"/>
+            <span class="p2">grep </span>&thinsp;
+            <input type="radio" name="select_questions_2" value="B" />
+            <span class="p2">awk </span>&thinsp;
+            <input type="radio" name="select_questions_2" value="C" />
+            <span class="p2">sed </span>&thinsp;
+            <input type="radio" name="select_questions_2" value="D" />
+            <span class="p2">cat</span><br /><br />
+
+            <h3>二、简答题（每题8分）</h3>
+            <p class="p1">1. 写出你最常用的Linux基础命令</p><textarea  style="min-height:60px;min-width:500px;max-height:60px;max-width:500px;" name="short_answer_questions_1" /></textarea>
+            <p class="p1">2. 写出'删除现在运行的所有容器'的命令</p><textarea  style="min-height:60px;min-width:500px;max-height:60px;max-width:500px;" name="short_answer_questions_2" /></textarea>
+            <p class="p1">3. 写出把爱/opt/目录下小于100K的文件全部转移到/tmp下</p><textarea  style="min-height:60px;min-width:500px;max-height:60px;max-width:500px;" name="short_answer_questions_3" /></textarea>
+            <p class="p1">4. 写出shell脚本里[]和[[]]的区别</p><textarea  style="min-height:60px;min-width:500px;max-height:60px;max-width:500px;" name="short_answer_questions_4" /></textarea>
+            <p class="p1">5. 写出python的内置类型</p><textarea  style="min-height:60px;min-width:500px;max-height:60px;max-width:500px;" name="short_answer_questions_5" /></textarea><br /><br />
+            <input type="submit" value="提交答案" />&thinsp;&thinsp;&thinsp;&thinsp;
+            <input type="reset" value="重置" />
+       </form>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

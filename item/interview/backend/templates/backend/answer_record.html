@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block style %}
+<style type="text/css">
+    .p1 {
+        border : none !important;
+        background-color : transparent !important;
+        font-family: sans-serif;
+        font-size: 18px;
+    }
+    .p2 {
+        border : none !important;
+        background-color : transparent !important;
+        font-family: sans-serif;
+        font-size: 17px;
+    }
+</style>
+{% endblock %}
+
+
+{% block container %}
+<h1 style='text-align: center'>面试题</h1>
+    <div class="container">
+        <h3>一、选择题</h3>
+            <form action="{% url 'answer:interview_options_answer' %}" method="POST">
+                {% csrf_token %}
+                <p id='options'></p>
+        <h3>二、简答题</h3>
+                <!-- <p id='sort_answer'></p> -->
+
+            <input type="submit" value="提交答案" />
+    </form>
+</div>
+{% endblock %}
+
+
+{% block js %}
+
+    jQuery.get("{% url 'answer:interview_options' %}", {'_':(new Date()).getTime()}, function(ms) {
+        if(ms['code'] == 200) {
+            var str = ""
+            for (i in ms['result']){
+                str += 
+                    '<p class="p1">' + ms['result'][i]['question_number'] + '.' + ms['result'][i]['question_title'] + '(      )' + '</p>&thinsp;<input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_A']+'" /><span class="p2">' + ms['result'][i]['options_A'] + '&thinsp;'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_B']+'" /><span class="p2">' + ms['result'][i]['options_B'] + '&thinsp;'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_C']+'"/><span class="p2">' + ms['result'][i]['options_C'] + '&thinsp;'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="' + ms['result'][i]['options_D']+'" checked /><span class="p2">' + ms['result'][i]['options_D'] +'</span><br /><br />'
+            }
+        
+        $('#options').html(str)
+
+        } else if(result['code'] == 400){
+            var errors = []
+            jQuery.each(result['errors'], function(k, v){
+              errors.push(v)
+        });
+            swal("获取数据失败:", errors.join('\n'), "error");
+        } else if(result['code'] == 403){
+        swal({
+            title: "未登录",
+            text: "",
+            timer: 2000,
+            showConfirmButton: false
+           });
+        }
+        }, 'json')
+
+    jQuery.get("{% url 'answer:interview_sort_answer' %}", {'_':(new Date()).getTime()}, function(ms) {
+        if(ms['code'] == 200) {
+            var str = ""
+            for (i in ms['result']){
+                str += 
+                    '<p class="p1">' + i + '.' + ms['result'][i]['question_title'] + ':' + '</p>&thinsp;<textarea name="' + i +'" /></textarea><br />'
+            }
+        
+        $('#sort_answer').html(str)
+
+        } else if(result['code'] == 400){
+            var errors = []
+            jQuery.each(result['errors'], function(k, v){
+              errors.push(v)
+        });
+            swal("获取数据失败:", errors.join('\n'), "error");
+        } else if(result['code'] == 403){
+        swal({
+            title: "未登录",
+            text: "",
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+    }, 'json')
+
+
+{% endblock %}

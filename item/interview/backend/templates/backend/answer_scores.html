@@ -1,0 +1,272 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8" />
+        <title>面试系统后端系统</title>
+
+        <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <ul class="nav nav-pills" role="tablist">
+                        <li><h4 style="font-size: 28px">面试系统后端管理成绩模块</h4></li>
+                    </ul>
+                </div>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a>当前登录用户为: {{ request.session.user.name }}</a></li>
+                    <li class="active"><a href="{% url 'backend:logout' %}">点我退出登录</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >
+                        管理部份
+                            <span class="caret"></span>
+                        </a>
+                    <ul id="menu1" class="dropdown-menu" aria-labelledby="drop1">
+                        <li class="active"><a href="{% url 'backend:scores' %}">成绩管理</a></li>
+                        <li class="user"><a href="{% url 'backend:index' %}">用户管理</a></li>
+                    </ul>
+
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+<div class="container">
+        <table id="table_user" class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>总成绩</th>
+                    <th>选择题分数</th>
+                    <th>简答题部分</th>
+                    <th>详情</th>
+                    <th>时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for score in scores %}
+                    <tr>
+                        <td>{{ score.name }}</td>
+                        <td>{{ score.scores }}</td>
+                        <td>{{ score.options_scores }}</td>
+                        <td><a class="btn btn-xs btn-success btn-short-answer" date-id="{{ score.id }}" href="javascript:void(0);">简答题批改</a></td>
+                        <td>
+                            <a class="btn btn-xs btn-success " date-id="{{ score.id }}" href="{% url 'backend:record' %}">跳转试卷页面</a>
+                        </td>
+                        <td>{{ score.create_time}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="modal fade" id="dialog-short-answer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">简答题修改</h4>
+          </div>
+          <div class="modal-body">
+            
+            <form class="form-horizontal form-short-answer">
+                {% csrf_token %}
+
+                <input type="hidden" name="id" value="" />
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">题目</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="0_title" readonly />
+                    </div>
+                </div>
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">答案</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="0_answer"  readonly/>
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">批改分数</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="0_score" />
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">题目</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="1_title" readonly />
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">答案</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="1_answer"  readonly/>
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">批改分数</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="1_score" />
+                    </div>
+                </div>
+
+
+             </form>
+
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">关闭</a>
+            <a class="btn btn-primary btn-short-save">修改</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <script  src="{% static 'jquery/jquery.min.js' %}"></script>
+        <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+        <script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+        <script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
+        <script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
+        
+
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+
+                 jQuery('#table_user').DataTable({
+          "language": {
+              "processing": "处理中...",
+              "lengthMenu": "显示 _MENU_ 项结果",
+              "zeroRecords": "没有匹配结果",
+              "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+              "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+              "infoFiltered": "(由 _MAX_ 项结果过滤)",
+              "infoPostFix": "",
+              "search": "搜索:",
+              "searchPlaceholder": "搜索...",
+              "url": "",
+              "emptyTable": "表中数据为空",
+              "loadingRecords": "载入中...",
+              "infoThousands": ",",
+              "paginate": {
+                "first": "首页",
+                "previous": "上页",
+                "next": "下页",
+                "last": "末页"
+              },
+              "aria": {
+                paginate: {
+                    first: '首页',
+                    previous: '上页',
+                    next: '下页',
+                    last: '末页'
+                },
+                "sortAscending": ": 以升序排列此列",
+                "sortDescending": ": 以降序排列此列"
+              },
+              "decimal": "-",
+              "thousands": "."
+              }
+      });
+
+
+    jQuery('.btn-short-answer').on('click', function(){
+        var id = jQuery(this).attr('date-id');
+        var form = jQuery('.form-short-answer');
+        jQuery.get("{% url 'backend:get_short' %}", {'id' : id}, function(result) {
+            console.log(result['result'])
+            if(result['code'] == 200) {
+                for (i = 0; i < result['result'].length; i++){
+                        form.find('[name='+ i +'_title]').val(result['result'][i][0][0] + '. ' +result['result'][i][0][1]);
+                        form.find('[name='+ i +'_answer]').val(result['result'][i][0][2]);
+                        form.find('[name='+ i +'_score]').val(0);
+                        
+                }
+
+                form.find('[name=id]').val(result['result']['id']);
+/*                form.find('[name=name]').val(result['result']);
+*/            jQuery('#dialog-short-answer').modal({
+                  show: true,
+                  backdrop: false,
+                  keyboard: false
+            });
+
+            } else if(result['code'] == 403){
+              swal({
+                  title: "未登录",
+                  text: "",
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+            }
+            }, 'json');
+      });
+      });
+       
+        </script>
+    </body>
+</html>
+
+
+      jQuery('.btn-short-save').on('click', function() {
+          var form = jQuery('.form-short-answer').serializeArray();
+          jQuery.post("{% url 'backend:edit_short' %}", form, function(result) {
+            if(result['code'] == 200) {
+              swal({
+                title: "更新成功",
+                text: "",
+                type: "success",
+                closeOnConfirm: false
+                }, function(){
+                    jQuery('#dialog-user-edit').modal('hide');
+                    swal.close();
+                    window.location.reload()
+                });
+
+            } else if(result['code'] == 400) {
+              var errors = [];
+              jQuery.each(result['errors'], function(k, v){
+                 errors.push(v)
+              });
+              swal("更新失败:", errors.join('\n'), "error");
+
+              jQuery('.form-edit-user').find('[name=id]').val(result['result']['id']);
+              jQuery('.form-edit-user').find('[name=name]').val(result['result']['name']);
+              jQuery('.form-edit-user').find('[name=tel]').val(result['result']['tel']);
+              jQuery('.form-edit-user').find('[name=age]').val(result['result']['age']);
+              if(result['result']['sex']){
+                jQuery('.form-edit-user').find('[name=sex][value=1]').prop('checked', true);
+              } else {
+              jQuery('.form-edit-user').find('[name=sex][value=0]').prop('checked', true);
+            }
+            } else if(result['code'] == 403){
+              swal({
+                  title: "未登录",
+                  text: "",
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+            }
+          }, 'json')
+        });

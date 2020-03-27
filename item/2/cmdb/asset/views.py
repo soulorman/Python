@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Host, Host_All, Resource, Gpu, Deploy, Wealth, Interview
+from .models import Host, Host_All, Resource, Gpu, Deploy, Wealth, Interview,Interview_SA
 from .utils import compose, compose_up
 from .select_sql import select
 from .error_info import  get_error_info
@@ -453,3 +453,15 @@ def interview_answer_ajax(request):
 
     print(scores)
     return  render(request, 'asset/interview_ok.html')
+
+def interview_SA(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    try:
+        results = Interview_SA.objects.filter(question_type='SA_question').values('title','question_number')
+        
+        result = [ i for i in results]
+        return JsonResponse({'code' : 200, 'result': result})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'code' : 400 ,'errors' : e})

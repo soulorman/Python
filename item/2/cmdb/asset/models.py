@@ -290,3 +290,23 @@ class Interview(models.Model):
     scores = models.IntegerField(null=False, default=0) 
     
     update_time = models.DateTimeField(null=False)
+
+class Interview_SA(models.Model):
+    question_type = models.CharField(max_length=64, null=False, default='无')
+    question_number = models.IntegerField(null=False, default=0)
+    title = models.TextField(null=False, default='无')
+    question_answer = models.TextField(null=False, default='无')
+    scores = models.IntegerField(null=False, default=0)
+    
+    update_time = models.DateTimeField(null=False)
+
+    def as_dict(self):
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str,datetime.datetime)):
+                rt[k] = v
+
+        return rt
+
+#题型           题号  题目                                                            参考答案       分数   创建时间
+#SA_question    1    '写出把/opt/目录下小于100K的文件全部转移到/tmp下的shell命令'     'mv /opt /tmp'     5    2020-2-27

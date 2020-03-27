@@ -38,4 +38,5 @@ urlpatterns = [
     path('interview/ajax', views.interview, name='interview'),
     path('interview', views.interview, name='interview'),
     path('interview_answer/ajax', views.interview_answer_ajax, name="interview_answer"),
+    path('interview_SA', views.interview_SA, name="interview_SA"),
 ]

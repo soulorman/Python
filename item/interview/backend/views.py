@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import User, Scores
+from .models import User, Scores, Other
 from .validators import UserValiator
 
 from answer.models import Interview_options, Interview_sort_answer
@@ -111,8 +111,25 @@ def scores(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
+    # 'scores' : Scores.objects.all().order_by('id').reverse(),'other' : Other.objects.all().order_by('id').reverse()
+    #  scores.姓名  scores.scores scores.options_scores  short_answer_scores other.short_answer other.interviewer_answer  other.remakr other.time    
+    # { xingming: [1,2,3,4,5,6,7]}
+    
+#{'name': 'test1', 'scores': 0, 'short_answer_scores': 0, 'id': 40, 'options_scores': 4, 'create_time': datetime.datetime(2020, 3, 25, 17, 1, 1)}
+
+    score = Scores.objects.all().values()
+    other = Other.objects.all().values()
+
+
+    result = []
+    for i in score: 
+        for j in other:
+            if i['name'] == j['name']:
+                i.update(j)
+                result.append(i)
+
     return  render(request, 'backend/answer_scores.html', {
-                    'scores' : Scores.objects.all().order_by('id').reverse()
+                    'result' : result
                     })
 
 
@@ -130,15 +147,27 @@ def get_short(request):
         return JsonResponse({'code' : 403})
 
     uid = request.GET.get('id', '')
-    info = Scores.objects.all().filter(pk=uid).values('short_answer')
+    info = Other.objects.all().filter(pk=uid).values('short_answer')
+    name = Other.objects.all().filter(pk=uid).values('name')
     
+    answer_scores = []
+    for i in name:
+        a = eval(Scores.objects.filter(name=i).values('short_answer_scores'))
+        a['1'] = 
+
+        answer_scores.append(a)
+
+
     to = []
     for i,v in eval(info[0]['short_answer']).items():
-        
+        c = [ i ]
+
+        d = [ answer_scores[i]] 
+
         a = [ j['question_title'] for j in Interview_sort_answer.objects.filter(question_number=i).values('question_title').order_by('question_number')]
         b = [ v ]
-        c = [ i ]
-        to.append([ c + a + b ])
+        
+        to.append([ c + a + b + d ])
 
     return  JsonResponse({'code' : 200, 'result': to})
 

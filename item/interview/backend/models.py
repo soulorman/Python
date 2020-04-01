@@ -32,15 +32,31 @@ class User(models.Model):
             'password' : self.password
         }
 
-class Scores(models.Model):
+
+class Other(models.Model):
     name = models.CharField(max_length=32, null=False, default='')
-    scores = models.IntegerField(null=False, default=0)
-    options_scores = models.IntegerField(default=0)
     short_answer = models.CharField(max_length=128, null=False, default='')
+    interviewer_answer = models.TextField(default='无')
     remark = models.TextField(default='无')
     
     create_time = models.DateTimeField(null=False)
 
+    def as_dict(self):
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str)):
+                rt[k] = v
+
+        return rt
+
+
+class Scores(models.Model):
+    name = models.CharField(max_length=32, null=False, default='')
+    scores = models.IntegerField(null=False, default=0)
+    options_scores = models.IntegerField(default=0)
+    short_answer_scores = models.IntegerField(default=0)
+    
+    create_time = models.DateTimeField(null=False)
 
     def as_dict(self):
         rt = {}

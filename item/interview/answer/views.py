@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from backend.models import User,Scores
+from backend.models import User,Scores, Other
 
 from .models import  Interview_options, Interview_sort_answer
 from .validators import UserValiator
@@ -92,10 +92,15 @@ def interview_options_answer(request):
     score = Scores()
     score.name = request.session.get('user')['name']
     score.options_scores = scores
-    score.short_answer = short_answer
-    score.remark = request_dict
     score.create_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
     score.save()
+
+    other = Other()
+    other.name = request.session.get('user')['name']
+    other.short_answer = short_answer
+    other.interviewer_answer = request_dict
+    other.create_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+    other.save()
 
     return  render(request, 'answer/ok.html')
 

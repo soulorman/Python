@@ -51,20 +51,24 @@
                     <th>选择题分数</th>
                     <th>简答题部分</th>
                     <th>详情</th>
+                    <th>备注</th>
                     <th>时间</th>
                 </tr>
             </thead>
             <tbody>
-                {% for score in scores %}
+                
+                {% for res in result %}
                     <tr>
-                        <td>{{ score.name }}</td>
-                        <td>{{ score.scores }}</td>
-                        <td>{{ score.options_scores }}</td>
-                        <td><a class="btn btn-xs btn-success btn-short-answer" date-id="{{ score.id }}" href="javascript:void(0);">简答题批改</a></td>
+                        <td>{{ res.name }}</td>
+                        <td>{{ res.scores }}</td>
+                        <td>{{ res.options_scores }}</td>
+                        <td><a class="btn btn-xs btn-success btn-short-answer" date-id="{{ res.id }}" href="javascript:void(0);">简答题批改</a></td>
                         <td>
-                            <a class="btn btn-xs btn-success " date-id="{{ score.id }}" href="{% url 'backend:record' %}">跳转试卷页面</a>
+                            <a class="btn btn-xs btn-success " date-id="{{ res.id }}" href="{% url 'backend:record' %}">跳转试卷页面</a>
                         </td>
-                        <td>{{ score.create_time}}</td>
+
+                        <td>{{ res.remark }}</td>
+                        <td>{{ res.create_time }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -194,8 +198,7 @@
     jQuery('.btn-short-answer').on('click', function(){
         var id = jQuery(this).attr('date-id');
         var form = jQuery('.form-short-answer');
-        jQuery.get("{% url 'backend:get_short' %}", {'id' : id}, function(result) {
-            console.log(result['result'])
+        jQuery.get("{% url 'backend:get_short' %}", {'id' : id}, function(result) {            
             if(result['code'] == 200) {
                 for (i = 0; i < result['result'].length; i++){
                         form.find('[name='+ i +'_title]').val(result['result'][i][0][0] + '. ' +result['result'][i][0][1]);
@@ -227,46 +230,3 @@
         </script>
     </body>
 </html>
-
-
-      jQuery('.btn-short-save').on('click', function() {
-          var form = jQuery('.form-short-answer').serializeArray();
-          jQuery.post("{% url 'backend:edit_short' %}", form, function(result) {
-            if(result['code'] == 200) {
-              swal({
-                title: "更新成功",
-                text: "",
-                type: "success",
-                closeOnConfirm: false
-                }, function(){
-                    jQuery('#dialog-user-edit').modal('hide');
-                    swal.close();
-                    window.location.reload()
-                });
-
-            } else if(result['code'] == 400) {
-              var errors = [];
-              jQuery.each(result['errors'], function(k, v){
-                 errors.push(v)
-              });
-              swal("更新失败:", errors.join('\n'), "error");
-
-              jQuery('.form-edit-user').find('[name=id]').val(result['result']['id']);
-              jQuery('.form-edit-user').find('[name=name]').val(result['result']['name']);
-              jQuery('.form-edit-user').find('[name=tel]').val(result['result']['tel']);
-              jQuery('.form-edit-user').find('[name=age]').val(result['result']['age']);
-              if(result['result']['sex']){
-                jQuery('.form-edit-user').find('[name=sex][value=1]').prop('checked', true);
-              } else {
-              jQuery('.form-edit-user').find('[name=sex][value=0]').prop('checked', true);
-            }
-            } else if(result['code'] == 403){
-              swal({
-                  title: "未登录",
-                  text: "",
-                  timer: 2000,
-                  showConfirmButton: false
-              });
-            }
-          }, 'json')
-        });

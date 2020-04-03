@@ -17,7 +17,7 @@ class User(models.Model):
     name = models.CharField(max_length=32, null=False, default='')
     password = models.CharField(max_length=512, null=False, default='')
     age = models.IntegerField(null=False, default=0)
-    tel = models.CharField(max_length=32, null=False, default='')
+    remark = models.CharField(max_length=32, null=False, default='')
     sex = models.BooleanField(null=False, default=True)
     create_time = models.DateTimeField(null=False)
 
@@ -27,7 +27,7 @@ class User(models.Model):
             'id' : self.id,
             'name' : self.name,
             'age' :  self.age,
-            'tel' : self.tel,
+            'remark' : self.remark,
             'sex' : self.sex,
             'password' : self.password
         }
@@ -52,9 +52,9 @@ class Other(models.Model):
 
 class Scores(models.Model):
     name = models.CharField(max_length=32, null=False, default='')
-    scores = models.IntegerField(null=False, default=0)
+    scores = models.CharField(max_length=32, null=False, default='未批改简答题')
     options_scores = models.IntegerField(default=0)
-    short_answer_scores = models.IntegerField(default=0)
+    short_answer_scores = models.CharField(max_length=32, null=False, default='0')
     
     create_time = models.DateTimeField(null=False)
 

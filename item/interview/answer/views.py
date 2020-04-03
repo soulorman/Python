@@ -97,36 +97,10 @@ def interview_options_answer(request):
 
     other = Other()
     other.name = request.session.get('user')['name']
+    other.remark = request.session.get('user')['remark']
     other.short_answer = short_answer
     other.interviewer_answer = request_dict
     other.create_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
     other.save()
 
     return  render(request, 'answer/ok.html')
-
-
-# def interview_sort_answer_answer(request):
-#     if not request.session.get('user'):
-#         return JsonResponse({'code' : 403})
-
-#     scores = 0
-#     for j in request.POST.keys():
-#         if 'csrf' not in j:
-#             answer_test = request.POST.get(j,0)
-
-#             results = Interview_sort_answer.objects.filter(question_number=j).values('question_answer','scores')
-#             print(results)
-#             for result in results:
-#                 if result.get('question_answer',0) == answer_test:
-#                     scores += result.get('scores',0)
-
-#         score = Scores()
-        
-#         score.name = request.session.get('user')
-#         score.scores = scores
-#         score.true_number = len(true_number)
-#         score.false_number = len(false_number)
-#         score.remark = 'true' : true_number, 'false' : false_number
-#         score.save()
-
-#     return  render(request, 'answer/ok.html')

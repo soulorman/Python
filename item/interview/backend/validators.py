@@ -80,8 +80,8 @@ class UserValiator(object):
         else:
             user.age = int(age)
 
-        user.tel = params.get('tel', '0').strip()
-        user.sex = int(params.get('sex', '1').strip())
+        user.remark = params.get('remark', '0').strip()
+        user.remark = int(params.get('remark', '1').strip())
         user.create_time = timezone.now()
 
         return is_valid, user, errors
@@ -122,7 +122,7 @@ class UserValiator(object):
         else:
             user.age = int(user.age)
 
-        user.tel = params.get('tel', '0').strip()
+        user.remark = params.get('remark', '0').strip()
         user.sex = int(params.get('sex', '1').strip())
         user.create_time = timezone.now()
 

@@ -58,6 +58,7 @@
             <tbody>
                 
                 {% for res in result %}
+
                     <tr>
                         <td>{{ res.name }}</td>
                         <td>{{ res.scores }}</td>
@@ -93,36 +94,19 @@
                 <div class="form-group"> 
                     <label class="control-label col-md-3">题目</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" name="0_title" readonly />
-                    </div>
-                </div>
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">答案</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="0_answer"  readonly/>
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">批改分数</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="0_score" />
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">题目</label>
-                    <div class="col-md-8">
                         <input type="text" class="form-control" name="1_title" readonly />
                     </div>
                 </div>
 
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">参考答案</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="1_reference_answer"  readonly/>
+                    </div>
+                </div>
 
                 <div class="form-group"> 
-                    <label class="control-label col-md-3">答案</label>
+                    <label class="control-label col-md-3">面试者答案</label>
                     <div class="col-md-8">
                         <input type="text" class="form-control" name="1_answer"  readonly/>
                     </div>
@@ -133,6 +117,38 @@
                     <label class="control-label col-md-3">批改分数</label>
                     <div class="col-md-8">
                         <input type="text" class="form-control" name="1_score" />
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">题目</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="2_title" readonly />
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">参考答案</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="2_reference_answer"  readonly/>
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">面试者答案</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="2_answer"  readonly/>
+                    </div>
+                </div>
+
+
+                <div class="form-group"> 
+                    <label class="control-label col-md-3">批改分数</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="2_score" />
                     </div>
                 </div>
 
@@ -198,18 +214,17 @@
     jQuery('.btn-short-answer').on('click', function(){
         var id = jQuery(this).attr('date-id');
         var form = jQuery('.form-short-answer');
-        jQuery.get("{% url 'backend:get_short' %}", {'id' : id}, function(result) {            
+        jQuery.get("{% url 'backend:get_short' %}", {'id' : id}, function(result) {
             if(result['code'] == 200) {
                 for (i = 0; i < result['result'].length; i++){
-                        form.find('[name='+ i +'_title]').val(result['result'][i][0][0] + '. ' +result['result'][i][0][1]);
-                        form.find('[name='+ i +'_answer]').val(result['result'][i][0][2]);
-                        form.find('[name='+ i +'_score]').val(0);
-                        
+                        num = i + 1
+                        form.find('[name=id]').val(result['result'][i][6]);
+                        form.find('[name='+ num +'_title]').val(result['result'][i][0] + '. ' +result['result'][i][1]);
+                        form.find('[name='+ num +'_reference_answer ]').val(result['result'][i][2] + '   （' + result['result'][i][3] +'分)');
+                        form.find('[name='+ num +'_answer]').val(result['result'][i][4]);
+                        form.find('[name='+ num +'_score]').val(result['result'][i][5]);
                 }
-
-                form.find('[name=id]').val(result['result']['id']);
-/*                form.find('[name=name]').val(result['result']);
-*/            jQuery('#dialog-short-answer').modal({
+           jQuery('#dialog-short-answer').modal({
                   show: true,
                   backdrop: false,
                   keyboard: false
@@ -225,8 +240,45 @@
             }
             }, 'json');
       });
-      });
-       
+     
+
+      jQuery('.btn-short-save').on('click', function() {
+            var form = jQuery('.form-short-answer').serializeArray();
+            jQuery.post("{% url 'backend:edit_short' %}", form, function(result) {
+              if(result['code'] == 200) {
+                swal({
+                  title: "更新成功",
+                  text: "",
+                  type: "success",
+                  closeOnConfirm: false
+                  }, function(){
+                      jQuery('#dialog-short-answer').modal('hide');
+                      swal.close();
+                      window.location.reload()
+                  });
+
+              } else if(result['code'] == 400) {
+                var errors = [];
+                jQuery.each(result['errors'], function(k, v){
+                   errors.push(v)
+                });
+                swal("更新失败:", errors.join('\n'), "error");
+              } else if(result['code'] == 403){
+                swal({
+                    title: "未登录",
+                    text: "",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+              }
+            }, 'json')
+          });
+ });
+
         </script>
     </body>
 </html>
+
+
+
+

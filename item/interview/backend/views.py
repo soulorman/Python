@@ -111,20 +111,13 @@ def scores(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
-    # 'scores' : Scores.objects.all().order_by('id').reverse(),'other' : Other.objects.all().order_by('id').reverse()
-    #  scores.姓名  scores.scores scores.options_scores  short_answer_scores other.short_answer other.interviewer_answer  other.remakr other.time    
-    # { xingming: [1,2,3,4,5,6,7]}
-    
-#{'name': 'test1', 'scores': 0, 'short_answer_scores': 0, 'id': 40, 'options_scores': 4, 'create_time': datetime.datetime(2020, 3, 25, 17, 1, 1)}
-
     score = Scores.objects.all().values()
     other = Other.objects.all().values()
-
 
     result = []
     for i in score: 
         for j in other:
-            if i['name'] == j['name']:
+            if i['id'] == j['id']:
                 i.update(j)
                 result.append(i)
 
@@ -147,37 +140,64 @@ def get_short(request):
         return JsonResponse({'code' : 403})
 
     uid = request.GET.get('id', '')
-    info = Other.objects.all().filter(pk=uid).values('short_answer')
-    name = Other.objects.all().filter(pk=uid).values('name')
-    
-    answer_scores = []
-    for i in name:
-        a = eval(Scores.objects.filter(name=i).values('short_answer_scores'))
-        a['1'] = 
+    info = Other.objects.all().filter(pk=uid).values()
+    info1 = Scores.objects.all().filter(pk=uid).values()
 
-        answer_scores.append(a)
+    first = eval(info[0]['short_answer'])
+    b = eval(info1[0]['short_answer_scores'])
 
+
+    li = []
+    for k,v in first.items():
+        try:
+            han_score = b[k]
+        except BaseException as e:
+            han_score = 0
+
+        x = [ 'serial', 'answer', 'score','id' ]
+        y = [ k, v , han_score,uid ]
+        
+        li.append(dict(zip(x,y)))
 
     to = []
-    for i,v in eval(info[0]['short_answer']).items():
-        c = [ i ]
+    for i in li:
+        Serial_Number =[ i['serial']]
+        title = [ j['question_title'] for j in Interview_sort_answer.objects.filter(question_number=i['serial']).values('question_title').order_by('question_number')]
+        reference_answer = [x['question_answer'] for x in Interview_sort_answer.objects.filter(question_number=i['serial']).values('question_answer').order_by('question_number')]
+        reference_score =[ y['scores'] for y in Interview_sort_answer.objects.filter(question_number=i['serial']).values('scores').order_by('question_number')]
+        short_answer =[i['answer']]
+        short_answer_score =[i['score']]
 
-        d = [ answer_scores[i]] 
-
-        a = [ j['question_title'] for j in Interview_sort_answer.objects.filter(question_number=i).values('question_title').order_by('question_number')]
-        b = [ v ]
-        
-        to.append([ c + a + b + d ])
+        to.append(Serial_Number + title + reference_answer + reference_score + short_answer + short_answer_score + list(uid))
 
     return  JsonResponse({'code' : 200, 'result': to})
-
 
 
 def edit_short(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
-    uid = request.GET.get('id', '')
-    user = Scores.objects.get(pk=uid)
+    score_id = request.POST.get('id', '0')
+    score = Scores.objects.get(pk=score_id)
 
-    return  JsonResponse({'code' : 200, 'result': user.as_dict()})
+    total_answer_scores = 0
+    short_answer_scores = {}
+    errors = {}
+    for i in range(1,3):
+
+        short_answer_score = int(request.POST.get(str(i) + '_score', '0'))
+        if short_answer_score > 10:
+            errors['error'] = '分数不能超过10分，请重打分！'
+            break
+        total_answer_scores += short_answer_score
+        short_answer_scores[str(i)] = short_answer_score
+
+    total_score = score.options_scores + total_answer_scores
+
+    score.scores = total_score
+    score.short_answer_scores = short_answer_scores
+    if short_answer_scores:    
+        score.save()
+        return JsonResponse({'code' : 200 })
+    else:
+        return JsonResponse({'code' : 400, 'errors' : errors})

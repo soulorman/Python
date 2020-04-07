@@ -58,14 +58,14 @@
             <tbody>
                 
                 {% for res in result %}
-
+                
                     <tr>
                         <td>{{ res.name }}</td>
                         <td>{{ res.scores }}</td>
                         <td>{{ res.options_scores }}</td>
-                        <td><a class="btn btn-xs btn-success btn-short-answer" date-id="{{ res.id }}" href="javascript:void(0);">简答题批改</a></td>
+                        <td><a class="btn btn-xs btn-success" href="{% url 'backend:correct_short' %}?id={{ res.id }}"} >简答题批改</a></td>
                         <td>
-                            <a class="btn btn-xs btn-success " date-id="{{ res.id }}" href="{% url 'backend:record' %}">跳转试卷页面</a>
+                            <a class="btn btn-xs btn-success" target="_blank " href="{% url 'backend:record' %}">跳转试卷页面</a>
                         </td>
 
                         <td>{{ res.remark }}</td>
@@ -76,204 +76,51 @@
         </table>
     </div>
 
-
-    <div class="modal fade" id="dialog-short-answer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">简答题修改</h4>
-          </div>
-          <div class="modal-body">
-            
-            <form class="form-horizontal form-short-answer">
-                {% csrf_token %}
-
-                <input type="hidden" name="id" value="" />
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">题目</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="1_title" readonly />
-                    </div>
-                </div>
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">参考答案</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="1_reference_answer"  readonly/>
-                    </div>
-                </div>
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">面试者答案</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="1_answer"  readonly/>
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">批改分数</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="1_score" />
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">题目</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="2_title" readonly />
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">参考答案</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="2_reference_answer"  readonly/>
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">面试者答案</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="2_answer"  readonly/>
-                    </div>
-                </div>
-
-
-                <div class="form-group"> 
-                    <label class="control-label col-md-3">批改分数</label>
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="2_score" />
-                    </div>
-                </div>
-
-
-             </form>
-
-          </div>
-          <div class="modal-footer">
-            <a class="btn btn-default" data-dismiss="modal">关闭</a>
-            <a class="btn btn-primary btn-short-save">修改</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
         <script  src="{% static 'jquery/jquery.min.js' %}"></script>
         <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
         <script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
         <script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
         <script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
         
-
         <script type="text/javascript">
             jQuery(document).ready(function() {
 
                  jQuery('#table_user').DataTable({
-          "language": {
-              "processing": "处理中...",
-              "lengthMenu": "显示 _MENU_ 项结果",
-              "zeroRecords": "没有匹配结果",
-              "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-              "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
-              "infoFiltered": "(由 _MAX_ 项结果过滤)",
-              "infoPostFix": "",
-              "search": "搜索:",
-              "searchPlaceholder": "搜索...",
-              "url": "",
-              "emptyTable": "表中数据为空",
-              "loadingRecords": "载入中...",
-              "infoThousands": ",",
-              "paginate": {
-                "first": "首页",
-                "previous": "上页",
-                "next": "下页",
-                "last": "末页"
-              },
-              "aria": {
-                paginate: {
-                    first: '首页',
-                    previous: '上页',
-                    next: '下页',
-                    last: '末页'
-                },
-                "sortAscending": ": 以升序排列此列",
-                "sortDescending": ": 以降序排列此列"
-              },
-              "decimal": "-",
-              "thousands": "."
-              }
-      });
-
-
-    jQuery('.btn-short-answer').on('click', function(){
-        var id = jQuery(this).attr('date-id');
-        var form = jQuery('.form-short-answer');
-        jQuery.get("{% url 'backend:get_short' %}", {'id' : id}, function(result) {
-            if(result['code'] == 200) {
-                for (i = 0; i < result['result'].length; i++){
-                        num = i + 1
-                        form.find('[name=id]').val(result['result'][i][6]);
-                        form.find('[name='+ num +'_title]').val(result['result'][i][0] + '. ' +result['result'][i][1]);
-                        form.find('[name='+ num +'_reference_answer ]').val(result['result'][i][2] + '   （' + result['result'][i][3] +'分)');
-                        form.find('[name='+ num +'_answer]').val(result['result'][i][4]);
-                        form.find('[name='+ num +'_score]').val(result['result'][i][5]);
-                }
-           jQuery('#dialog-short-answer').modal({
-                  show: true,
-                  backdrop: false,
-                  keyboard: false
-            });
-
-            } else if(result['code'] == 403){
-              swal({
-                  title: "未登录",
-                  text: "",
-                  timer: 2000,
-                  showConfirmButton: false
-              });
-            }
-            }, 'json');
-      });
-     
-
-      jQuery('.btn-short-save').on('click', function() {
-            var form = jQuery('.form-short-answer').serializeArray();
-            jQuery.post("{% url 'backend:edit_short' %}", form, function(result) {
-              if(result['code'] == 200) {
-                swal({
-                  title: "更新成功",
-                  text: "",
-                  type: "success",
-                  closeOnConfirm: false
-                  }, function(){
-                      jQuery('#dialog-short-answer').modal('hide');
-                      swal.close();
-                      window.location.reload()
-                  });
-
-              } else if(result['code'] == 400) {
-                var errors = [];
-                jQuery.each(result['errors'], function(k, v){
-                   errors.push(v)
-                });
-                swal("更新失败:", errors.join('\n'), "error");
-              } else if(result['code'] == 403){
-                swal({
-                    title: "未登录",
-                    text: "",
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-              }
-            }, 'json')
-          });
- });
+                      "language": {
+                          "processing": "处理中...",
+                          "lengthMenu": "显示 _MENU_ 项结果",
+                          "zeroRecords": "没有匹配结果",
+                          "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                          "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                          "infoFiltered": "(由 _MAX_ 项结果过滤)",
+                          "infoPostFix": "",
+                          "search": "搜索:",
+                          "searchPlaceholder": "搜索...",
+                          "url": "",
+                          "emptyTable": "表中数据为空",
+                          "loadingRecords": "载入中...",
+                          "infoThousands": ",",
+                          "paginate": {
+                            "first": "首页",
+                            "previous": "上页",
+                            "next": "下页",
+                            "last": "末页"
+                          },
+                          "aria": {
+                            paginate: {
+                                first: '首页',
+                                previous: '上页',
+                                next: '下页',
+                                last: '末页'
+                            },
+                            "sortAscending": ": 以升序排列此列",
+                            "sortDescending": ": 以降序排列此列"
+                          },
+                          "decimal": "-",
+                          "thousands": "."
+                          }
+                  });   
+             });
 
         </script>
     </body>

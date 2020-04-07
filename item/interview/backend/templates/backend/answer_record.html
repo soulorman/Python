@@ -22,16 +22,17 @@
 
 
 {% block container %}
-<h1 style='text-align: center'>面试题</h1>
+<h1 style='text-align: center'>{{ name }}回溯面试题</h1>
+<h5 style='text-align: center'>(刷新该网页即重置所有题目以及答案)</h5>
     <div class="container">
         <h3>一、选择题</h3>
             <form action="{% url 'answer:interview_options_answer' %}" method="POST">
                 {% csrf_token %}
                 <p id='options'></p>
-        <h3>二、简答题</h3>
-                <!-- <p id='sort_answer'></p> -->
+        <h3>二、简答题</h3>(答题框可以随意拉大)
+                <p id='sort_answer'></p>
 
-            <input type="submit" value="提交答案" />
+            <input type="submit" value="提交答案" /><br /><br />
     </form>
 </div>
 {% endblock %}
@@ -43,8 +44,10 @@
         if(ms['code'] == 200) {
             var str = ""
             for (i in ms['result']){
+                //实现题号从1开始
+                j = Number(i) + 1
                 str += 
-                    '<p class="p1">' + ms['result'][i]['question_number'] + '.' + ms['result'][i]['question_title'] + '(      )' + '</p>&thinsp;<input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_A']+'" /><span class="p2">' + ms['result'][i]['options_A'] + '&thinsp;'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_B']+'" /><span class="p2">' + ms['result'][i]['options_B'] + '&thinsp;'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_C']+'"/><span class="p2">' + ms['result'][i]['options_C'] + '&thinsp;'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="' + ms['result'][i]['options_D']+'" checked /><span class="p2">' + ms['result'][i]['options_D'] +'</span><br /><br />'
+                    '<p class="p1">' + j + '. ' + ms['result'][i]['question_title'] + '( )'+'<p>'+'<input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_A']+'" /> A. <span class="p2">' + ms['result'][i]['options_A']+'<p>'+'</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_B']+'" /> B. <span class="p2">' + ms['result'][i]['options_B']+ '<p>'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_C']+'"/> C. <span class="p2">' + ms['result'][i]['options_C']+'<p>'+'</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="' + ms['result'][i]['options_D']+'"/> D. <span class="p2">' + ms['result'][i]['options_D'] +'</span><br /><br />'
             }
         
         $('#options').html(str)
@@ -69,8 +72,10 @@
         if(ms['code'] == 200) {
             var str = ""
             for (i in ms['result']){
+                //实现题号从1开始
+                j = Number(i) + 1
                 str += 
-                    '<p class="p1">' + i + '.' + ms['result'][i]['question_title'] + ':' + '</p>&thinsp;<textarea name="' + i +'" /></textarea><br />'
+                    '<p class="p1">' + j + '.' + ms['result'][i]['question_title'] + '</p>&thinsp;<textarea name="' + ms['result'][i]['question_number'] +'" /></textarea><br /><br />'
             }
         
         $('#sort_answer').html(str)

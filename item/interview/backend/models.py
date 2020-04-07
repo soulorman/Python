@@ -54,7 +54,7 @@ class Scores(models.Model):
     name = models.CharField(max_length=32, null=False, default='')
     scores = models.CharField(max_length=32, null=False, default='未批改简答题')
     options_scores = models.IntegerField(default=0)
-    short_answer_scores = models.CharField(max_length=32, null=False, default='0')
+    short_answer_scores = models.TextField(default='0')
     
     create_time = models.DateTimeField(null=False)
 

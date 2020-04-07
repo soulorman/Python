@@ -9,7 +9,7 @@ from .validators import UserValiator
 from answer.models import Interview_options, Interview_sort_answer
 
 def index(request):
-    if not request.session.get('user'):
+    if request.session.get('user')['name'] != 'admin':
         return redirect('backend:login')
 
     return  render(request, 'backend/index.html', {
@@ -23,14 +23,18 @@ def login(request):
     else:
         name = request.POST.get('name')
         password = request.POST.get('password')
-        user = UserValiator.valid_login(name, password)
+        user, errors = UserValiator.valid_login(name, password)
+        result = {'default':'用户名或者密码错误'}
+        if errors:
+            result = errors
+
         if user:
             request.session['user'] = user.as_dict()
             return redirect('backend:index')
         else:
             return render(request, 'backend/login.html', {
                 'name': name, 
-                'errors': {'default':'用户名或者密码错误'}
+                'errors': result
                 })
 
 
@@ -135,32 +139,31 @@ def record(request):
                     })   
 
 
-def get_short(request):
+def correct_short(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
-    uid = request.GET.get('id', '')
-    info = Other.objects.all().filter(pk=uid).values()
-    info1 = Scores.objects.all().filter(pk=uid).values()
+    temp_id = request.GET.get('id', '')
+    info = Other.objects.all().filter(pk=temp_id).values()
+    score_info = Scores.objects.all().filter(pk=temp_id).values()
 
-    first = eval(info[0]['short_answer'])
-    b = eval(info1[0]['short_answer_scores'])
+    short_answers = eval(info[0]['short_answer'])
+    short_answer_score = eval(score_info[0]['short_answer_scores'])
 
-
-    li = []
-    for k,v in first.items():
+    temp_list = []
+    for k,v in short_answers.items():
         try:
-            han_score = b[k]
+            han_score = short_answer_score[k]
         except BaseException as e:
             han_score = 0
 
         x = [ 'serial', 'answer', 'score','id' ]
-        y = [ k, v , han_score,uid ]
+        y = [ k, v , han_score,temp_id ]
         
-        li.append(dict(zip(x,y)))
+        temp_list.append(dict(zip(x,y)))
 
-    to = []
-    for i in li:
+    result = []
+    for i in temp_list:
         Serial_Number =[ i['serial']]
         title = [ j['question_title'] for j in Interview_sort_answer.objects.filter(question_number=i['serial']).values('question_title').order_by('question_number')]
         reference_answer = [x['question_answer'] for x in Interview_sort_answer.objects.filter(question_number=i['serial']).values('question_answer').order_by('question_number')]
@@ -168,36 +171,51 @@ def get_short(request):
         short_answer =[i['answer']]
         short_answer_score =[i['score']]
 
-        to.append(Serial_Number + title + reference_answer + reference_score + short_answer + short_answer_score + list(uid))
+        result.append(Serial_Number + title + reference_answer + reference_score + short_answer + short_answer_score + list(temp_id))
 
-    return  JsonResponse({'code' : 200, 'result': to})
+    return  render(request, 'backend/correct_short.html',{'results' : result})
+
 
 
 def edit_short(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
-    score_id = request.POST.get('id', '0')
+    
+    request_dict = { i : v  for i,v in request.POST.lists() if 'csrf' not in i }
+    # table_id 为记录的id
+    # title_id 为实际题的序号
+    score_id = request.POST.get('table_id', '0')
     score = Scores.objects.get(pk=score_id)
-
+    
     total_answer_scores = 0
     short_answer_scores = {}
     errors = {}
-    for i in range(1,3):
 
-        short_answer_score = int(request.POST.get(str(i) + '_score', '0'))
-        if short_answer_score > 10:
-            errors['error'] = '分数不能超过10分，请重打分！'
+    list1 = request_dict.get('title_id',0)
+    list2 = request_dict.get('score',0)
+    short_answer_scores =  dict(zip(list1,list2))
+
+    flag = True
+    for short_score in list2:
+        short_score = int(short_score)
+        if short_score > 5:
+            errors['error'] = '分数不能超过5分，请重新打分！'
+            flag = False
             break
-        total_answer_scores += short_answer_score
-        short_answer_scores[str(i)] = short_answer_score
-
+        
+        total_answer_scores += short_score
+     
     total_score = score.options_scores + total_answer_scores
+
 
     score.scores = total_score
     score.short_answer_scores = short_answer_scores
-    if short_answer_scores:    
+    if flag:    
         score.save()
-        return JsonResponse({'code' : 200 })
+        return redirect('backend:scores')
     else:
-        return JsonResponse({'code' : 400, 'errors' : errors})
+        return render(request, 'backend/correct_short.html', {
+                'errors': errors
+                })
+        #return render(request, 'backend/error.html',{'errors' : errors})

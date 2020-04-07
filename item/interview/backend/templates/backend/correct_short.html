@@ -1,0 +1,70 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8" />
+        <title>简答题批改页面</title>
+
+        <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+        <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+    </head>
+    <style type="text/css">
+    .p1 {
+        text-align: center;
+
+        font-size: 18px;
+
+    }
+    </style>
+
+    <body>
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <ul class="nav nav-pills" role="tablist">
+                        <li><h4 style="font-size: 28px">简答题批改页面</h4></li>
+                    </ul>
+                </div>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a>当前登录管理员为: {{ request.session.user.name }}</a></li>
+                    <li class="active"><a href="{% url 'backend:logout' %}">点我退出登录</a></li>
+                </ul>
+            </div>
+        </nav>
+    <div class="container">
+        <form id="correct_short" action="{% url 'backend:edit_short' %}" method="POST">
+            {% csrf_token %}
+            {% if errors %}
+                {% for key, error in errors.items %}
+                    <div class="alert alert-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+            
+            {% else %}
+            
+                {% for res in results %}
+                    <input type="hidden" name="table_id" value="{{ res.6 }}" />
+                    <input type="hidden" name="title_id" value="{{ res.0 }}" />
+                    <label class="p1">题目</label><br />
+                    <textarea class="form-control" name="title"  readonly>{{ res.1 }}</textarea><br/>
+
+                    <label class="p1">参考意见</label>
+                    <textarea class="form-control" name="reference_answer"  readonly>{{ res.2 }}  (此题总分:{{ res.3 }}分)</textarea><br/>
+
+                    <label class="p1">面试者答案</label>
+                    <textarea class="form-control" name="answer"  readonly>{{ res.4 }}</textarea><br/>
+
+                    <label class="p1">此题分数:</label>
+                    <input type='text' name="score" value="{{ res.5 }}" /><br/><br/>
+                {% endfor %}
+                <button class="btn" type="submit">提交修改</button>
+                <button class="btn" type="reset">重置</button>
+
+            {% endif %}
+         </form>
+      </div>
+    </body>
+</html>

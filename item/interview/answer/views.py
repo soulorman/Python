@@ -12,7 +12,6 @@ from django.utils import timezone
 import datetime
 from datetime import timedelta
 
-
 def index(request):
     if not request.session.get('user'):
         return redirect('answer:login')
@@ -47,12 +46,14 @@ def interview_options(request):
         return JsonResponse({'code' : 403})
 
     try:
-        results = Interview_options.objects.all().order_by('question_number').values('question_number','question_title','options_A','options_B','options_C','options_D')
+        #results = Interview_options.objects.all().order_by('question_number').values('question_number','question_title','options_A','options_B','options_C','options_D')
+        #results = Interview_options.objects.all().values('question_number','question_title','options_A','options_B','options_C','options_D')
+        results = Interview_options.objects.order_by('?')[:3].values('question_number','question_title','options_A','options_B','options_C','options_D')
         result = [ i for i in results]
+
         return JsonResponse({'code' : 200, 'result': result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400 ,'errors' : e})
-
 
 
 def interview_sort_answer(request):
@@ -60,7 +61,7 @@ def interview_sort_answer(request):
         return JsonResponse({'code' : 403})
 
     try:
-        results = Interview_sort_answer.objects.all().values('question_number','question_title')
+        results = Interview_sort_answer.objects.order_by('?')[:3].values('question_number','question_title')
         result = [ i for i in results]
         return JsonResponse({'code' : 200, 'result': result})
     except ObjectDoesNotExist as e:
@@ -71,23 +72,27 @@ def interview_options_answer(request):
     if not request.session.get('user'):
         return JsonResponse({'code' : 403})
 
-
-    request_dict = { i : v  for i,v in request.POST.lists() if 'csrf' not in i }
+    # 原计划想返回值是列表的情况
+    #request_dict = { i : v  for i,v in request.POST if 'csrf' not in i }    
 
     scores = 0
+    option_answer = {}
     short_answer = {}
-
-    for j in request_dict.keys():
-        if 'csrf' not in j:
-            answer_option = request_dict.get(j,0)[0]
-
-            short_answer[j] = request_dict.get(j,0)[1]
-
+    for j in request.POST.keys():
+        # 选择题的答案返回并保持在Scores数据库
+        if j.startswith('option_'):
+            answer_option = request.POST.get(j,0)
             results = Interview_options.objects.filter(question_number=j).values('question_answer','scores')
+            option_answer[j] = answer_option
 
-            for result in results:
-                if result.get('question_answer',0) == answer_option:
-                    scores += result.get('scores',0)
+            if results[0].get('question_answer',0) == answer_option:
+                scores += results[0].get('scores',0)        
+        # 
+        elif j.startswith('short_'):
+            short_answer[j] = request.POST.get(j,0)
+            results = Interview_sort_answer.objects.filter(question_number=j).values('question_answer','scores')
+
+    interviewer_answer = dict(option_answer,**short_answer)
 
     score = Scores()
     score.name = request.session.get('user')['name']
@@ -99,7 +104,7 @@ def interview_options_answer(request):
     other.name = request.session.get('user')['name']
     other.remark = request.session.get('user')['remark']
     other.short_answer = short_answer
-    other.interviewer_answer = request_dict
+    other.interviewer_answer = interviewer_answer
     other.create_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
     other.save()
 

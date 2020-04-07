@@ -19,6 +19,7 @@ class UserValiator(object):
     @classmethod
     def valid_login(cls, name, password):
         user = None
+        errors = {}
         try:
             user = User.objects.get(name=name)
         except BaseException as e:
@@ -29,9 +30,12 @@ class UserValiator(object):
         
         password = encrypt_password(password)
         if user.password == password:
-            return user
+            if user.remark == '管理员':
+                return user, errors
+            else:
+                errors['role'] = '权限不对'
 
-        return None
+        return None, errors
 
 
     @classmethod 
@@ -81,7 +85,7 @@ class UserValiator(object):
             user.age = int(age)
 
         user.remark = params.get('remark', '0').strip()
-        user.remark = int(params.get('remark', '1').strip())
+        #user.remark = int(params.get('remark', 'd').strip())
         user.create_time = timezone.now()
 
         return is_valid, user, errors

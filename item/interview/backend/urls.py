@@ -18,6 +18,7 @@ urlpatterns = [
 
     path('scores/', views.scores, name="scores"),
     path('record/', views.record, name="record"),
-    path('get_short/', views.get_short, name="get_short"),
+    path('correct_short/', views.correct_short, name="correct_short"),
     path('edit_short/', views.edit_short, name="edit_short"),
+    #path('error/', views.error, name="error"),
 ]

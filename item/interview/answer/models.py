@@ -14,7 +14,7 @@ def encrypt_password(password):
 
 
 class Interview_options(models.Model):
-    question_number = models.IntegerField(null=False, default=0)
+    question_number = models.TextField(null=False, default='无')
     question_title = models.TextField(null=False, default='无')
     options_A = models.CharField(max_length=64, default='无')
     options_B = models.CharField(max_length=64, default='无')
@@ -22,9 +22,7 @@ class Interview_options(models.Model):
     options_D =models.CharField(max_length=64, default='无')
     question_answer = models.TextField(null=False, default='无')
     scores = models.IntegerField(null=False, default=0) 
-    
     update_time = models.DateTimeField(null=False)
-
 
     def as_dict(self):
         rt = {}
@@ -36,13 +34,12 @@ class Interview_options(models.Model):
 
 
 class Interview_sort_answer(models.Model):
-    question_number = models.IntegerField(null=False, default=0)
+    question_number = models.TextField(null=False, default='无')
     question_title = models.TextField(null=False, default='无')
     question_answer = models.TextField(null=False, default='无')
     scores = models.IntegerField(null=False, default=0) 
     
     update_time = models.DateTimeField(null=False)
-
 
     def as_dict(self):
         rt = {}

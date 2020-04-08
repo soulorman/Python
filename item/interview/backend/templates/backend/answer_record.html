@@ -10,91 +10,34 @@
         background-color : transparent !important;
         font-family: sans-serif;
         font-size: 18px;
+        font-weight: bold;
     }
     .p2 {
         border : none !important;
         background-color : transparent !important;
         font-family: sans-serif;
-        font-size: 17px;
+        font-size: 16px;
+        color:red;
     }
 </style>
 {% endblock %}
 
 
 {% block container %}
-<h1 style='text-align: center'>{{ name }}回溯面试题</h1>
-<h5 style='text-align: center'>(刷新该网页即重置所有题目以及答案)</h5>
+<h1 style='text-align: center'>{{ name }}的回溯面试题</h1>
     <div class="container">
         <h3>一、选择题</h3>
-            <form action="{% url 'answer:interview_options_answer' %}" method="POST">
-                {% csrf_token %}
-                <p id='options'></p>
-        <h3>二、简答题</h3>(答题框可以随意拉大)
-                <p id='sort_answer'></p>
-
-            <input type="submit" value="提交答案" /><br /><br />
-    </form>
+            {% for k,v in option_dict.items %}
+            <form>
+            {% csrf_token %}
+                <p class="p1" >题目：{{ k }}</p>
+                <p class="p2" >面试者答案：{{ v }}</p>
+            {% endfor %}
+        <h3>二、简答题</h3>
+        {% for k,v in short_dict.items %}
+                <p class="p1" >题目：{{ k }}</p>
+                <p class="p2" >面试者答案：{{ v }}</p>
+            </form>
+        {% endfor %}
 </div>
-{% endblock %}
-
-
-{% block js %}
-
-    jQuery.get("{% url 'answer:interview_options' %}", {'_':(new Date()).getTime()}, function(ms) {
-        if(ms['code'] == 200) {
-            var str = ""
-            for (i in ms['result']){
-                //实现题号从1开始
-                j = Number(i) + 1
-                str += 
-                    '<p class="p1">' + j + '. ' + ms['result'][i]['question_title'] + '( )'+'<p>'+'<input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_A']+'" /> A. <span class="p2">' + ms['result'][i]['options_A']+'<p>'+'</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_B']+'" /> B. <span class="p2">' + ms['result'][i]['options_B']+ '<p>'+ '</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="'+ ms['result'][i]['options_C']+'"/> C. <span class="p2">' + ms['result'][i]['options_C']+'<p>'+'</span><input type="radio" name="' + ms['result'][i]['question_number'] +'" value="' + ms['result'][i]['options_D']+'"/> D. <span class="p2">' + ms['result'][i]['options_D'] +'</span><br /><br />'
-            }
-        
-        $('#options').html(str)
-
-        } else if(result['code'] == 400){
-            var errors = []
-            jQuery.each(result['errors'], function(k, v){
-              errors.push(v)
-        });
-            swal("获取数据失败:", errors.join('\n'), "error");
-        } else if(result['code'] == 403){
-        swal({
-            title: "未登录",
-            text: "",
-            timer: 2000,
-            showConfirmButton: false
-           });
-        }
-        }, 'json')
-
-    jQuery.get("{% url 'answer:interview_sort_answer' %}", {'_':(new Date()).getTime()}, function(ms) {
-        if(ms['code'] == 200) {
-            var str = ""
-            for (i in ms['result']){
-                //实现题号从1开始
-                j = Number(i) + 1
-                str += 
-                    '<p class="p1">' + j + '.' + ms['result'][i]['question_title'] + '</p>&thinsp;<textarea name="' + ms['result'][i]['question_number'] +'" /></textarea><br /><br />'
-            }
-        
-        $('#sort_answer').html(str)
-
-        } else if(result['code'] == 400){
-            var errors = []
-            jQuery.each(result['errors'], function(k, v){
-              errors.push(v)
-        });
-            swal("获取数据失败:", errors.join('\n'), "error");
-        } else if(result['code'] == 403){
-        swal({
-            title: "未登录",
-            text: "",
-            timer: 2000,
-            showConfirmButton: false
-        });
-    }
-    }, 'json')
-
-
 {% endblock %}

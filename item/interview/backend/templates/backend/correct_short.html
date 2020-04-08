@@ -14,8 +14,23 @@
     <style type="text/css">
     .p1 {
         text-align: center;
-
+        font-weight: bold;
         font-size: 18px;
+    }
+    #p2 {
+        font-weight: bold;
+        font-size: 18px;
+    }
+    #p3 {
+         font-weight: bold;
+        font-size: 18px; 
+        color:blue;  
+    }
+
+    #p4 {
+         font-weight: bold;
+        font-size: 18px; 
+        color:red;  
 
     }
     </style>
@@ -49,19 +64,19 @@
                     <input type="hidden" name="table_id" value="{{ res.6 }}" />
                     <input type="hidden" name="title_id" value="{{ res.0 }}" />
                     <label class="p1">题目</label><br />
-                    <textarea class="form-control" name="title"  readonly>{{ res.1 }}</textarea><br/>
+                    <textarea id='p2' class="form-control" name="title"  readonly>{{ res.1 }}</textarea><br/>
 
                     <label class="p1">参考意见</label>
-                    <textarea class="form-control" name="reference_answer"  readonly>{{ res.2 }}  (此题总分:{{ res.3 }}分)</textarea><br/>
+                    <textarea id='p2' class="form-control" name="reference_answer"  readonly>{{ res.2 }}  (此题总分:{{ res.3 }}分)</textarea><br/>
 
                     <label class="p1">面试者答案</label>
-                    <textarea class="form-control" name="answer"  readonly>{{ res.4 }}</textarea><br/>
+                    <textarea id='p3'class="form-control" name="answer"  readonly>{{ res.4 }}</textarea><br/>
 
                     <label class="p1">此题分数:</label>
-                    <input type='text' name="score" value="{{ res.5 }}" /><br/><br/>
+                    <input id='p4' type='text' name="score" value="{{ res.5 }}" /><br/><br/>
                 {% endfor %}
                 <button class="btn" type="submit">提交修改</button>
-                <button class="btn" type="reset">重置</button>
+                <button class="btn" type="reset">重置</button><br /><br />
 
             {% endif %}
          </form>

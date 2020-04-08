@@ -65,7 +65,7 @@
                         <td>{{ res.options_scores }}</td>
                         <td><a class="btn btn-xs btn-success" href="{% url 'backend:correct_short' %}?id={{ res.id }}"} >简答题批改</a></td>
                         <td>
-                            <a class="btn btn-xs btn-success" target="_blank " href="{% url 'backend:record' %}">跳转试卷页面</a>
+                            <a class="btn btn-xs btn-success" target="_blank " href="{% url 'backend:record' %}?id={{ res.id }}">跳转试卷页面</a>
                         </td>
 
                         <td>{{ res.remark }}</td>

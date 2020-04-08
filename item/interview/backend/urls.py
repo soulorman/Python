@@ -20,5 +20,4 @@ urlpatterns = [
     path('record/', views.record, name="record"),
     path('correct_short/', views.correct_short, name="correct_short"),
     path('edit_short/', views.edit_short, name="edit_short"),
-    #path('error/', views.error, name="error"),
 ]

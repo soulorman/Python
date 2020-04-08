@@ -130,14 +130,6 @@ def scores(request):
                     })
 
 
-def record(request):
-    if not request.session.get('user'):
-        return JsonResponse({'code' : 403})
-
-    return  render(request, 'backend/answer_record.html', {
-                    'scores' : Scores.objects.all()
-                    })   
-
 
 def correct_short(request):
     if not request.session.get('user'):
@@ -219,3 +211,34 @@ def edit_short(request):
                 'errors': errors
                 })
         #return render(request, 'backend/error.html',{'errors' : errors})
+
+
+def record(request):
+    if not request.session.get('user'):
+        return JsonResponse({'code' : 403})
+
+    temp_id = request.GET.get('id', 0)
+    info = Other.objects.get(pk=temp_id)
+    temp_result = eval(info.interviewer_answer)
+    
+    option_dict = {}
+    short_dict = {}
+    for k,v in temp_result.items():
+        if k.startswith('option_'):
+            option = Interview_options.objects.filter(question_number=k).values('question_title')
+            option_title = option[0].get('question_title','无')
+
+            option_dict[option_title] = v
+
+            
+        elif k.startswith('short_'):
+            short = Interview_sort_answer.objects.filter(question_number=k).values('question_title')
+            short_title = short[0].get('question_title','无')
+
+            short_dict[short_title] = v
+
+    return  render(request, 'backend/answer_record.html',{
+            'name' : info.name,
+            'option_dict' : option_dict,
+            'short_dict' : short_dict,
+        })   

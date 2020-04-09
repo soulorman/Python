@@ -352,7 +352,6 @@
           });
         });
 
-
       jQuery('.btn-edit-user').on('click', function(){
           var id = jQuery(this).attr('date-id');
           var form = jQuery('.form-edit-user');
@@ -365,7 +364,7 @@
               if(result['result']['sex']){
                 form.find('[name=sex][value=1]').prop('checked', true);
               } else {
-              form.find('[name=sex][value=0]').prop('checked', true);
+                form.find('[name=sex][value=0]').prop('checked', true);
             }
             jQuery('#dialog-user-edit').modal({
                   show: true,
@@ -383,7 +382,6 @@
             }, 'json');
       });
       
-
       jQuery('.btn-edit-save').on('click', function() {
           var form = jQuery('.form-edit-user').serializeArray();
           jQuery.post("{% url 'user:edit_ajax' %}", form, function(result) {
@@ -405,7 +403,6 @@
                  errors.push(v)
               });
               swal("更新失败:", errors.join('\n'), "error");
-
               jQuery('.form-edit-user').find('[name=id]').val(result['result']['id']);
               jQuery('.form-edit-user').find('[name=name]').val(result['result']['name']);
               jQuery('.form-edit-user').find('[name=tel]').val(result['result']['tel']);
@@ -425,7 +422,6 @@
             }
           }, 'json')
         });
-
 
         jQuery('.btn-changepass').on('click', function(){
             var id = jQuery(this).attr('date-id');

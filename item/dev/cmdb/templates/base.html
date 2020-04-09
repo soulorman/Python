@@ -64,8 +64,8 @@
                         </a>
                     <ul id="menu3" class="dropdown-menu" aria-labelledby="drop4">
                         <li class="{% block nav_asset_ops %}{% endblock %}"><a href="{% url 'asset:index' %}">资源管理</a></li>
-                        <li class="{% block nav__ops %}{% endblock %}"><a href="{% url 'webanalysis:index' %}" >日志管理</a></li>
-                        <li class="{% block nav_up %}{% endblock %}"><a href="{% url 'asset:deploy' %}">线上环境资源统计</a></li>
+                        <li class="{% block nav_log_analysis %}{% endblock %}"><a href="{% url 'webanalysis:index' %}" >日志文件上传并分析</a></li>
+                        <li class="{% block nav_deploy %}{% endblock %}"><a href="{% url 'asset:deploy' %}">医院线上项目部署记录</a></li>
                     </ul>
                     </li>
 

@@ -19,11 +19,15 @@ urlpatterns = [
     
     path('deploy/ajax', views.deploy, name='deploy'),
     path('resource_other/ajax', views.resource_other, name='resource_other'),
+
+    # 部署资源跳转
     path('info/ajax', views.info_up_ajax, name='info_up_ajax'),
     path('get_up/ajax', views.get_up_ajax, name='get_up_ajax'),
     path('edit_up/ajax', views.edit_up_ajax, name='edit_up_ajax'),
     path('delete_up/ajax', views.delete_up_ajax, name='delete_up_ajax'),
     path('create_up/ajax', views.create_up_ajax, name="create_up_ajax"),
+
+    
     path('error_info/ajax', views.error_info_ajax, name="error_info_ajax"),
 
     path('asset_dev/ajax', views.asset_dev_ajax, name="asset_dev_ajax"),

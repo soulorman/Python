@@ -108,4 +108,5 @@ def interview_options_answer(request):
     other.create_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
     other.save()
 
-    return  render(request, 'answer/ok.html')
+    return HttpResponse("答题完成，请等待试卷批改完成！")
+    #return  render(request, 'answer/ok.html')

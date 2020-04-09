@@ -319,6 +319,8 @@ def gpu_yuce(request):
         return JsonResponse({'code' : 400 ,'errors' : e})
 
 
+
+# 部署项目展示代码段
 def deploy(request):
     if not request.session.get('user'):
         return redirect('user:login')

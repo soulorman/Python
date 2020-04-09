@@ -7,13 +7,12 @@
 
     <body>
        <form action="{% url 'user:create' %}" method="POST">
-            {% csrf_token %}
             {% if errors %}
                 {% for error in errors.values %}
                     {{ error }}<br />
                 {% endfor %}
             {% endif %}
-            <input type="hidden" name="id" />
+            {% csrf_token %}
             用户名: <input type="text" name="name" /><br />
             密码: <input type="password" name="password" /><br />
             再次输入密码: <input type="password" name="password_new" /><br />

@@ -1,0 +1,424 @@
+{% load static %} 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="30;URL=">
+    <title>监控页面</title>
+    <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <script type="text/javascript" src="{% static 'incubator-echarts-4.1.0/dist/echarts.min.js' %}"></script> 
+
+    <style type="text/css">
+        .container-fluid{
+            width: 100%;
+        }
+        .row{
+            margin-bottom: 40px;
+        }
+        table>thead>tr>th{
+            font-size: 17px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table>tbody>tr>td {
+            font-size: 18px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+
+<h3>主机为：{{ ip }}</h3>
+<div class="row">
+    <div class="col-md-12">
+        <table id="table-program" class="table table-striped table-hover table-bordered table-condensed" style="text-align: center;vertical-align: middle; height: 300px">
+            <thead>
+                <tr>
+                    <th colspan="6">JAVA进程</th>
+                    <th colspan="3">Python进程</th>
+                    <th>Redis进程</th>
+                    <th colspan="2">Other进程</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>auth</td>
+                    <td>path</td>
+                    <td>insights</td>
+                    <td>thoslide</td>
+                    <td>config</td>
+                    <td>registry</td>
+    
+                    <td>tensorflow_model_server</td>
+                    <td>save_log</td>
+                    <td>celery</td>
+    
+                    <td>redis</td>
+    
+                    <td>nginx</td>
+                    <td>mysql</td>
+                </tr>
+                <tr>
+    
+                    {% for i in result.isalive %}
+                    {% if i == '0' %} 
+                        <td><a class="btn btn-danger btn-sm btn-log-info" data-id=id href="javascript:void(0)" ><b>查看日志</b></a></td>
+                     {% else %} 
+                        <td><a class="btn btn-success btn-sm btn-program" href="javascript:void(0)"><b>进程存在</b></a></td>
+                     {% endif %} 
+                     {% endfor %} 
+                </tr>
+    
+                <tr>
+                     {% for _ in result.isalive %} 
+                    <td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>
+                     {%  endfor %} 
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+</div>
+
+<div class="modal fade dialog-detail-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">进程信息</h4>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" rows="10" style="resize: none">tail -f 100 服务名</textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+        <div id="main_1" style="width: 100%;height: 330px;"></div>
+
+        <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('main_1'));
+            option_1 = {
+                title : {
+                    text : 'CPU使用率'
+                },
+            series : [
+                {
+                    name : 'CPU使用率',
+                    type : 'gauge',
+                    detail : {formatter:'{value}%'},
+                    data : [{value: 0}]
+                }
+            ]
+        };
+
+        option_1.series[0].data[0].value = {{ result.cpu_use }};
+        myChart.setOption(option_1);
+
+        </script>
+        </div>
+
+        <div class="col-md-7">
+        <table id="table-program" class="table table-striped table-hover table-bordered table-condensed" style="text-align: center;height: 388px ">
+                <thead>
+                    <tr>
+                        <th>显卡编号</th>
+                        <th>185 使用者（显存使用率）</th>
+                        <th>189 使用者（显存使用率）</th>
+                        <th>191 使用者（显存使用率）</th>
+                        <th>192 使用者（显存使用率）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in gpu %} 
+                    <tr>
+                        <td>显卡 {{ i.0 }}</td>
+                        {% if i.1.0 == '没人(0%)' %} 
+                            <td><a class="btn btn-danger btn-sm btn-log-info" href="javascript:void(0)" ><b>没人用显卡</b></a></td>
+                        {% else %} 
+                        <td>{{ i.1.0 }}</td>
+                        {% endif %} 
+
+                        {% if i.1.1 == '没人(0%)' %} 
+                        <td><a class="btn btn-danger btn-sm btn-log-info" href="javascript:void(0)" ><b>没人用显卡</b></a></td>
+                        {% else %} 
+                        <td>{{ i.1.1 }}</td>
+                        {% endif %}
+
+                        {% if i.1.2 == '没人(0%)' %} 
+                        <td><a class="btn btn-danger btn-sm btn-log-info" href="javascript:void(0)" ><b>没人用显卡</b></a></td>
+                        {% else %} 
+                        <td>{{ i.1.2 }}</td>
+                        {% endif %} 
+
+                        {% if i.1.3 == '没人(0%)' %} 
+                        <td><a class="btn btn-danger btn-sm btn-log-info" href="javascript:void(0)" ><b>没人用显卡</b></a></td>
+                        {% else %} 
+                        <td>{{ i.1.3 }}</td>
+                        {% endif %}  
+                    </tr>
+                     {% endfor %} 
+                </tbody>
+        </table>
+        </div>
+
+        <div class="col-md-3">
+            <table class="table table-striped table-hover table-bordered table-condensed">
+                <tbody >
+                    <tr>
+                        <td>内存available</td>
+                        <td>{{ result.mem_free }}MB</td>
+                    </tr>
+
+                    <tr>
+                        <td>网络信息</td>
+                        <td>{{ result.network }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>系统盘<br/>读速率</td>
+                        <td>{{ result.disk_read }}Mb/s</td>
+                    </tr>
+
+                    <tr>
+                        <td>系统盘<br/>写速率</td>
+                        <td>{{ result.disk_write }}Mb/s</td>
+                    </tr>
+
+                    <tr>
+                        <td>今日<br/>上传数</td>
+                        <td>{{ result.upload_success }}张</td>
+                    </tr>
+
+                    <tr>
+                        <td>今日<br/>预测成功</td>
+                        <td>{{ result.yuce_success }}张</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+<div class="row">
+    <div class="col-md-12">
+        <div id="main_3" style="width: 100%; height:600px ;"></div>    
+    </div>
+</div>
+<script type="text/javascript">
+var myChart_1 = echarts.init(document.getElementById('main_3'));
+option_2 = {
+    title: {
+        text: '内存使用率'
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['auth','path','insights','thoslide','config','registry','tensorflow_model_server','save_log','celery','redis','nginx','mysql']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['周一','周二','周三','周四','周五','周六','周日']
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+        {
+            name:'auth',
+            type:'line',
+            stack: '总量',
+            data:[120, 132, 101, 134, 90, 230, 210]
+        },
+        {
+            name:'path',
+            type:'line',
+            stack: '总量',
+            data:[220, 182, 191, 234, 290, 330, 310]
+        },
+        {
+            name:'insights',
+            type:'line',
+            stack: '总量',
+            data:[150, 232, 201, 154, 190, 330, 410]
+        },
+        {
+            name:'thoslide',
+            type:'line',
+            stack: '总量',
+            data:[320, 332, 301, 334, 390, 330, 320]
+        },
+        {
+            name:'config',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        },
+        {
+            name:'registry',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        },
+        {
+            name:'tensorflow_model_server',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        },
+        {
+            name:'save_log',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        },
+        {
+            name:'celery',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        },
+        {
+            name:'redis',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        },
+        {
+            name:'mysql',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        }
+    ]
+};
+myChart_1.setOption(option_2);
+
+</script>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="main_4" style="width: 100%;height: 600px;"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+var myChart_2 = echarts.init(document.getElementById('main_4'));
+option_3 = {
+    title: {
+        text: '折线图堆叠'
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    toolbox: {
+        feature: {
+            saveAsImage: {}
+        }
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['周一','周二','周三','周四','周五','周六','周日']
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+        {
+            name:'邮件营销',
+            type:'line',
+            stack: '总量',
+            data:[120, 132, 101, 134, 90, 230, 210]
+        },
+        {
+            name:'联盟广告',
+            type:'line',
+            stack: '总量',
+            data:[220, 182, 191, 234, 290, 330, 310]
+        },
+        {
+            name:'视频广告',
+            type:'line',
+            stack: '总量',
+            data:[150, 232, 201, 154, 190, 330, 410]
+        },
+        {
+            name:'直接访问',
+            type:'line',
+            stack: '总量',
+            data:[320, 332, 301, 334, 390, 330, 320]
+        },
+        {
+            name:'搜索引擎',
+            type:'line',
+            stack: '总量',
+            data:[820, 932, 901, 934, 1290, 1330, 1320]
+        }
+    ]
+};
+myChart_2.setOption(option_3);
+
+</script>
+
+
+
+</div>
+
+<script  src="{% static 'jquery/jquery.min.js' %}"></script>
+<script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+<script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+<script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
+<script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('#table-program').on('click', '.btn-log-info', function() {
+    // {#var id = jQuery(this).attr('data-id');#}
+    // {#{'id' : id}#}
+    // {#    jQuery.get("{% url 'asset:get_allinfo_ajax' %}", function(result) {#}
+    // {#        console.log(result)#}
+            jQuery('.dialog-detail-info').modal('show');
+    });
+});
+
+function myrefresh(){ 
+window.location.reload(); 
+} 
+setTimeout('myrefresh()',300000);  
+</script>
+
+
+</body>
+</html>

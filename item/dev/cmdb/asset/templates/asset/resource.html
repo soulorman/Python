@@ -1,0 +1,544 @@
+{% load static %} 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>监控页面</title>
+
+    <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+
+    <style type="text/css">
+        .container-fluid{
+            width: 100%;
+        }
+        .row{
+            margin-bottom: 40px;
+        }
+        table>thead>tr>th{
+            font-size: 17px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table>tbody>tr>td {
+            font-size: 18px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+        .th_error {
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            padding:10px;
+            font-size: 18px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <h2 id="ip" ></h2>
+    <h5 style="color:#FF0000" id="error_info"></h5>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table id="table-program" class="table table-striped table-hover table-bordered table-condensed" style="text-align: center;vertical-align: middle; height: 300px">
+                <thead>
+                    <tr>
+                        <th colspan="6">JAVA进程</th>
+                        <th colspan="3">Python进程</th>
+                        <th>Redis进程</th>
+                        <th colspan="2">Other进程</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>auth</td>
+                        <td>path</td>
+                        <td>recovery</td>
+                        <td>thoslide</td>
+                        <td>config</td>
+                        <td>registry</td>
+        
+                        <td>tensorflow_model_server</td>
+                        <td>save_log</td>
+                        <td>celery</td>
+        
+                        <td>redis</td>
+        
+                        <td>nginx</td>
+                        <td>mysql</td>
+                    </tr>
+
+                    <tr id="tr_test">                        
+                    </tr>
+        
+                    <tr id="tr_restart">    
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-2">
+            <div id="main_cpu_total_use" style="width: auto;height: 388px;"></div>
+        </div>
+
+        <div class="col-md-7">
+            <table id="table-program" class="table table-striped table-hover table-bordered table-condensed" style="text-align: center;height: 388px ">
+                    <thead>
+                        <tr>
+                            <th>显卡编号</th>
+                            <th>185</th>
+                            <th>189</th>
+                            <th>191</th>
+                            <th>192</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_gpu">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-3">
+            <table class="table table-striped table-hover table-bordered table-condensed">
+                <tbody id="tbody_other">
+                </tbody>
+            </table>
+        </div>
+ 
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped table-hover table-bordered table-condensed" style="text-align: center">
+                    <thead>
+                        <tr>
+                            <th>今日上传数</th>
+                            <th>总上传数</th>
+                            <th>今日预测数</th>
+                            <th>总预测成功</th>
+                            <th>今日复原成功</th>
+                            <th>总复原成功</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="tr_yuce">
+                        </tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>    
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="main_mem_use" style="width: auto; height:600px;"></div>    
+        </div>
+    </div>    
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="main_cpu_use" style="width: auto;height: 600px;"></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="{% static 'incubator-echarts-4.1.0/dist/echarts.min.js' %}"></script> 
+<script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
+
+
+<script type="text/javascript">
+    var myChart_cpu_total_use = echarts.init(document.getElementById('main_cpu_total_use'));
+    var myChart_mem_use = echarts.init(document.getElementById('main_mem_use'));
+    var myChart_cpu_use = echarts.init(document.getElementById('main_cpu_use'));
+
+    option_cpu_total_use = {
+        title : {
+            text : 'CPU使用率'
+        },
+        series : [
+            {
+                name : 'CPU使用率',
+                type : 'gauge',
+                detail : {formatter:'{value}%'},
+                data : [{value: 0}]
+            }
+        ]
+    };
+
+    option_mem_use = {
+        title: {
+            text: '内存使用率'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data:[]
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        },
+        yAxis: [
+            {
+                name : '百分比',
+                type: 'value',
+                axisLabel : {
+                formatter : '{value}%'
+                }
+            }
+        ],
+        series: []
+        };
+
+        option_cpu_use = {
+            title: {
+                text: 'CPU使用率'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:[]
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: []
+            },
+            yAxis:  [
+                {
+                    name : '百分比',
+                    type: 'value',
+                    axisLabel : {
+                    formatter : '{value}%'
+                    }
+                }
+            ],
+            series: []
+        };
+
+
+function reload_table_program(ip){
+    jQuery.get("{% url 'asset:table_ajax' %}", {'ip' : ip}, function(ms) {
+        if(ms['code'] == 200){
+            var str = ""
+            var str_1 = ""
+            var pro_end = ms.result
+            for (i in pro_end){
+                str_1 += 
+                '<td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>'
+                if(pro_end[i] == '0'){
+                    str += 
+                '<td><a class="btn btn-danger btn-sm btn-program-log" data-id='+ i +' href="http://192.168.31.107:5601" target="_blank"" ><b>查看日志</b></a></td>'
+                } else{
+                    str += 
+                '<td><a class="btn btn-success btn-sm" href="javascript:void(0)"><b>我还活着</b></a></td>'
+                }
+            }
+            $('#tr_test').html(str)
+            $('#tr_restart').html(str_1)
+        } else if(result['code'] == 400){
+            var errors = []
+            jQuery.each(result['errors'], function(k, v){
+              errors.push(v)
+        });
+            swal("数据获取失败:", errors.join('\n'), "error");
+        } else if(result['code'] == 403){
+        swal({
+            title: "未登录",
+            text: "",
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+    } 
+    }, 'json');
+
+}
+
+
+function reload_cpu_total_use(ip){
+      jQuery.get("{% url 'asset:cpu_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+        if(result['code'] == 200) {
+            option_cpu_total_use.series[0].data[0].value = result['result'];
+            myChart_cpu_total_use.setOption(option_cpu_total_use);
+            }
+        }, 'json');
+    }
+
+
+function reload_mem_use(ip){
+      jQuery.get("{% url 'asset:pmem_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+        if(result['code'] == 200) {
+
+            option_mem_use.legend.data = result['result']['legend']
+            option_mem_use.xAxis.data = result['result']['xAxis']
+            option_mem_use.series = result['result']['series']
+
+            myChart_mem_use.setOption(option_mem_use);
+
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+
+function reload_cpu_use(ip){
+      jQuery.get("{% url 'asset:pcpu_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+        if(result['code'] == 200) {
+
+            option_cpu_use.legend.data = result['result']['legend']
+            option_cpu_use.xAxis.data = result['result']['xAxis']
+            option_cpu_use.series = result['result']['series']
+            myChart_cpu_use.setOption(option_cpu_use);
+
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+
+function reload_other(ip){
+      jQuery.get("{% url 'asset:other_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(result) {
+        if(result['code'] == 200) {
+            var str = ""
+            str += 
+            '<tr><td>内存(available)</td><td>' + result['result']['mem_free'] + 'MB</td></tr>' 
+            +
+            '<tr><td>系统盘<br/>读速率</td><td>' + result['result']['disk_read'] + 'KB/s</td></tr>' 
+            +
+            '<tr><td>系统盘<br/>写速率</td><td>' + result['result']['disk_write'] + 'KB/s</td></tr>' 
+            +
+            '<tr><td>网络上传</td><td>' + result['result']['network_upload'] + 'KB/s</td></tr>' 
+            +
+            '<tr><td>网络下载</td><td>' + result['result']['network_download'] + 'KB/s</td></tr>' 
+            +
+            '<tr><td>存储情况</td><td>' + result['result']['volume'] + '</td></tr>' 
+
+            $('#tbody_other').html(str)
+ 
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+
+function reload_gpu(ip){
+      jQuery.get("{% url 'asset:gpu_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(ms) {
+        if(ms['code'] == 200) {
+            var str = ""
+            for (i in ms['result']){
+                    str += '<tr><td>' + [i]
+
+                for (y in ms['result'][i]){
+                    if(ms['result'][i][y] == 'liucanc+'){
+
+                    str += 
+                    '<td><b>刘灿城</b></td>'
+                    } else if(ms['result'][i][y] == 'root'){
+                    str += 
+                    '<td><b>刘灿城</b></td>'
+
+                    }else if (ms['result'][i][y] == '1'){
+
+                    str +=
+                    '<td><b>顾健白</b></td>'
+                    } else if (ms['result'][i][y] == 'sunzhuo'){
+
+                    str +=
+                    '<td><b>孙卓</b></td>'
+                    } else if (ms['result'][i][y] == 'swang'){ 
+
+                    str +=
+                    '<td><b>王书浩</b></td>'
+                    } else {
+
+                    str +=
+                    '<td><a class="btn btn-danger btn-sm" href="javascript:void(0)"><b>没有人使用</b></a></td>'
+                    }
+                }
+            }
+            
+            $('#tbody_gpu').html(str)
+
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+
+function reload_yuce(ip){
+      jQuery.get("{% url 'asset:gpu_yuce' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(ms) {
+        if(ms['code'] == 200) {
+            var str = ""
+            for (i in ms['result']){
+                    str += '<td>' + ms['result'][i] + '</td>'
+            }
+            
+            $('#tr_yuce').html(str)
+
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+
+function reload_error_info(ip){
+      jQuery.get("{% url 'asset:error_info_ajax' %}", {'ip' : ip, '_':(new Date()).getTime()}, function(ms) {
+        if(ms['code'] == 200) {
+            if (ms['result'] != ''){
+                var str = "<table border=1><tr><th class='th_error'></th><th class='th_error'>错误内容</th><th class='th_error'></th></tr>"
+                for (i in ms['result']){
+                    str += '<tr>'
+                    for (j in ms['result'][i]){
+                        str += '<td style="text-align:center;vertical-align:middle;padding:10px">' + ms['result'][i][j] +'</td>'
+                    }
+                    str += '</tr>'
+                }
+                str += '</table>'
+            }
+            
+            $('#error_info').html(str)
+
+            } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+            });
+                swal("获取数据失败:", errors.join('\n'), "error");
+            } else if(result['code'] == 403){
+            swal({
+                title: "未登录",
+                text: "",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        }, 'json');
+    }
+
+function reload(ip){
+    reload_table_program(ip);
+    reload_cpu_total_use(ip);
+    reload_mem_use(ip);
+    reload_cpu_use(ip);
+    reload_other(ip)
+    reload_gpu(ip)
+    reload_yuce(ip)
+    reload_error_info(ip)
+}
+
+    jQuery(document).ready(function() {
+        //切出ip
+        var ip = window.location.search.substring(1).split("&")[0].split("=")[1]
+        jQuery('#ip').html('主机名: ' + ip); 
+
+        reload(ip);
+        setInterval(function(){
+               reload(ip);
+        },30000);
+
+    });
+
+</script>
+</body>
+</html>

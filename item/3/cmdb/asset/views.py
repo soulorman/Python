@@ -410,7 +410,7 @@ def error_info_ajax(request):
 
     _ip = request.GET.get('ip', '')
     end_time = timezone.now()
-    start_time = end_time - timedelta(hours=1000)
+    start_time = end_time - timedelta(hours=24)
     try: 
         result = get_error_info(_ip,start_time)
         return JsonResponse({'code' : 200, 'result': result})
@@ -431,3 +431,4 @@ def asset_dev_ajax(request):
 
     result = [ wealth.as_dict() for wealth in Wealth.objects.all()]
     return JsonResponse({'code' : 200, 'result': result })
+

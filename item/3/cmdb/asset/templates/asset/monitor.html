@@ -27,13 +27,11 @@
             font-weight: bold;
             vertical-align: middle;
         }
-
     </style>
 </head>
 <body>
 
 <div class="container-fluid">
-
 <h3>主机为：{{ ip }}</h3>
 <div class="row">
     <div class="col-md-12">
@@ -69,16 +67,16 @@
                     {% for i in result.isalive %}
                     {% if i == '0' %} 
                         <td><a class="btn btn-danger btn-sm btn-log-info" data-id=id href="javascript:void(0)" ><b>查看日志</b></a></td>
-                     {% else %} 
+                    {% else %}
                         <td><a class="btn btn-success btn-sm btn-program" href="javascript:void(0)"><b>进程存在</b></a></td>
-                     {% endif %} 
-                     {% endfor %} 
+                    {% endif %}
+                    {% endfor %}
                 </tr>
     
                 <tr>
-                     {% for _ in result.isalive %} 
+                     {% for _ in result.isalive %}
                     <td><a href="http://192.168.31.102:12000/" target="_blank" ><b>重启服务</b></a></td>
-                     {%  endfor %} 
+                     {%  endfor %}
                 </tr>
             </tbody>
         </table>
@@ -135,7 +133,6 @@
                 <thead>
                     <tr>
                         <th>显卡编号</th>
-                        <th>185 使用者（显存使用率）</th>
                         <th>189 使用者（显存使用率）</th>
                         <th>191 使用者（显存使用率）</th>
                         <th>192 使用者（显存使用率）</th>
@@ -163,11 +160,6 @@
                         <td>{{ i.1.2 }}</td>
                         {% endif %} 
 
-                        {% if i.1.3 == '没人(0%)' %} 
-                        <td><a class="btn btn-danger btn-sm btn-log-info" href="javascript:void(0)" ><b>没人用显卡</b></a></td>
-                        {% else %} 
-                        <td>{{ i.1.3 }}</td>
-                        {% endif %}  
                     </tr>
                      {% endfor %} 
                 </tbody>
@@ -218,6 +210,7 @@
         <div id="main_3" style="width: 100%; height:600px ;"></div>    
     </div>
 </div>
+
 <script type="text/javascript">
 var myChart_1 = echarts.init(document.getElementById('main_3'));
 option_2 = {
@@ -328,13 +321,13 @@ myChart_1.setOption(option_2);
 var myChart_2 = echarts.init(document.getElementById('main_4'));
 option_3 = {
     title: {
-        text: '折线图堆叠'
+        text: 'CPU使用率'
     },
     tooltip: {
         trigger: 'axis'
     },
     legend: {
-        data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+        data:['auth','path','insights','thoslide','config','registry','tensorflow_model_server','save_log','celery','redis','nginx','mysql']
     },
     grid: {
         left: '3%',
@@ -389,18 +382,12 @@ option_3 = {
     ]
 };
 myChart_2.setOption(option_3);
-
 </script>
-
-
-
 </div>
 
 <script  src="{% static 'jquery/jquery.min.js' %}"></script>
 <script  src="{% static 'sweetalert-1.0.1/dist/sweetalert.min.js' %}"></script>
 <script  src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
-<script  src="{% static 'DataTables-1.10.15/media/js/jquery.dataTables.min.js' %}"></script>
-<script  src="{% static 'DataTables-1.10.15/media/js/dataTables.bootstrap.min.js' %}"></script>
 
 <script type="text/javascript">
 jQuery(document).ready(function() {

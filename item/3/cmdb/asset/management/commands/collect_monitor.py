@@ -15,31 +15,39 @@ from ansible.playbook.play import Play
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.plugins.callback import CallbackBase
 import ansible.constants as C
-from asset.models import Host
+from asset.models import Host,Resource,Host_All,Monitor
 
 class ResultCallback(CallbackBase):
+
+    def __init__(self):
+        super(ResultCallback, self).__init__()
+        self._cache_host = {}
+
     def v2_runner_on_ok(self, result, **kwargs):
         if result.task_name == 'collect_host':
-            self.collect_host(result._result)
+            facts = result._result.get('ansible_facts', {})
+            ip = facts.get('ansible_default_ipv4', {}).get('address', '')
+            self._cache_host[result._host.name] = ip
+        elif result.task_name == 'collect_monitor':
+            ip = self._cache_host.get(result._host.name)
+            monitor_info = eval(result._result.get('stdout_lines','')[0])
+            self.collect_monitor(ip,**monitor_info)
 
-    def collect_host(self, result):
-        facts = result.get('ansible_facts', {})
-        ip = facts.get('ansible_default_ipv4', {}).get('address', '')
-        name = facts.get('ansible_nodename', {})
-        mac = facts.get('ansible_default_ipv4', {}).get('macaddress', '')
-        os = facts.get('ansible_lsb', {}).get('description','')
 
-        kernel = facts.get('ansible_kernel', '')
-        cpu_core = facts.get('ansible_processor_cores', 0)
-        cpu_thread = facts.get('ansible_processor_vcpus', 0)
+    def collect_monitor(self, ip, **result):
+            self.ip =  ip
+            isalive = result.get('isalive','')
+            cpu = result.get('cpu','')
+            mem = result.get('mem','')
 
-        arch = facts.get('ansible_architecture', {})
-        mem = facts.get('ansible_memtotal_mb', {})
-        cpu = facts.get('ansible_processor_count', {})
-        disk = [ {'name' : i.get('device'), 'total' : int(i.get('size_total')) / 1024 / 1024 } for i in facts.get('ansible_mounts', []) ]
-
-        Host.create_or_replace(ip, name, mac, os, kernel, cpu_core, cpu_thread, arch, mem, cpu, json.dumps(disk))
-
+            cpu_use = result.get('cpu_use',0)
+            mem_free = result.get('mem_free',0)
+            disk_read = result.get('disk_read',0)
+            disk_write = result.get('sda_write',0)
+            upload_success = result.get('upload_success',0)
+            yuce_success = result.get('yuce_success',0)
+            network = result.get('network_info',[])
+            Monitor.create_or_replace(self.ip,isalive,cpu,mem,cpu_use,mem_free,disk_read,disk_write,upload_success,yuce_success,network)
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
@@ -51,6 +59,8 @@ class Command(BaseCommand):
         inventory = InventoryManager(loader=loader, sources=os.path.join(settings.BASE_DIR,'etc','hosts'))
         variable_manager = VariableManager(loader=loader, inventory=inventory)
 
+        path_resource = '/tmp/collect_cmdb_monitor.sh'
+
         play_source =  {
                 'name' : "cmdb",
                 'hosts' : 'all',
@@ -59,9 +69,17 @@ class Command(BaseCommand):
                     {
                       'name' : 'collect_host',
                       'setup' : ''
+                    },
+                    {
+                      'name' : 'copyfile',
+                      'copy' : 'src={0} dest={1} mode=700'.format(os.path.join(settings.BASE_DIR, 'etc', 'collect_monitor.sh'), path_resource)
+                    },
+                    {
+                      'name' : 'collect_monitor',
+                      'command' : '/bin/bash {0}'.format(path_resource)
                     }
               ]
-        }
+            }
 
         play = Play().load(play_source, variable_manager=variable_manager, loader=loader)
         tqm = None

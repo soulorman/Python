@@ -15,30 +15,23 @@ from ansible.playbook.play import Play
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.plugins.callback import CallbackBase
 import ansible.constants as C
-from asset.models import Host
+from asset.models import Host,Resource,Host_All,Monitor
 
 class ResultCallback(CallbackBase):
+
+    def __init__(self):
+        super(ResultCallback, self).__init__()
+        self._cache_host = {}
+
     def v2_runner_on_ok(self, result, **kwargs):
         if result.task_name == 'collect_host':
-            self.collect_host(result._result)
-
-    def collect_host(self, result):
-        facts = result.get('ansible_facts', {})
-        ip = facts.get('ansible_default_ipv4', {}).get('address', '')
-        name = facts.get('ansible_nodename', {})
-        mac = facts.get('ansible_default_ipv4', {}).get('macaddress', '')
-        os = facts.get('ansible_lsb', {}).get('description','')
-
-        kernel = facts.get('ansible_kernel', '')
-        cpu_core = facts.get('ansible_processor_cores', 0)
-        cpu_thread = facts.get('ansible_processor_vcpus', 0)
-
-        arch = facts.get('ansible_architecture', {})
-        mem = facts.get('ansible_memtotal_mb', {})
-        cpu = facts.get('ansible_processor_count', {})
-        disk = [ {'name' : i.get('device'), 'total' : int(i.get('size_total')) / 1024 / 1024 } for i in facts.get('ansible_mounts', []) ]
-
-        Host.create_or_replace(ip, name, mac, os, kernel, cpu_core, cpu_thread, arch, mem, cpu, json.dumps(disk))
+            facts = result._result.get('ansible_facts', {})
+            ip = facts.get('ansible_default_ipv4', {}).get('address', '')
+            self._cache_host[result._host.name] = ip
+        elif result.task_name == 'collect_monitor':
+            ip = self._cache_host.get(result._host.name)
+            gpu_info = eval(result._result.get('stdout_lines','')[0])
+            Resource.create_or_replace(ip,**gpu_info)
 
 
 class Command(BaseCommand):
@@ -51,6 +44,8 @@ class Command(BaseCommand):
         inventory = InventoryManager(loader=loader, sources=os.path.join(settings.BASE_DIR,'etc','hosts'))
         variable_manager = VariableManager(loader=loader, inventory=inventory)
 
+        path_resource = '/tmp/collect_cmdb_gpu.sh'
+
         play_source =  {
                 'name' : "cmdb",
                 'hosts' : 'all',
@@ -59,9 +54,17 @@ class Command(BaseCommand):
                     {
                       'name' : 'collect_host',
                       'setup' : ''
+                    },
+                    {
+                      'name' : 'copyfile',
+                      'copy' : 'src={0} dest={1} mode=700'.format(os.path.join(settings.BASE_DIR, 'etc', 'collect_gpu.sh'), path_resource)
+                    },
+                    {
+                      'name' : 'collect_monitor',
+                      'command' : '/bin/bash {0}'.format(path_resource)
                     }
               ]
-        }
+            }
 
         play = Play().load(play_source, variable_manager=variable_manager, loader=loader)
         tqm = None

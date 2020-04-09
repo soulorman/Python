@@ -1,369 +1,307 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}资源管理{% endblock %}
-{% block nav_asset_ops %}active{% endblock %}
-
-{% block style %}
-<style type="text/css">
-    #table_asset pre {
-        border : none !important;
-        background-color : transparent !important;
-        font-family: sans-serif;
-        font-size: 14px;
-    }
-</style>
-{% endblock %}
-
+{% block title %}资产管理{% endblock %}
+{% block nav_asset %}active{% endblock %}
 
 {% block container %}
-<div class="container" style="width: auto">
-    <table id="table_asset" class="table table-striped table-bordered table-hover table-condensed">
+<div class="container">
+    <table id="table-asset" class="table table-striped table-hover table-bordered table-condensed">
         <thead>
             <tr>
-                <th>主机名(IP)</th>
-                <th>操作系统(架构)</th>
-                <th>内核版本</th>
-                <th>CPU信息</th>
-                <th>内存信息</th>
-                <th>磁盘信息</th>
-                <th>显卡信息</th>
-                <th>最后更新时间</th>
-                <th>备注</th>
+                <th>名称(IP)</th>
+                <th>操作系统</th>
+                <th>架构</th>
+                <th>内存</th>
+                <th>cpu</th>
+                <th>磁盘</th>
+                <th>发现时间</th>
+                <th>最后一次发现时间</th>
                 <th>操作</th>
             </tr>
         </thead>
         <tbody>
         </tbody>
-    </table>
+</table>
 </div>
 {% endblock %}
 
-
 {% block dialog%}
-    <div class="modal fade" id=dialog-asset tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade dialog-detail-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">资源详细信息</h4>
+                    <h4 class="modal-title" id="myModalLabel">硬件资源详细信息</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal form-asset-info">
-                        {% csrf_token %}
+                    <form class="form-horizontal form-list-info">
                         <div class="form-group">
-                            <label class="control-label col-md-3">主机IP:</label>
+                            <label class="control-label col-md-3">主机名(IP)：</label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="ip" value="" readonly />
+                                <input type="text" class="form-control" name="host" value="" readonly />
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">主机名:</label>
+                            <label class="control-label col-md-3">管理者：</label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="name" value="" readonly />
+                                <input type="text" class="form-control" name="user" value="" readonly />
                             </div>
                         </div>
-
+                        
                         <div class="form-group">
-                            <label class="control-label col-md-3">MAC地址:</label>
+                            <label class="control-label col-md-3">MAC地址：</label>
                             <div class="col-md-8">
                                 <input type="text" class="form-control" name="mac" value="" readonly />
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">CPU信息:</label>
+                            <label class="control-label col-md-3">操作系统：</label>
                             <div class="col-md-8">
-                                <textarea rows="5" class="form-control" name="cpu" value="" style="resize: none" readonly /></textarea>
+                                <input type="text" class="form-control" name="os" value="" readonly />
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">主板信息:</label>
+                            <label class="control-label col-md-3">内核(架构)：</label>
                             <div class="col-md-8">
-                                <textarea  rows="2" class="form-control" name="mainboard" value="" style="resize: none"  readonly /></textarea>
+                                <input type="text" class="form-control" name="kernel" value="" readonly />
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">序列号:</label>
+                            <label class="control-label col-md-3">CPU个数：</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="cpu" value="" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">CPU类型：</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="cpu_type" value="" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">内存信息：</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="mem" value="" readonly  />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">主板信息：</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="mainboard" value="" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">主板序列号：</label>
                             <div class="col-md-8">
                                 <input type="text" class="form-control" name="serial" value="" readonly />
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">分区信息:</label>
+                            <label class="control-label col-md-3">根的总大小：</label>
                             <div class="col-md-8">
-                                <textarea class="form-control" rows="8" name="partitions"  value="" style="resize: none" readonly ></textarea>
+                                <input type="text" class="form-control" name="rootinfo"  value="" readonly ></input>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">GPU信息：</label>
+                            <div class="col-md-8">
+                                <textarea class="form-control" rows="5" name="gpu" value="" style="resize: none" readonly ></textarea>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">网卡设备信息:</label>
+                            <label class="control-label col-md-3">网络信息：</label>
                             <div class="col-md-8">
-                                <textarea class="form-control" rows="2"  name="network"  value="" style="resize: none" readonly ></textarea>
+                                <textarea class="form-control" rows="5"  name="network"  value="" style="resize: none" readonly ></textarea>
+
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">时间信息:</label>
+                            <label class="control-label col-md-3">硬盘信息：</label>
                             <div class="col-md-8">
-                                <textarea class="form-control" rows="2"  name="time"  value="" style="resize: none" readonly ></textarea>
+                                <textarea class="form-control" rows="5"  name="disk"  value="" style="resize: none" readonly ></textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">数据盘信息：</label>
+                            <div class="col-md-8">
+                                <textarea class="form-control" rows="5"  name="datainfo"  value="" style="resize: none" readonly ></textarea>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3">管理者(可更改):</label>
+                            <label class="control-label col-md-3">备注: </label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="user" value="" />
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="control-label col-md-3">备注(可更改):</label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" name="remark"  value="" />
+                                <textarea class="form-control" rows="5"  name="remark"  value="" style="resize: none"></textarea>
                             </div>
                         </div>
                     </form>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-success btn-asset-save">保存</button>
               </div>
             </div>
           </div>
         </div>
 {% endblock %}
 
+{% block script %}
+<script type="text/javascript" src="{% static 'incubator-echarts-4.1.0/dist/echarts.min.js' %}"></script>
+{% endblock %}
 
 {% block js %}
-var table = jQuery('#table_asset').DataTable({
-    "language": {
-      "processing": "处理中...",
-      "lengthMenu": "显示 _MENU_ 项结果",
-      "zeroRecords": "没有匹配结果",
-      "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-      "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
-      "infoFiltered": "(由 _MAX_ 项结果过滤)",
-      "infoPostFix": "",
-      "search": "搜索:",
-      "searchPlaceholder": "搜索...",
-      "url": "",
-      "emptyTable": "表中数据为空",
-      "loadingRecords": "载入中...",
-      "infoThousands": ",",
-      "paginate": {
-        "first": "首页",
-        "previous": "上页",
-        "next": "下页",
-        "last": "末页"
-      },
-      "aria": {
-        paginate: {
-            first: '首页',
-            previous: '上页',
-            next: '下页',
-            last: '末页'
-        },
-        "sortAscending": ": 以升序排列此列",
-        "sortDescending": ": 以降序排列此列"
-      },
-      "decimal": "-",
-      "thousands": "."
-      },
-      ajax : {
-            url : '{% url 'asset:list_ajax' %}',
-            dataSrc: 'result',
-      },
-      columns : [
-        {
-            "data" : function(row, type, set, meta){
-                return '<pre>' + row['name'] + '\n' + row['ip'] + '</pre>';
-            }
-
-        },
-        {
-            "data" : function(row, type, set, meta){
-                return '<pre>' + row['os'] + '\n' + row['arch'] + '</pre>'; 
-            }
-        },
-        {"data" : function(row, type, set, meta){
-                return '<pre>' + row['kernel'] + '</pre>'; 
-            }
-        },   
-        {
-            "data" : function(row, type, set, meta){
-                return '<pre>'+'颗       数: '+row['cpu_number']+"\n核       数: "+row['cpu_core']+'\n逻辑核数: '+row['cpu_vcore']+'</pre>';
-            }
-        },
-        {"data" : "mem_info"},
-        {"data": function(row, type, set, meta){
-                return '<pre>' + row['disk_info'] + '</pre>'; 
-            }
-        },
-        {"data": function(row, type, set, meta){
-                return '<pre>' + row['gpu_info'] + '</pre>'; 
-            }
-
-        },
-        {"data" : function(row, type, set, meta){
-                return '<pre>' + row['update_time'] + '</pre>'; 
-            }
-        },
-        {"data" : function(row, type, set, meta){
-                return '<pre>' + row['remark'] + '</pre>'; 
-            }
-        },
-        {
-            "data" : function(row){
-              return '<pre><a class="btn btn-sm btn-success btn-info-asset" date-id="' + row['id'] + '" href="javascript:void(0);">查看详细信息</a></pre>'
-              + 
-              '<pre><a class="btn btn-sm btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删除目标主机</a></pre>'
-              + 
-              '<pre><a class="btn btn-sm btn-warning" target="_blank" href="{% url 'asset:resource' %}?ip=' + row['ip'] + '" >查看监控资源</a></pre>';
-            }
-        }
-      ]
-});
-
-
-jQuery('#table_asset').on('click','.btn-info-asset', function(){
-    var id = jQuery(this).attr('date-id');
-    var form = jQuery('.form-asset-info');
-    jQuery.get("{% url 'asset:get_ajax' %}", {'id' : id}, function(result) {
-    if(result['code'] == 200) {
-        form.find('[name=ip]').val(result['result']['ip'] );
-        form.find('[name=name]').val(result['result']['name']);
-        form.find('[name=user]').val(result['result']['user']);
-        form.find('[name=mac]').val(result['result']['mac']);
-        form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
-
-        form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
-        
-        form.find('[name=serial]').val(result['result']['serial']);
-        form.find('[name=network]').val(result['result']['network']);
-        //form.find('[name=partitions]').html(JSON.stringify(result['result']['partitions'], '', '5'));
-        form.find('[name=partitions]').val(result['result']['partitions']);
-        form.find('[name=time]').val('发现时间: ' + result['result']['discover_time']+'\n更新时间: '+result['result']['update_time']);
-        form.find('[name=remark]').val(result['result']['remark']);
-
-        jQuery('#dialog-asset').modal({
-            show: true,
-            backdrop: false,
-            keyboard: false
+var table = jQuery('#table-asset').DataTable({
+        "language": {
+            "processing": "处理中...",
+            "lengthMenu": "显示 _MENU_ 项结果",
+            "zeroRecords": "没有匹配结果",
+            "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+            "infoFiltered": "(由 _MAX_ 项结果过滤)",
+            "infoPostFix": "",
+            "search": "搜索:",
+            "searchPlaceholder": "搜索...",
+            "url": "",
+            "emptyTable": "表中数据为空",
+            "loadingRecords": "载入中...",
+            "infoThousands": ",",
+            "paginate": {
+              "first": "首页",
+              "previous": "上页",
+              "next": "下页",
+              "last": "末页"
+            },
+            "aria": {
+              paginate: {
+                  first: '首页',
+                  previous: '上页',
+                  next: '下页',
+                  last: '末页'
+              },
+              "sortAscending": ": 以升序排列此列",
+              "sortDescending": ": 以降序排列此列"
+            },
+            "decimal": "-",
+            "thousands": "."
+            },
+            ajax : {
+                url : '{% url "asset:list_ajax" %}',
+                dataSrc : 'result',
+            },
+            columns : [
+                {
+                    "data" : function(row, type, set, meta){
+                    return row['name'] +  '(' + row['ip'] + ')'
+                    }
+                },
+                {"data" : 'os'},
+                {"data" : 'arch'},
+                {"data" : 'mem'},
+                {"data" : 'cpu'},
+                {"data" : 'disk',
+                 "render": function ( data, type, row ) {
+                    return '<pre>'+ data +'</pre>';
+                }
+                },
+                {"data" : 'created_time'},
+                {"data" : 'last_time'},
+                {"data" : function(row){
+                    return '<a  class="btn btn-info btn-xs btn-list-info"  data-id="' + row['id'] + '" href="javascript:void(0)">查看详细硬件信息</a> ' +
+                           ' <a  class="btn btn-danger btn-xs btn-delete-asset"  data-id="' + row['id'] + '" href="javascript:void(0)">删除目标主机</a> ' +
+                           ' <a  href="{% url 'asset:monitor' %}?IP=' + row['ip'] + '&ID=' + row['id']+' " target="_blank" class="btn btn-warning btn-xs btn-monitor-asset">查看监控资源</a> ';
+                }
+                }
+            ]
         });
 
-    }  else if(result['code'] == 400){
-                var errors = []
-                jQuery.each(result['errors'], function(k, v){
-                  errors.push(v)
-            });
-                swal("删除失败:", errors.join('\n'), "error");
-            } else if(result['code'] == 403){
-      swal({
-          title: "未登录",
-          text: "",
-          timer: 2000,
-          showConfirmButton: false
-      });
-    }
-    }, 'json');
-});
-
-
- jQuery('.btn-asset-save').on('click', function() {
-          var form = jQuery('.form-asset-info').serializeArray();
-          jQuery.post("{% url 'asset:edit_ajax' %}", form, function(result) {
-            if(result['code'] == 200) {
-              swal({
-                title: "更新成功",
-                text: "",
-                type: "success",
-                closeOnConfirm: false
-                }, function(){
-                    jQuery('#dialog-asset').modal('hide');
-                    swal.close();
-                    window.location.reload()
-                });
-            } else if(result['code'] == 400) {
-              var errors = [];
-              jQuery.each(result['errors'], function(k, v){
-                 errors.push(v)
-              });
-                swal("更新失败:", errors.join('\n'), "error");
-                form.find('[name=ip]').val(result['result']['ip'] );
-                form.find('[name=name]').val(result['result']['name']);
-                form.find('[name=user]').val(result['result']['user']);
-                form.find('[name=mac]').val(result['result']['mac']);
-                form.find('[name=cpu]').val('CPU数       量: ' + result['result']['cpu_number'] + '颗\nCPU核       数: ' + result['result']['cpu_core'] + '\nCPU逻辑核数: ' + result['result']['cpu_vcore'] + '\nCPU型号:\n' + result['result']['cpu_name'])
-                form.find('[name=mainboard]').val('生产厂商：' + result['result']['server_producter'] + '\n版本信息：' + result['result']['server_name']);
-                form.find('[name=serial]').val(result['result']['serial']);
-                form.find('[name=network]').val(result['result']['network']);
-                form.find('[name=partitions]').val(result['result']['partitions']);
-                form.find('[name=time]').val('发现时间: ' + result['result']['discover_time']+'\n更新时间: '+result['result']['update_time']);
-                form.find('[name=remark]').val(result['result']['remark']);
-            }  else if(result['code'] == 400){
-                var errors = []
-                jQuery.each(result['errors'], function(k, v){
-                  errors.push(v)
-            });
-                swal("删除失败:", errors.join('\n'), "error");
-            } else if(result['code'] == 403){
-              swal({
-                  title: "未登录",
-                  text: "",
-                  timer: 2000,
-                  showConfirmButton: false
-              });
-            }
-          }, 'json')
-        });
-
-jQuery('#table_asset').on('click','.btn-delete-asset', function(){
-    var id = jQuery(this).attr('date-id');
+//删除事件
+jQuery('#table-asset').on('click', '.btn-delete-asset', function() {
     swal({
-        title: "确认删除吗？",
-        text: "",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: "确定删除！", 
-        cancelButtonText: "取消删除！",
-        closeOnConfirm: false, 
-        closeOnCancel: true
-    },function() {
-        jQuery.get("{% url 'asset:delete_ajax' %}", {'id' : id}, function(result) {
-            if(result['code'] == 200){
-                swal({
-                  title: "删除成功",
-                  text: "",
-                  type: "success",
-                  closeOnConfirm: false
-                }, function(){
-                    swal.close();
-                    table.ajax.reload(null, false);
+            title: "确定删除目标主机吗？", 
+            text: "", 
+            type: "warning",
+            showCancelButton: true, 
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定删除！", 
+            cancelButtonText: "取消删除！",
+            closeOnConfirm: false, 
+            closeOnCancel: true  
+    },
+    function(){
+        jQuery.get('{% url "asset:delete_ajax" %}', {'id':id}, function(result){
+            if(result['code'] == 200) {
+                swal({ 
+                    title: "删除成功", 
+                    text: "", 
+                    type: "success",
+                    showCancelButton: false, 
+                    confirmButtonText: "确定", 
+                    closeOnConfirm: false
+            },
+            function(){
+                table.ajax.reload(null, false);
+                swal.close();
             });
-            } else if(result['code'] == 400){
-                var errors = []
-                jQuery.each(result['errors'], function(k, v){
-                  errors.push(v)
-            });
-                swal("删除失败:", errors.join('\n'), "error");
-            } else if(result['code'] == 403){
-            swal({
-                title: "未登录",
-                text: "",
-                timer: 2000,
-                showConfirmButton: false
-            });
-    }
-        }, 'json')
-    });
+        }
+ 
+        },'json');
+  });
+ 
 });
 
 
+jQuery('#table-asset').on('click', '.btn-list-info', function() {
+    var id = jQuery(this).attr('data-id');
+    var form = jQuery('.form-list-info');
+    jQuery.get("{% url 'asset:get_allinfo_ajax' %}", {'id' : id}, function(result){
+        if(result['code'] == 200) {
+            form.find('[name=host]').val(result['result']['name'] + ' (' + result['result']['ip'] + ')');
+            form.find('[name=user]').val(result['result']['user']);
+
+            form.find('[name=mac]').val(result['result']['mac']);
+            form.find('[name=os]').val(result['result']['os']);
+            form.find('[name=kernel]').val(result['result']['kernel'] + ' ( ' + result['result']['arch'] + ' )');
+
+            form.find('[name=cpu]').val(result['result']['cpu'] + ' 颗CPU; 每颗 ' + result['result']['cpu_core'] + ' 核; 一共 ' + result['result']['cpu_thread'] + ' 线程');
+            form.find('[name=cpu_type]').val(result['result']['cpu_type']);
+
+            form.find('[name=mem]').val(result['result']['mem'] + ' Mb； ' + result['result']['mem_slot'] + '个插槽, 最大扩展容量:' + result['result']['mem_scalable'] + ' Gb');
+            form.find('[name=mainboard]').val('生产厂商: ' + result['result']['server_producter'] + ';  主板类型: ' + result['result']['server_type']);
+            form.find('[name=serial]').val(result['result']['server_number']);
+
+            form.find('[name=gpu]').val(result['result']['gpu_info']);
+
+            form.find('[name=network]').val(result['result']['network']);
+
+            form.find('[name=disk]').val(result['result']['disk']);
+
+            form.find('[name=rootinfo]').val(result['result']['root']);
+
+            form.find('[name=datainfo]').val(result['result']['data']);
+
+            form.find('[name=remark]').val(result['result']['remark']);
+
+            jQuery('.dialog-detail-info').modal({
+                show: true,
+
+            });
+            }
+});
+});
 
 
 {% endblock %}

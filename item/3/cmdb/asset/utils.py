@@ -45,6 +45,4 @@ def compose_up(id):
             'deploy_version' : deploy.deploy_version,
             'update_time' : deploy.update_time,
             'remark' : deploy.remark,
-        }
-
-    return result
+        

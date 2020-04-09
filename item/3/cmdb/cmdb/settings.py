@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME' : 'cmdb',
-        'HOST' : '192.168.31.103',
+        'HOST' : '172.17.0.2',
         'PORT' : 3306,
         'USER' : 'root',
         'PASSWORD' : '123456',
@@ -90,19 +90,7 @@ DATABASES = {
         'OPTIONS' : {
             'init_command' : "SET sql_mode='STRICT_TRANS_TABLES'"
         }
-    },
-    'db2': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME' : 'cmdb',
-        'HOST' : '192.168.31.103',
-        'PORT' : 13306,
-        'USER' : 'root',
-        'PASSWORD' : '123456',
-        'CHARSET' : 'utf8',
-        'OPTIONS' : {
-            'init_command' : "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
-    }
+     }
 }
 
 

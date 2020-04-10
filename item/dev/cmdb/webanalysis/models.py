@@ -1,5 +1,4 @@
 # encoding: utf-8
-
 from django.db import models, connection
 
 class AccessLogFile(models.Model):
@@ -20,6 +19,11 @@ class AccessLog(models.Model):
 
     @classmethod
     def dist_status_code(cls, file_id):
+        """扇形图数据处理
+
+        :param: file_id: 文件的id号
+        :return: x，y轴的信息
+        """
         cursor = connection.cursor()
         cursor.execute(
             '''
@@ -41,6 +45,11 @@ class AccessLog(models.Model):
 
     @classmethod
     def tren_visit(cls, file_id):
+        """柱状图数据处理
+
+        :param: file_id: 文件的id号
+        :return: x，y轴的信息
+        """
         cursor = connection.cursor()
         cursor.execute(
             '''

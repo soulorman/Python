@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
 from utils.signutils import get_sign
-from asset.models import Host, Host_All, Resource
+from asset.models import Host, Host_More, Monitor_Resource
 
 # 继承view的类
 class APIView(View):
@@ -94,7 +94,7 @@ class ClientView(APIView):
                                         _Json.get('get_gpu_info', '无')
                                     )
 
-        host_all = Host_All.create_or_replace( 
+        Host_More.create_or_replace( 
                                         _ip, \
                                         _Json.get('mac', ''), \
                                         _Json.get('cpu_name', ''), \
@@ -138,8 +138,7 @@ class ResourceView(APIView):
     def post(self, request, *args, **kwargs):
         _ip = kwargs.get('ip', '')
         _Json = self.get_json()
-        
-        Resource.create_or_replace(
+        Monitor_Resource.create_or_replace(
                                 _ip, \
                                 _Json.get('process_isalive', ''), \
                                 _Json.get('process_cpu_use', ''), \
@@ -150,7 +149,7 @@ class ResourceView(APIView):
                                 _Json.get('disk_write', 0), \
                                 _Json.get('network_upload', 0), \
                                 _Json.get('network_download', 0), \
-                                _Json.get('volume', ''),
+                                _Json.get('volume', '[]'),
                             )
 
         return self.response()

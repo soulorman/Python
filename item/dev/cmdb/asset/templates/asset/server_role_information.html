@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}资源列表{% endblock %}
+{% block nav_asset_dev %}active{% endblock %}
+
+{% block container %}
+<div class="container">
+ 
+    <table id="server_role_information_table" class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+            <tr>
+                <th>主机所在地</th>
+                <th>IP地址(主机名称)</th>
+                <th>服务器角色</th>
+                <th>更新时间</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+{% block js %}
+var table = jQuery('#server_role_information_table').DataTable({
+    "language": {
+      "processing": "处理中...",
+      "lengthMenu": "显示 _MENU_ 项结果",
+      "zeroRecords": "没有匹配结果",
+      "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+      "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+      "infoFiltered": "(由 _MAX_ 项结果过滤)",
+      "infoPostFix": "",
+      "search": "搜索:",
+      "searchPlaceholder": "搜索...",
+      "url": "",
+      "emptyTable": "表中数据为空",
+      "loadingRecords": "载入中...",
+      "infoThousands": ",",
+      "paginate": {
+        "first": "首页",
+        "previous": "上页",
+        "next": "下页",
+        "last": "末页"
+      },
+      "aria": {
+        paginate: {
+            first: '首页',
+            previous: '上页',
+            next: '下页',
+            last: '末页'
+        },
+        "sortAscending": ": 以升序排列此列",
+        "sortDescending": ": 以降序排列此列"
+      },
+      "decimal": "-",
+      "thousands": "."
+      },
+      ajax : {
+            url : '{% url 'asset:server_role_information_ajax' %}',
+            dataSrc: 'result',
+      },
+      columns : [
+        {
+            "data" : function(row, type, set, meta){
+                return  row['host_address'];
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return row['ip'] + '(' + row['name'] + ')';
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return row['service_role'] ;
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return  row['update_time'] ;
+            }
+
+        },
+        {
+            "data" : function(row, type, set, meta){
+                return  row['remark'] ;
+            }
+
+        }
+      ]
+});
+
+
+{% endblock %}

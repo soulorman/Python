@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}资源管理{% endblock %}
-{% block nav_asset_ops %}active{% endblock %}
+{% block nav_asset %}active{% endblock %}
 
 {% block style %}
 <style type="text/css">
@@ -130,7 +130,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-success btn-asset-save">保存</button>
+                <button type="button" class="btn btn-success btn-more-asset-edit-save">保存</button>
               </div>
             </div>
           </div>
@@ -198,7 +198,10 @@ var table = jQuery('#table_asset').DataTable({
                 return '<pre>'+'颗       数: '+row['cpu_number']+"\n核       数: "+row['cpu_core']+'\n逻辑核数: '+row['cpu_vcore']+'</pre>';
             }
         },
-        {"data" : "mem_info"},
+        {"data": function(row, type, set, meta){
+                return '<pre>' + row['mem_info'] + '</pre>'; 
+            }
+        },
         {"data": function(row, type, set, meta){
                 return '<pre>' + row['disk_info'] + '</pre>'; 
             }
@@ -218,18 +221,18 @@ var table = jQuery('#table_asset').DataTable({
         },
         {
             "data" : function(row){
-              return '<pre><a class="btn btn-sm btn-success btn-info-asset" date-id="' + row['id'] + '" href="javascript:void(0);">查看详细信息</a></pre>'
+              return '<a class="btn btn-xs btn-success btn-more-asset" date-id="' + row['id'] + '" href="javascript:void(0);">查看详细信息</a>'
               + 
-              '<pre><a class="btn btn-sm btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删除目标主机</a></pre>'
+              '<a class="btn btn-xs btn-danger btn-delete-asset" date-id="' + row['id'] + '" href="javascript:void(0);">删除目标主机</a>'
               + 
-              '<pre><a class="btn btn-sm btn-warning" target="_blank" href="{% url 'asset:resource' %}?ip=' + row['ip'] + '" >查看监控资源</a></pre>';
+              '<a class="btn btn-xs btn-warning" target="_blank" href="{% url 'asset:monitor' %}?ip=' + row['ip'] + '" >查看监控资源</a>';
             }
         }
       ]
 });
 
 
-jQuery('#table_asset').on('click','.btn-info-asset', function(){
+jQuery('#table_asset').on('click','.btn-more-asset', function(){
     var id = jQuery(this).attr('date-id');
     var form = jQuery('.form-asset-info');
     jQuery.get("{% url 'asset:get_ajax' %}", {'id' : id}, function(result) {
@@ -260,7 +263,7 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
                 jQuery.each(result['errors'], function(k, v){
                   errors.push(v)
             });
-                swal("删除失败:", errors.join('\n'), "error");
+                swal("展示失败:", errors.join('\n'), "error");
             } else if(result['code'] == 403){
       swal({
           title: "未登录",
@@ -273,9 +276,9 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
 });
 
 
- jQuery('.btn-asset-save').on('click', function() {
+ jQuery('.btn-more-asset-edit-save').on('click', function() {
           var form = jQuery('.form-asset-info').serializeArray();
-          jQuery.post("{% url 'asset:edit_ajax' %}", form, function(result) {
+          jQuery.post("{% url 'asset:edit_save_ajax' %}", form, function(result) {
             if(result['code'] == 200) {
               swal({
                 title: "更新成功",
@@ -309,7 +312,7 @@ jQuery('#table_asset').on('click','.btn-info-asset', function(){
                 jQuery.each(result['errors'], function(k, v){
                   errors.push(v)
             });
-                swal("删除失败:", errors.join('\n'), "error");
+                swal("更新失败:", errors.join('\n'), "error");
             } else if(result['code'] == 403){
               swal({
                   title: "未登录",
@@ -362,8 +365,6 @@ jQuery('#table_asset').on('click','.btn-delete-asset', function(){
         }, 'json')
     });
 });
-
-
 
 
 {% endblock %}

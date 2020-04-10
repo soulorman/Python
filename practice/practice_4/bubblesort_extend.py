@@ -34,3 +34,6 @@ print(bubble_sort(TEST_LIST, key1))
 
 TEST_TUL = [(1, 2), (5, 6), (0, 1)]
 print(bubble_sort(TEST_TUL, key2))
+
+TEST_DICT = [{'name': 'wangyuxi','age':12},{'name': 'wangyu','age':80},{'name': 'wangxi','age':2}]
+print(bubble_sort(TEST_DICT, key3))

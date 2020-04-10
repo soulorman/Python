@@ -37,7 +37,7 @@
                             <span class="caret"></span>
                         </a>
                     <ul id="menu2" class="dropdown-menu" aria-labelledby="drop2">
-                        <li class="{% block nav_asset_dev %}{% endblock %}"><a href="{% url 'asset:resource_other' %}">资源管理</a></li>
+                        <li class="{% block nav_asset_dev %}{% endblock %}"><a href="{% url 'asset:server_role_information' %}">资源管理</a></li>
                         <li class="{% block nav_webanalysis_dev %}{% endblock %}"><a href="http://192.168.31.107:5601" target="_blank">日志管理</a></li>
                         <li role="separator" class="divider"></li>
                         <li class="{% block nav_bushu %}{% endblock %}"><a href="http://192.168.31.102:12000" target="_blank" >软件部署管理</a></li>
@@ -50,7 +50,7 @@
                             <span class="caret"></span>
                         </a>
                     <ul id="menu2" class="dropdown-menu" aria-labelledby="drop2">
-                        <li class="{% block nav_asset_math %}{% endblock %}"><a href="{% url 'asset:resource_other' %}">资源管理</a></li>
+                        <li class="{% block nav_asset_math %}{% endblock %}"><a href="{% url 'asset:server_role_information' %}">资源管理</a></li>
                         <li class="{% block nav_user_math %}{% endblock %}"><a href="http://192.168.31.107:5601" target="_blank">日志管理</a></li>
                         <li role="separator" class="divider"></li>
                         <li class="{% block nav_ceshi %}{% endblock %}"><a href="">测试管理</a></li>
@@ -63,7 +63,7 @@
                             <span class="caret"></span>
                         </a>
                     <ul id="menu3" class="dropdown-menu" aria-labelledby="drop4">
-                        <li class="{% block nav_asset_ops %}{% endblock %}"><a href="{% url 'asset:index' %}">资源管理</a></li>
+                        <li class="{% block nav_asset %}{% endblock %}"><a href="{% url 'asset:index' %}">所有服务器软/硬件资源管理</a></li>
                         <li class="{% block nav_log_analysis %}{% endblock %}"><a href="{% url 'webanalysis:index' %}" >日志文件上传并分析</a></li>
                         <li class="{% block nav_deploy %}{% endblock %}"><a href="{% url 'asset:deploy' %}">医院线上项目部署记录</a></li>
                     </ul>

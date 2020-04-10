@@ -39,7 +39,7 @@ def get_disk_write():
 def get_volume():
     return subprocess.getoutput("df -Th|grep data|awk '{print $NF\":\"$5}'").split("\n")
 
-
+# 注意网卡的情况
 def get_network_upload():
     bytes_rcvd = subprocess.getoutput("sar -n DEV 1 1|egrep 'enp'|grep 'Ave*'|awk '{print $5}'")
 #   net = psutil.net_io_counters()

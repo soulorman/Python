@@ -16,5 +16,5 @@ def bubble_sort(arr: list) -> list:
     return arr
 
 
-TEST_LIST = [1, 3, 2]
+TEST_LIST = [1, 5,2,0,3]
 print(bubble_sort(TEST_LIST))

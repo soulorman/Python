@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
 from utils.signutils import get_sign
-from asset.models import Host, Host_All, Resource
+from asset.models import Host, Host_More, Monitor_Resource
 
 class APIView(View):
 
@@ -118,7 +118,7 @@ class ResourceView(APIView):
         _ip = kwargs.get('ip', '')
         _Json = self.get_json()
 
-        Resource.create_obj(
+        Monitor_Resource.create_obj(
                                 _ip, \
                                 _Json.get('cpu', ''), \
                                 _Json.get('mem', '')

@@ -10,33 +10,30 @@ urlpatterns = [
     path('list/ajax', views.list_ajax, name='list_ajax'),
     path('delete/ajax', views.delete_ajax, name='delete_ajax'),
     path('get/ajax', views.get_ajax, name='get_ajax'),
-    path('edit/ajax', views.edit_ajax, name='edit_ajax'),
-    path('resource/ajax', views.resource_ajax, name='resource_ajax'),
-    # 跳转资源页面
-    path('resource/', views.resource, name='resource'),
-    path('other/ajax', views.other_ajax, name='other_ajax'),
+    path('edit_save/ajax', views.edit_save_ajax, name='edit_save_ajax'),
+
+    #动态监控的跳转页面
     path('monitor/', views.monitor, name="monitor"),
-    
-    path('deploy/ajax', views.deploy, name='deploy'),
-    path('resource_other/ajax', views.resource_other, name='resource_other'),
-
-    # 部署资源跳转
-    path('info/ajax', views.info_up_ajax, name='info_up_ajax'),
-    path('get_up/ajax', views.get_up_ajax, name='get_up_ajax'),
-    path('edit_up/ajax', views.edit_up_ajax, name='edit_up_ajax'),
-    path('delete_up/ajax', views.delete_up_ajax, name='delete_up_ajax'),
-    path('create_up/ajax', views.create_up_ajax, name="create_up_ajax"),
-
-    
-    path('error_info/ajax', views.error_info_ajax, name="error_info_ajax"),
-
-    path('asset_dev/ajax', views.asset_dev_ajax, name="asset_dev_ajax"),
-
-    # path('log/ajax', views.log_ajax, name='log_ajax'),
+    path('table/ajax', views.table_ajax, name='table_ajax'),
     path('cpu/ajax', views.cpu_ajax, name='cpu_ajax'),
+    path('other/ajax', views.other_ajax, name='other_ajax'),
     path('pmem/ajax', views.pmem_ajax, name='pmem_ajax'),
     path('pcpu/ajax', views.pcpu_ajax, name='pcpu_ajax'),
-    path('table/ajax', views.table_ajax, name='table_ajax'),
-    path('gpu/ajax', views.gpu_ajax, name='gpu_ajax'),
     path('yuce/ajax', views.gpu_yuce, name='gpu_yuce'),
+    path('gpu/ajax', views.gpu_ajax, name='gpu_ajax'),
+
+    # 部署资源的跳转
+    path('deploy/ajax', views.deploy, name='deploy'),
+    path('info_deploy/ajax', views.info_deploy_ajax, name='info_deploy_ajax'),
+    path('get_deploy/ajax', views.get_deploy_ajax, name='get_deploy_ajax'),
+    path('edit_save_deploy/ajax', views.edit_save_deploy_ajax, name='edit_save_deploy_ajax'),
+    path('delete_deploy_info/ajax', views.delete_deploy_info_ajax, name='delete_deploy_info_ajax'),
+    path('create_deploy/ajax', views.create_deploy_ajax, name="create_deploy_ajax"),
+
+    # 服务器角色信息
+    path('server_role_information', views.server_role_information, name='server_role_information'),
+    path('server_role_information/ajax', views.server_role_information_ajax, name="server_role_information_ajax"),
+
+    #报警
+    path('error_info/ajax', views.error_info_ajax, name="error_info_ajax"),
 ]

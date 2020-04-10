@@ -1,12 +1,9 @@
 # 查询sql
 # encoding: utf-8
-
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-
-from .models import Host, Host_All, Resource, Gpu, Deploy
-
+from .models import Monitor_Resource
 
 error_dict = {
                 'mem_error':'内存可使用资源不足',
@@ -33,6 +30,11 @@ legend = [
 ]
 
 def get_info(info):
+    """定制邮件格式
+
+    :param info:邮件内容
+    :return: 格式化的邮件内容
+    """  
     email = '<table border="1" cellspacing="0" cellpadding="0"><tr><th>报错的原因</th><th>具体报错的内容</th><th>发生错误的时间</th></tr>'
     for i in info:
         email += '<tr>'
@@ -44,6 +46,11 @@ def get_info(info):
     return email
 
 def send_mail(email_content):
+    """发送邮件
+
+    :param email_content： 邮件内容
+    :return: 无
+    """  
     mail_host="smtp.exmail.qq.com"
     mail_user="watchdog@thorough.ai"
     mail_pass="Xueqing1101"
@@ -67,14 +74,20 @@ def send_mail(email_content):
 
 
 def get_error_info(address_ip, start_time):
-    mem_error = Resource.objects.filter(ip=address_ip, mem_free__lte=2000, created_time__gte=start_time).values('mem_free','created_time').last()
-    cpu_error = Resource.objects.filter(ip=address_ip, cpu_total_use__gte=85, created_time__gte=start_time).values('cpu_total_use','created_time').last()
+    """发现错误就发邮件
+
+    :param address_ip：报警的服务器的ip
+    :param start_time：判断时间
+    :return: 报警结果
+    """  
+    mem_error = Monitor_Resource.objects.filter(ip=address_ip, mem_free__lte=2000, created_time__gte=start_time).values('mem_free','created_time').last()
+    cpu_error = Monitor_Resource.objects.filter(ip=address_ip, cpu_total_use__gte=85, created_time__gte=start_time).values('cpu_total_use','created_time').last()
     
-    disk_error = Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('volume','created_time').last()
-    process_error = Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('process_isalive','created_time').last()
+    disk_error = Monitor_Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('volume','created_time').last()
+    process_error = Monitor_Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('process_isalive','created_time').last()
     
-    process_error_mem = Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('process_mem_use','created_time').last()
-    process_error_cpu = Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('process_cpu_use','created_time').last()
+    process_error_mem = Monitor_Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('process_mem_use','created_time').last()
+    process_error_cpu = Monitor_Resource.objects.filter(ip=address_ip, created_time__gte=start_time).values('process_cpu_use','created_time').last()
 
     # 此处适合用class类来解决
     result = []

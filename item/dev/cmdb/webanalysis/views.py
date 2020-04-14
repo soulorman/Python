@@ -1,26 +1,14 @@
 # encoding: utf-8
-
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse
 from django.conf import settings
 from django.http import JsonResponse
 
 from .models import AccessLogFile, AccessLog
+from utils.login_auth import login_required
 
-from functools import wraps
 import os
 import time
 import json
-
-
-def login_required(func):
-    @wraps(func)
-    def wrapper(request, *args, **kwargs):
-        if request.session.get('user') is None:
-            if request.is_ajax():
-                return JsonResponse({'code':403,'result':[]})
-            return redirect('user:login')
-        return func(request, *args, **kwargs)
-    return wrapper
 
 
 @login_required

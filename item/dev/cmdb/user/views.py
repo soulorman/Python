@@ -3,8 +3,8 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 
 from .models import User
-from .validators import UserValiator, login_required
-
+from .validators import UserValiator
+from utils.login_auth import login_required
 
 @login_required
 def index(request):

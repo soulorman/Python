@@ -1,10 +1,7 @@
 # encoding: utf-8
-from django.shortcuts import redirect
-from django.http import JsonResponse
 from django.utils import timezone
 
 from .models import User
-from functools import wraps
 import hashlib
 
 def encrypt_password(password: str) -> str:
@@ -21,23 +18,6 @@ def encrypt_password(password: str) -> str:
     md5.update(password)
     
     return md5.hexdigest()
-
-
-def login_required(func):
-    """验证的装饰器
-    
-    缓存没有用户，而且没ajax的返回登录页面，缓存有ajax的返回403
-    :param :func 不知道
-    :return: 验证结果
-    """
-    @wraps(func)
-    def wrapper(request, *args, **kwargs):
-        if request.session.get('user') is None:
-            if request.is_ajax():
-                return JsonResponse({'code':403,'result':[]})
-            return redirect('user:login')
-        return func(request, *args, **kwargs)
-    return wrapper
 
 
 class ValidatorUtils(object):

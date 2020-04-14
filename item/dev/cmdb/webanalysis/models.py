@@ -1,5 +1,6 @@
 # encoding: utf-8
-from django.db import models, connection
+from django.db import connection, models
+
 
 class AccessLogFile(models.Model):
     name = models.CharField(max_length=128, null=False, default='')

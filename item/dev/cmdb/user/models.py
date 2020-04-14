@@ -15,11 +15,9 @@ class User(models.Model):
         :param self:传入对象
         :return: 返回字典
         """
-        return {
-            'id' : self.id,
-            'name' : self.name,
-            'age' :  self.age,
-            'tel' : self.tel,
-            'sex' : self.sex,
-            'password' : self.password
-        }
+        rt = {}
+        for k, v in self.__dict__.items():
+            if isinstance(v, (int, float, bool, str,datetime.datetime)):
+                rt[k] = v
+
+        return rt

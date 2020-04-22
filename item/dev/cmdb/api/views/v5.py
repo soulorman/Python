@@ -106,7 +106,8 @@ class ClientView(APIView):
                                         _Json.get('arch', ''), \
                                         _Json.get('get_mem_info', '[]'), \
                                         _Json.get('disk_info', '{}'), \
-                                        _Json.get('get_gpu_info', '无')
+                                        _Json.get('get_gpu_info', '无'),
+                                        _Json.get('project', ''),
                                     )
 
         Host_more = Host_More.create_or_replace( 
@@ -163,7 +164,7 @@ class ClientView(APIView):
         return self.response(code=404)
 
 
-class ResourceView(APIView):
+class MonitorView(APIView):
 
     def post(self, request, *args, **kwargs):
         """获取post的内容

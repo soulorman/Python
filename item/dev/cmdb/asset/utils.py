@@ -25,14 +25,14 @@ def compose(id):
             'server_name' : host_more.server_name,
             'server_producter' : host_more.server_producter,
             'serial' : host_more.serial,
-            'network' : host_more.network[1:-1],
-            'partitions' : host_more.partitions[1:-1],
+            'network' : host_more.network,
+            'partitions' : host_more.partitions,
             'discover_time' : host.discover_time,
             'update_time' : host.update_time,
             'user' : host_more.user,
             'remark' : host.remark,
         }
-
+    print(type(result))
     return result
 
 

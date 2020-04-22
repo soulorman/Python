@@ -4,9 +4,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
-    <link rel="icon" href="{%static 'favicon.ico' %}">
     <title>用户登录</title>
-
     <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link type="text/css" href="{% static 'user/login.css' %}" rel="stylesheet">
   </head>
@@ -15,22 +13,18 @@
     <div class="container">
       <form class="form-signin" action="{% url 'backend:login' %}" method="POST">
         <h2 class="form-signin-heading">用户登录</h2>
-
         {% if errors %}
-        {% for key, error in errors.items %}
+            {% for key, error in errors.items %}
         <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endfor %}
+            {% endfor %}
         {% endif %}
         {% csrf_token %}
-
         <label for="inputname" class="sr-only">用户名</label>
         <input type="name" id="name" name="name" class="form-control" placeholder="用户名" value="{{ name }}" />
         <label for="inputPassword" class="sr-only">密码</label>
         <input type="password" name="password" class="form-control" placeholder="密码"/>
         <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
-
       </form>
     </div>
   </body>
 </html>
-

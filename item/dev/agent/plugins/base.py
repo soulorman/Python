@@ -7,6 +7,7 @@ import time
 logger = logging.getLogger(__name__)
 
 class BaseThread(Thread):
+    """各工作线程的基础线程，父类"""
 
     def __init__(self, type, interval, config):
         super(BaseThread, self).__init__()
@@ -19,11 +20,14 @@ class BaseThread(Thread):
         return None
 
     def run(self):
+        """运行收集日志，并写进队列"""
+        
         _type = self._type
         _interval = self._interval
         _config = self._config
 
-        _queue = getattr(_config, 'QUEUE')
+        #_queue = getattr(_config, 'QUEUE')
+        _queue = _config.QUEUE
         logger.info('plugin[ %s ] running ...', _type)
 
         while True:

@@ -1,12 +1,16 @@
 # encoding: utf-8
-
-from .models import User,encrypt_password
+from .models import User
 from django.utils import timezone
 
+from .utils import encrypt_password
+
+
 class ValidatorUtils(object):
+    """验证用户输入的年龄是否是整数"""
 
     @staticmethod
     def is_integer(value):
+        """验证整数类型"""
         try:
             int(value)
             return True
@@ -15,9 +19,16 @@ class ValidatorUtils(object):
 
 
 class UserValiator(object):
+    """用户验证模块"""
 
     @classmethod
     def valid_login(cls, name, password):
+        """用户登录认证用户名、密码和权限
+
+        :param name: 用户名
+        :param password: 密码
+        :return: 用户的对象或者报错信息
+        """
         user = None
         errors = {}
         try:
@@ -27,19 +38,24 @@ class UserValiator(object):
 
         if user is None:
             return None
-        
+
         password = encrypt_password(password)
         if user.password == password:
             if user.remark == '管理员':
                 return user, errors
             else:
-                errors['role'] = '权限不对'
+                errors['role'] = '拒绝访问'
 
         return None, errors
 
-
-    @classmethod 
+    @classmethod
     def valid_name_unique(cls, name, uid=None):
+        '''验证用户名的唯一性
+
+        :param name: 用户名
+        :param id: 编号
+        :return: 对比结果（反着的）
+        '''
         user = None
         try:
             user = User.objects.get(name=name)
@@ -51,9 +67,13 @@ class UserValiator(object):
         else:
             return str(user.id) == str(uid)
 
-
     @classmethod
     def valid_update(cls, params):
+        '''更新验证模块
+
+        :param params: 前端返回的数据
+        :return: 验证结果、用户对象、报错信息
+        '''
         is_valid = True
         errors = {}
         user = None
@@ -72,10 +92,9 @@ class UserValiator(object):
         elif not cls.valid_name_unique(name, user.id):
             is_valid = False
             errors['name'] = '用户名已存在'
-        
+
         else:
             user.name = name
-
 
         age = params.get('age', '0').strip()
         if not ValidatorUtils.is_integer(age):
@@ -90,15 +109,19 @@ class UserValiator(object):
 
         return is_valid, user, errors
 
-
-    @classmethod 
+    @classmethod
     def valid_create(cls, params):
+        '''注册用户名的验证
+
+        :param params: 前端返回的数据
+        :return: 验证结果、用户对象、报错信息
+        '''
         is_valid = True
         errors = {}
         user = User()
-        
+
         user.name = params.get('name', '').strip()
-        
+
         if user.name == '':
             is_valid = False
             errors['name'] = '用户名不能为空'
@@ -132,24 +155,33 @@ class UserValiator(object):
 
         return is_valid, user, errors
 
-
     @classmethod
     def valid_passwd(cls, password, uid=None):
+        """密码认证
+
+        :param password: 密码
+        :param uid: 用户id
+        :return: 密码对比结果
+        """
         user = None
         try:
             user = User.objects.get(pk=uid)
         except BaseException as e:
             pass
-        
+
         password = encrypt_password(password)
         if user is None or user.password != password:
             return True
         else:
             return str(user.id) != str(uid)
 
-
-    @classmethod 
+    @classmethod
     def valid_changepass(cls, params):
+        """新密码认证
+
+        :param params: 前端请求页面信息
+        :return: 验证结果、用户对象、报错信息
+        """
         is_valid = True
         errors = {}
         user = None

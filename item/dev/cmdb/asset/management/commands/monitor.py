@@ -19,7 +19,7 @@ class Command(BaseCommand):
         """
         while True:
             end_time = timezone.now()
-            start_time = end_time - timedelta(hours=24)
+            start_time = end_time - timedelta(minutes=3)
             info = Monitor_Resource.objects.values('ip').distinct()
             for i in info:
                 _ip = i['ip']
@@ -28,7 +28,7 @@ class Command(BaseCommand):
                 if error_info:
                     self.ding_push_message(error_info)
 
-            time.sleep(10)
+            time.sleep(60)
 
 
     def ding_push_message(self, err_info):

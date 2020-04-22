@@ -17,17 +17,21 @@ error_dict = {
 legend = [
     'auth',
     'path',
-    'recovery',
+    'insights',
     'thoslide',
     'config',
     'registry',
     'tensorflow_model_server',
     'save_log',
     'celery',
+    'plugin',
+    'FE',
     'redis',
     'nginx',
-    'mysql'
-]
+    'mongo',
+    'mysql',
+    'kafka',
+]   
 
 def get_info(info):
     """定制邮件格式
@@ -103,9 +107,15 @@ def get_error_info(address_ip, start_time):
                 result.append((error_dict['process_error'],legend[idx_process],process_error['created_time'].strftime('%Y-%m-%d_%H:%M:%S')))
             
     if disk_error:
-        for idx_disk,v_disk in enumerate(disk_error.get('volume',[]).replace(' ','').split(',')[:-1:]):
-            if float(v_disk.split(':')[1][:-2:]) <= 100:
-                result.append((error_dict['disk_error'],disk_error.get('volume',[]).replace(' ','').split(',')[:-1:][idx_disk],disk_error['created_time'].strftime('%Y-%m-%d_%H:%M:%S')))
+        list_info = eval(disk_error.get('volume',[]))
+        for disk_name,disk_volume in list_info.items():
+            if disk_volume >= 85:
+                disk_info = disk_name + ':' + str(disk_volume)+ '%'
+                result.append((error_dict['disk_error'],disk_info,disk_error['created_time'].strftime('%Y-%m-%d_%H:%M:%S')))
+
+        # for idx_disk,v_disk in enumerate(disk_error.get('volume',[]).replace(' ','').split(',')[:-1:]):
+        #     if float(v_disk.split(':')[1][:-2:]) <= 100:
+        #         result.append((error_dict['disk_error'],disk_error.get('volume',[]).replace(' ','').split(',')[:-1:][idx_disk],disk_error['created_time'].strftime('%Y-%m-%d_%H:%M:%S')))
 
     if process_error_cpu:
         for idx_process_cpu,v_process_cpu in enumerate(process_error_cpu.get('process_cpu_use',[]).replace(' ','').split(',')[:-1:]):
@@ -118,6 +128,7 @@ def get_error_info(address_ip, start_time):
                 result.append((error_dict['process_error_mem'],legend[idx_process_mem],str(process_error_mem.get('process_mem_use',[]).replace(' ','').split(',')[:-1:][idx_process_mem])+'%',process_error_mem['created_time'].strftime('%Y-%m-%d_%H:%M:%S')))
 
     if result:
+        result.insert(0,('报错主机IP地址',address_ip,''))
         send_mail(get_info(result))
 
     return  result

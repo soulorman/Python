@@ -27,17 +27,18 @@
 <h1 style='text-align: center'>{{ name }}的回溯面试题</h1>
     <div class="container">
         <h3>一、选择题</h3>
-            {% for k,v in option_dict.items %}
+            {% for k in option_dict %}
             <form>
             {% csrf_token %}
-                <p class="p1" >题目：{{ k }}</p>
-                <p class="p2" >面试者答案：{{ v }}</p>
+                <p class="p1" >题目：{{ k.0 }}</p>
+                <p class="p2" >面试者答案：{{ k.1 }}</p>
+                <p class="p2" >参考答案：{{ k.2 }}</p>
             {% endfor %}
         <h3>二、简答题</h3>
-        {% for k,v in short_dict.items %}
-                <p class="p1" >题目：{{ k }}</p>
-                <p class="p2" >面试者答案：{{ v }}</p>
-            </form>
-        {% endfor %}
+            {% for k in short_dict %}
+                <p class="p1" >题目：{{ k.0 }}</p>
+                <p class="p2" >面试者答案：{{ k.1 }}</p>
+                <p class="p2" >参考答案：{{ k.2 }}</p>
+            {% endfor %}
 </div>
 {% endblock %}

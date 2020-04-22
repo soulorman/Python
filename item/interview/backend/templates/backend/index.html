@@ -5,7 +5,6 @@
     <head>
         <meta charset="utf-8" />
         <title>面试系统后端系统</title>
-
         <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
         <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
         <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
@@ -71,14 +70,15 @@
                         </td>
                         <td>{{ user.remark }}</td>
                         <td>
-                            <a class="btn btn-xs btn-success btn-edit-user" date-id="{{ user.id }}" href="javascript:void(0);">编辑</a> 
+                            <a class="btn btn-xs btn-success btn-edit-user" date-id="{{ user.id }}" href="javascript:void(0);">编辑用户信息</a> 
                             {% if request.session.user.id != user.id %}
                             <a class="btn btn-xs btn-danger btn-delete-user" date-id="{{ user.id }}" href="javascript:void(0);">删除</a> 
                             {% endif %}
+                            <a class="btn btn-xs btn-success btn-changepass" date-id="{{ user.id }}"  href="javascript:void(0);">修改密码</a> 
                         </td>
                         <td>
-                            {% if request.session.user.id == user.id %}
-                            <a class="btn btn-xs btn-success btn-changepass" date-id="{{ user.id }}"  href="javascript:void(0);">修改密码</a> 
+                            {% if request.session.user.id != user.id %}
+                            <a class="btn btn-xs btn-success btn-flush-title" date-id="{{ user.id }}"  href="javascript:void(0);">刷新题库</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -509,8 +509,52 @@
           }, 'json')
           });
 
-                
+
+     jQuery('.btn-flush-title').on('click',  function() {
+          var id = jQuery(this).attr('date-id');
+          swal({
+            title: "确定刷新题库吗？",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定刷新！", 
+            cancelButtonText: "我点错了！",
+            closeOnConfirm: false, 
+            closeOnCancel: true
+          },
+          function() {
+            jQuery.get("{% url 'backend:flush_ajax' %}", {'id' : id}, function(result) {
+              if(result['code'] == 200){
+                swal({
+                  title: "刷新成功",
+                  text: "",
+                  type: "success",
+                  closeOnConfirm: false
+                }, function(){
+                    swal.close();
+                    window.location.reload()
                 });
+
+              } else if(result['code'] == 400){
+                var errors = []
+                jQuery.each(result['errors'], function(k, v){
+                  errors.push(v)
+                });
+                swal("刷新失败:", errors.join('\n'), "error");
+
+              } else if(result['code'] == 403){
+                swal({
+                    title: "未登录",
+                    text: "",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+              }
+            }, 'json')
+          });
+        });
+    });
         </script>
     </body>
 </html>

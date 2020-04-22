@@ -23,12 +23,13 @@ class Host(models.Model):
     gpu_info = models.CharField(max_length=512,null=False, default='')
     
     remark = models.TextField(null=False, default='')
+    project_name = models.CharField(max_length=64, null=False, default='ESD')
     discover_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(null=False)
 
 
     @classmethod
-    def create_or_replace(cls, ip, name, os, kernel, cpu_number, cpu_core, cpu_vcore, arch, mem_info, disk_info, gpu_info):
+    def create_or_replace(cls, ip, name, os, kernel, cpu_number, cpu_core, cpu_vcore, arch, mem_info, disk_info, gpu_info, project_name):
         """发现一台新主机
 
         :param ip: ip地址
@@ -63,6 +64,7 @@ class Host(models.Model):
         obj.mem_info = mem_info
         obj.disk_info = disk_info
         obj.gpu_info = gpu_info
+        obj.project_name = project_name
 
         obj.update_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
         obj.save()

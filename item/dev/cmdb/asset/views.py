@@ -43,12 +43,38 @@ def index(request):
 
 @login_required
 def list_ajax(request):
-    """跳转软/硬件资源的首页
+    """跳转软/硬件资源的首页,并处理数据，方便前端展示
 
     :param request:前端页面返回的请求内容
     :return: 资源首页
     """
-    result = [ host.as_dict() for host in Host.objects.all()]
+    try:
+        result = [ host.as_dict() for host in Host.objects.all()]
+        info_mem = eval(result[0]['mem_info'])
+        temp_mem = ''
+        for mem in info_mem:
+            temp_mem += mem + '<br />'
+        result[0]['mem_info'] = temp_mem
+
+        info_disk = eval(result[0]['disk_info'])
+        temp_disk = "磁盘名称\t磁盘总容量<br />"
+        for name,volume in info_disk.items():
+            temp_disk += name + '\t\t' + str(volume) + '<br />'
+        result[0]['disk_info'] = temp_disk
+
+        info_gpu = eval(result[0]['gpu_info'])
+        temp_gpu = ''
+        for gpu in info_gpu:
+            temp_gpu += gpu + '<br />'
+        result[0]['gpu_info'] = temp_gpu
+
+        info_remark = result[0]['remark']
+        if '无' == info_remark:
+            result[0]['remark'] = result[0]['project_name']
+
+    except BaseException as e:
+        print(e)
+    
     return JsonResponse({'code' : 200, 'result': result })
 
 
@@ -70,7 +96,7 @@ def delete_ajax(request):
 
 @login_required
 def get_ajax(request):
-    """获取编辑的主机信息
+    """获取编辑的主机信息,并处理数据，方便前端展示
 
     :param request:前端页面返回的请求内容
     :return: 更多的主机信息或者错误信息
@@ -78,6 +104,19 @@ def get_ajax(request):
     _id = request.GET.get('id', 0)
     try:
         result = compose(_id)
+        info_partitions = eval(result['partitions'])
+        temp_partitions = '分区名称   分区格式   总容量   挂载点<br />'
+        for partitions,v in info_partitions.items():
+            info = v.split(',')
+            temp_partitions += partitions +'   ' + info[0] + '   ' +info[1] +'   ' +info[2] +'<br />'
+        result['partitions'] = temp_partitions
+
+        info_network = eval(result['network'])
+        temp_network = '网卡名\tip地址<br />'
+        for network,ip in info_network.items():
+            temp_network += network +'\t' + ip +'<br />'
+        result['network'] = temp_network
+
         return JsonResponse({'code' : 200,'result': result  })
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400 ,'errors' : e})
@@ -118,13 +157,19 @@ def monitor(request):
     :param request:前端页面返回的请求内容
     :return: 监控页面和所有数据
     """
-    _ip = request.GET.get('ip', '')
+    _project = request.GET.get('project', 'insights')
+    _ip = request.GET.get('IP', '')
     try:
         result = Monitor_Resource.objects.filter(ip=_ip).order_by('-created_time')[0]
     except ObjectDoesNotExist as e:
         raise e
 
-    return render(request, 'asset/monitor.html', {'result':result.as_dict()})
+    if _project == 'ESD':
+        return render(request, 'asset/monitor_esd.html', {'result':result.as_dict()})
+    elif _project == 'insights':
+        return render(request, 'asset/monitor_insights.html', {'result':result.as_dict()})
+    elif _project == 'cervix':
+        return render(request, 'asset/monitor_cervix.html', {'result':result.as_dict()}) 
 
 
 @login_required
@@ -169,6 +214,12 @@ def other_ajax(request):
     _ip = request.GET.get('ip', '')
     try:
         result =  Monitor_Resource.objects.filter(ip=_ip).order_by('-created_time')[0]
+        info_volume = eval(result.volume)
+        temp_volume = '挂载点\t使用率<br />'
+        for point,volumes in info_volume.items():
+            temp_volume += point +'\t' + str(volumes) +'%<br />'
+        result.volume = temp_volume
+
         return JsonResponse({'code' : 200, 'result' : result.as_dict()})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})
@@ -184,20 +235,38 @@ def pmem_ajax(request):
     # 该逻辑设计个人感觉不好，待改进
     # 思路如下：首先，在这里定义所需要的进程名称。然后按序排好，在数据库，强行按照这个顺序依次存放数值
     # 如果添加进程，首先在这里添加进程，然后在列表后面必须按序添加信息
+    # legend = [
+    #     'auth',
+    #     'path',
+    #     'recovery',
+    #     'thoslide',
+    #     'config',
+    #     'registry',
+    #     'tensorflow_model_server',
+    #     'save_log',
+    #     'celery',
+    #     'redis',
+    #     'nginx',
+    #     'mysql'
+    # ]
     legend = [
         'auth',
         'path',
-        'recovery',
+        'insights',
         'thoslide',
         'config',
         'registry',
         'tensorflow_model_server',
         'save_log',
         'celery',
+        'plugin',
+        'FE',
         'redis',
         'nginx',
-        'mysql'
-    ]
+        'mongo',
+        'mysql',
+        'kafka',
+    ]   
     try:
         _ip = request.GET.get('ip', 0)
         end_time = timezone.now()
@@ -254,17 +323,21 @@ def pcpu_ajax(request):
     legend = [
         'auth',
         'path',
-        'recovery',
+        'insights',
         'thoslide',
         'config',
         'registry',
         'tensorflow_model_server',
         'save_log',
         'celery',
+        'plugin',
+        'FE',
         'redis',
         'nginx',
-        'mysql'
-    ]
+        'mongo',
+        'mysql',
+        'kafka',
+    ]   
     try:
         _ip = request.GET.get('ip', 0)
         end_time = timezone.now()

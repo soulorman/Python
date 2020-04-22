@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+# 希尔排序 时间复杂度O(n^1.3) 空间复杂度O(1) 不稳定
 def shellSort(arr: list) -> list:
     n = len(arr)
     gap = int(n/2) # gap间隔

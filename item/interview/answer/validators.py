@@ -1,13 +1,16 @@
 # encoding: utf-8
-
 from backend.models import User
-from .models import encrypt_password
+from .utils import encrypt_password
 from django.utils import timezone
 
+
 class ValidatorUtils(object):
+    """验证用户输入的年龄是否是整数"""
 
     @staticmethod
     def is_integer(value):
+        """验证整数类型"""
+
         try:
             int(value)
             return True
@@ -16,9 +19,16 @@ class ValidatorUtils(object):
 
 
 class UserValiator(object):
+    """用户验证模块"""
 
     @classmethod
     def valid_login(cls, name, password):
+        """用户登录认证用户名、密码和权限
+
+        :param name: 用户名
+        :param password: 密码
+        :return: 用户的对象或者报错信息
+        """        
         user = None
         try:
             user = User.objects.get(name=name)
@@ -37,6 +47,12 @@ class UserValiator(object):
 
     @classmethod 
     def valid_name_unique(cls, name, uid=None):
+        '''验证用户名的唯一性
+
+        :param name: 用户名
+        :param id: 编号
+        :return: 对比结果（反着的）
+        '''        
         user = None
         try:
             user = User.objects.get(name=name)
@@ -51,6 +67,11 @@ class UserValiator(object):
 
     @classmethod
     def valid_update(cls, params):
+        '''更新验证模块
+
+        :param params: 前端返回的数据
+        :return: 验证结果、用户对象、报错信息
+        '''       
         is_valid = True
         errors = {}
         user = None
@@ -90,6 +111,11 @@ class UserValiator(object):
 
     @classmethod 
     def valid_create(cls, params):
+        '''注册用户名的验证
+
+        :param params: 前端返回的数据
+        :return: 验证结果、用户对象、报错信息
+        '''       
         is_valid = True
         errors = {}
         user = User()
@@ -132,6 +158,12 @@ class UserValiator(object):
 
     @classmethod
     def valid_passwd(cls, password, uid=None):
+        """密码认证
+
+        :param password: 密码
+        :param uid: 用户id
+        :return: 密码对比结果
+        """        
         user = None
         try:
             user = User.objects.get(pk=uid)
@@ -147,6 +179,11 @@ class UserValiator(object):
 
     @classmethod 
     def valid_changepass(cls, params):
+        """新密码认证
+
+        :param params: 前端请求页面信息
+        :return: 验证结果、用户对象、报错信息
+        """
         is_valid = True
         errors = {}
         user = None

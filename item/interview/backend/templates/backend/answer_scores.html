@@ -5,7 +5,6 @@
     <head>
         <meta charset="utf-8" />
         <title>面试系统后端系统</title>
-
         <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
         <link type="text/css" href="{% static 'sweetalert-1.0.1/dist/sweetalert.css' %}" rel="stylesheet" />
         <link type="text/css" href="{% static 'DataTables-1.10.15/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
@@ -58,7 +57,6 @@
             <tbody>
                 
                 {% for res in result %}
-                
                     <tr>
                         <td>{{ res.name }}</td>
                         <td>{{ res.scores }}</td>
@@ -121,11 +119,6 @@
                           }
                   });   
              });
-
         </script>
     </body>
 </html>
-
-
-
-

@@ -48,30 +48,36 @@ def list_ajax(request):
     :param request:前端页面返回的请求内容
     :return: 资源首页
     """
-    try:
-        result = [ host.as_dict() for host in Host.objects.all()]
-        info_mem = eval(result[0]['mem_info'])
-        temp_mem = ''
-        for mem in info_mem:
-            temp_mem += mem + '<br />'
-        result[0]['mem_info'] = temp_mem
+    try:        
+        result = []
+        a = Host.objects.all()
+        for i in a:
+            info_mem = eval(i.mem_info)
+            temp_mem = ''
+            for index, mem in enumerate(info_mem):
+                temp_mem += str(index) + mem + '<br />'
+            i.mem_info = temp_mem
 
-        info_disk = eval(result[0]['disk_info'])
-        temp_disk = "磁盘名称\t磁盘总容量<br />"
-        for name,volume in info_disk.items():
-            temp_disk += name + '\t\t' + str(volume) + '<br />'
-        result[0]['disk_info'] = temp_disk
+            info_disk = eval(i.disk_info)
 
-        info_gpu = eval(result[0]['gpu_info'])
-        temp_gpu = ''
-        for gpu in info_gpu:
-            temp_gpu += gpu + '<br />'
-        result[0]['gpu_info'] = temp_gpu
+            temp_disk = "磁盘名称\t磁盘总容量<br />"
+            for name,volume in info_disk.items():
+                temp_disk += name + '\t\t' + str(volume) + '<br />'
+            i.disk_info = temp_disk
 
-        info_remark = result[0]['remark']
-        if '无' == info_remark:
-            result[0]['remark'] = result[0]['project_name']
+            if '无显卡' != i.gpu_info:
 
+                info_gpu = eval(i.gpu_info)
+                temp_gpu = ''
+                for gpu in info_gpu:
+                    temp_gpu += gpu + '<br />'
+                i.gpu_info = temp_gpu
+
+            info_remark = i.remark
+            if '无' == info_remark:
+                i.remark = i.project_name
+
+            result.append(i.as_dict())
     except BaseException as e:
         print(e)
     
@@ -108,11 +114,11 @@ def get_ajax(request):
         temp_partitions = '分区名称   分区格式   总容量   挂载点<br />'
         for partitions,v in info_partitions.items():
             info = v.split(',')
-            temp_partitions += partitions +'   ' + info[0] + '   ' +info[1] +'   ' +info[2] +'<br />'
+            temp_partitions += partitions +'   ' + info[0] + '     ' +info[1] +'     ' +info[2] +'<br />'
         result['partitions'] = temp_partitions
 
         info_network = eval(result['network'])
-        temp_network = '网卡名\tip地址<br />'
+        temp_network = '网卡名\t\tip地址<br />'
         for network,ip in info_network.items():
             temp_network += network +'\t' + ip +'<br />'
         result['network'] = temp_network
@@ -390,11 +396,24 @@ def gpu_ajax(request):
     :param request:前端页面返回的请求内容
     :return:gpu使用情况
     """
-    _ip = request.GET.get('ip', '')
-    end_time = timezone.now()
-    start_time = end_time - timedelta(minutes=1)
+    # _ip = request.GET.get('ip', '')
+    # end_time = timezone.now()
+    # start_time = end_time - timedelta(minutes=1)
+    # try:
+    #     #result = Gpu.objects.filter(ip=_ip, created_time__gte=start_time).order_by('-created_time')[0]
+    #     resource_all = Gpu.objects.all().values('ip','gpu_user_name').order_by('ip')
+    #     result = {}
+    #     for handle in resource_all:
+    #         handle['gpu_user_name'] = handle['gpu_user_name'].replace(' ','').split(',')[:-1:]
+
+    #         for txt in enumerate(handle['gpu_user_name']):
+    #             if txt[0] not in result:
+    #                 result[txt[0]] = []
+    #             result[txt[0]].append(txt[1])
+    #     return JsonResponse({'code' : 200, 'result' : result})
+    # except ObjectDoesNotExist as e:
+    #     return JsonResponse({'code' : 400, 'errors' : e})
     try:
-        #result = Gpu.objects.filter(ip=_ip, created_time__gte=start_time).order_by('-created_time')[0]
         resource_all = Gpu.objects.all().values('ip','gpu_user_name').order_by('ip')
         result = {}
         for handle in resource_all:
@@ -407,6 +426,7 @@ def gpu_ajax(request):
         return JsonResponse({'code' : 200, 'result' : result})
     except ObjectDoesNotExist as e:
         return JsonResponse({'code' : 400, 'errors' : e})
+
 
 
 # 部署项目展示代码段

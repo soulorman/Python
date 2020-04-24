@@ -32,7 +32,6 @@ def compose(id):
             'user' : host_more.user,
             'remark' : host.remark,
         }
-    print(type(result))
     return result
 
 

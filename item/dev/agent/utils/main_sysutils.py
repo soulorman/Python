@@ -35,11 +35,15 @@ def get_disk_info():
     return dict(zip(disk_name,disk_size))
 
 def get_mem_info():
-    return subprocess.getoutput("dmidecode -t memory|grep 'Size'|awk '{print $2$3$4}'").split('\n')
+    return subprocess.getoutput("dmidecode -t memory|grep 'Size'|awk '{print $2$3$4}'|grep -v 'No'").split('\n')
 
 def get_gpu_info():
-    return subprocess.getoutput("nvidia-smi -q|grep 'Product Name'|awk '{print $4\" \"$5\" \"$6}'").split('\n')
-
+    result =  subprocess.getoutput("nvidia-smi -q|grep 'Product Name'|awk '{print $4\" \"$5\" \"$6}'").split('\n')
+    if 'not found' in str(result):
+        return '无显卡'
+    else:
+        return result
+        
 if __name__ == '__main__':
     print(get_addr())
     print(get_hostname())

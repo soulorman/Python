@@ -41,7 +41,7 @@ def get_disk_write():
 
 def get_volume():
     """得到现在的data盘存储信息"""
-    data_numbers = subprocess.getoutput("df -Th|grep data|awk '{print $NF}'").split("\n")
+    data_numbers = subprocess.getoutput("df -Th|egrep -w 'data[0-9]|mfs'|awk '{print $NF}'").split("\n")
     volume_dict = {}
     for data_num in data_numbers:
         data_used = psutil.disk_usage(data_num).percent
@@ -52,7 +52,7 @@ def get_volume():
 
 # 注意网卡的情况
 def get_network_upload():
-    bytes_rcvd = subprocess.getoutput("sar -n DEV 1 1|egrep 'enp'|grep 'Ave*'|awk '{print $5}'")
+    bytes_rcvd = subprocess.getoutput("sar -n DEV 1 1|egrep 'enp3s0f0'|grep 'Ave*'|awk '{print $5}'")
 #   net = psutil.net_io_counters()
 #   bytes_sent = '{0:.2f} Mb'.format(net.bytes_recv // 1024 // 1024)
 #   bytes_rcvd = '{0:.2f} Mb'.format(net.bytes_sent // 1024 // 1024)
@@ -63,7 +63,7 @@ def get_network_upload():
 
 
 def get_network_download():
-    bytes_sent = subprocess.getoutput("sar -n DEV 1 1|egrep 'enp'|grep 'Ave*'|awk '{print $6}'")    
+    bytes_sent = subprocess.getoutput("sar -n DEV 1 1|egrep 'enp3s0f0'|grep 'Ave*'|awk '{print $6}'")    
     if bytes_sent:
         return bytes_sent
     else:

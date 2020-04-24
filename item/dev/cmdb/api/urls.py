@@ -25,4 +25,5 @@ urlpatterns = [
     path('v5/client/', v5.ClientView.as_view(), name='v5_client'),
     path('v5/client/<ip>/', v5.ClientView.as_view(), name='v5_client_key'),
     path('v5/client/<ip>/monitor/', v5.MonitorView.as_view(), name='v5_monitor'),
+    path('v5/client/<ip>/gpu/', v5.GpuView.as_view(), name='v5_gpu'),
 ]

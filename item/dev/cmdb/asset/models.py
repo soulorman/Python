@@ -269,13 +269,18 @@ class Gpu(models.Model):
         :param ip: ip地址
         :param gpu_user_name: 显卡使用者
         :return: gpu对象
-        """     
-        gpu = Gpu()
-        gpu.ip = ip
-        gpu.gpu_user_name = gpu_user_name
-        gpu.update_time = timezone.now()
-        gpu.save()
-        return gpu
+        """
+        obj = None
+        try:
+            obj = cls.objects.get(ip=ip)
+        except ObjectDoesNotExist as e:
+            obj = cls()
+            obj.ip = ip
+
+        obj.gpu_user_name = gpu_user_name
+        obj.update_time = timezone.now()
+        obj.save()
+        return obj
 
     def as_dict(self):
         """把对象转换为可序列化的dict

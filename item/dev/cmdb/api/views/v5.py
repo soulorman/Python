@@ -191,3 +191,24 @@ class MonitorView(APIView):
                             )
 
         return self.response(mon_res.as_dict())
+
+
+
+class GpuView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        """获取post的内容
+
+        :param request: 客户端发送的内容
+        :param args: 任意参数
+        :param kwargs: 任意关键字参数
+        :return: 内容、格式、错误信息
+        """
+        _ip = kwargs.get('ip', '')
+        _Json = self.get_json()
+        gpu = Gpu.create_or_replace(
+                                _ip, \
+                                _Json.get('gpu_user', ''), \
+                            )
+
+        return self.response(gpu.as_dict())

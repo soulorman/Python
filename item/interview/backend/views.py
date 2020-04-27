@@ -91,7 +91,7 @@ def edit_ajax(request):
         return JsonResponse({'code': 200})
     else:
         return JsonResponse(
-            {'code': 400, 'errors': errors, 'result': user.as_dict()})
+            {'code': 400, 'errors': errors, 'result': as_dict(user)})
 
 @login_required
 def get_ajax(request):

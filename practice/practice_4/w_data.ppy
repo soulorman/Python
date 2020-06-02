@@ -1,0 +1,14 @@
+import csv
+header = ['name','password','sex']
+
+data = [
+    ['abc','123','1'],
+    ['abc1','123','0'],
+    ['abc2','123','1'],
+
+]
+
+with open('res.csv','w', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerow(header)
+    writer.writerows(data)

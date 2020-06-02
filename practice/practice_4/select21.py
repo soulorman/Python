@@ -4,7 +4,7 @@ a = []
 for i in range(20):
     a.append(random.randint(1,200))
 
-def select(l):
+def select1(l):
     max = len(l)
     for i in range(max - 1):
         min_index = i

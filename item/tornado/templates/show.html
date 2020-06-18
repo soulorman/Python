@@ -1,0 +1,117 @@
+<!DOCTYPE>
+<head>
+    <link rel="stylesheet" href="./static/bootstrap.css">
+    <script src="./static/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">添加汽车</h3>
+                <h3 class="panel-title">当前登录用户为: {{ user }}</h3>
+                <h3 class="panel-title">点我退出登录</h3>
+            </div>
+        
+        <div class="panel-body form-inline">
+            <label>
+                编号:
+                <input type="text" v-model:value="id" class="form-control">
+            </label>
+
+            <label>
+                品牌:
+                <input type="text" v-model:value="name" class="form-control">
+            </label>
+
+              <label>
+            
+                <input type="button" value="提交" class="btn btn-primary" @click='add'>
+            </label>
+
+              <label>
+            
+                <input type="text" v-model:value="keywards" class="form-control">
+            </label>
+        </div>
+        
+        </div>
+
+
+        <table class="table table-bordered table-hover table-strip">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>品牌</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>      
+        <tbody>
+            <tr v-for='j in search(keywards)'>
+                <td>{{ j.id }}</td>
+                <td>{{ j.name }}</td>
+                <td>{{ j.ctime }}</td>
+                <td><a href="" @click.prevent='del(j.id)'>删除</a></td>
+            </tr>
+        </tbody>
+                
+
+        </div>
+
+        </table>
+
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                id: '',
+                name: '',
+                keywards :'',
+                list : [
+                    {id:1,name:'奔驰',ctime: new Date()},
+                    {id:2,name:'宝马',ctime: new Date()},
+                    {id:3,name:'千里马',ctime: new Date()},
+               ]
+            },
+            methods:{
+                add(){
+                    this.list.push({id:this.id, name: this.name, ctime:new Date()})
+                    this.id = this.name = ''
+                },
+                del(id){
+                    this.list.some((item, i) => {
+                        if (item.id == id){
+                            this.list.splice(i,1)
+                        return true;
+                        }
+                    })  
+                },
+                del1(id){
+
+                   var index = this.list.findIndex(item =>{
+                        if (item.id == id){
+                            return true;
+                        }
+                    })
+                   this.list.splice(index,1)
+                },
+                search(keywards){
+                    var newList = []
+                    this.list.forEach(item =>{
+                        if (item.name.indexOf(keywards) != -1){
+                            newList.push(item)
+                        }
+
+                    })
+                    console.log(newList)
+                    return newList
+                },
+            }
+        })
+
+    </script>
+</body>

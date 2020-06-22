@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <script src="./lib/vue.js"></script>
+  </head>
+
+  <body>
+    <div id='app'>
+        <input type="button" value="跑起来" v-bind:title="msg1" v-on:click="run">
+        <input type="button" value="停止" v-bind:title="msg2" v-on:click="stop">
+        <p v-html="msg"></p>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg  :'猥琐发育，别浪！！！',
+                msg1 :'开始跑马灯',
+                msg2 :'停止跑马灯',
+                IntervalID : null,
+            },
+            methods: {
+                run() {
+                    if (this.IntervalID != null) return;
+                    this.IntervalID = setInterval( () => {
+                            var start = this.msg.substring(0,1) 
+                            var end = this.msg.substring(1)
+                            this.msg = end +  start
+                        }, 40)
+                    },
+                stop() {
+                    clearInterval(this.IntervalID)
+                    this.IntervalID = null
+                }
+            }
+        })
+
+    </script>
+  </body>
+</html>

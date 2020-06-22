@@ -1,0 +1,28 @@
+<!DOCTYPE>
+<head>
+    <script src="./lib/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <input type="button" value="an" @click='flag = !flag'>
+        <h3 v-if="flag">1</h3>
+        <h3 v-show="flag">2</h3>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                flag: true
+            },
+            methods:{
+                an(){
+                    this.flag = !this.flag
+                }
+            }
+
+        })
+
+    </script>
+</body>

@@ -1,0 +1,31 @@
+<!DOCTYPE>
+<head>
+    <script src='./lib/vue.js'></script>
+</head>
+<style >
+    .red{
+        color: red;
+    }
+    .thin{
+        font-weight: 200;
+    }
+</style>
+</head>
+
+
+<body>
+    <div id='app'>
+        <h1 :style="styleObj">test</h1>
+    </div>
+    <script >
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                styleObj: {color:'red'}
+            },
+            methods:{
+            }
+        });
+
+    </script>
+</body>

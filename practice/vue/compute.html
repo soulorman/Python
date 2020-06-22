@@ -1,0 +1,51 @@
+<!DOCTYPE>
+<HEAD>
+    <script src="./lib/vue.js"></script>
+</HEAD>
+
+<body>
+    <div id='app'>
+        <input type="text" v-model:value="msg1">
+        <select v-model:value='opt'>
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+        </select>
+        <input type="text" v-model:value="msg2">
+        <input type="button" value="=" @click='compute'>
+        <input type="text" v-model:value="res">
+    </div>
+
+    <script >
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            msg1: 0,
+            msg2: 0,
+            opt: '/',
+            res: 0,
+        },
+        methods:{
+            compute(){
+/*                switch (this.opt) {
+                    case '+':
+                        this.res = parseInt(this.msg1) +  parseInt(this.msg2)
+                        break;
+                    case '-':
+                        this.res = parseInt(this.msg1) -  parseInt(this.msg2)
+                        break;
+                    case '*':
+                        this.res = parseInt(this.msg1) *  parseInt(this.msg2)
+                        break;
+                    case '/':
+                        this.res = parseInt(this.msg1) /  parseInt(this.msg2)
+                        break;
+                }*/
+                this.res = eval(parseInt(this.msg1) + this.opt +parseInt(this.msg2))
+            }
+        }
+    })
+    </script>
+
+</body>
